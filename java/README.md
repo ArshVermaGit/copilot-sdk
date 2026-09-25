@@ -1,6 +1,6 @@
 # GitHub Copilot SDK for Java
 
-[![Build](https://github.com/github/copilot-sdk/actions/workflows/java-sdk-tests.yml/badge.svg)](https://github.com/github/copilot-sdk/actions/workflows/java-sdk-tests.yml)
+[![Build](https://github.com/github/copilot-sdk/actions/workflows/sdk.yml/badge.svg)](https://github.com/github/copilot-sdk/actions/workflows/sdk.yml)
 [![Java 17+](https://img.shields.io/badge/Java-17%2B-blue?logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -74,7 +74,7 @@ implementation 'com.github:copilot-sdk-java:1.0.15-preview.1-SNAPSHOT'
 
 ## In-process mode (experimental)
 
-The SDK supports running the Copilot runtime **in-process** as a native library instead of spawning a separate CLI process. This eliminates process management overhead and simplifies deployment. In-process mode is currently experimental and supported on **linux-x64** (glibc), **linux-arm64** (glibc), **win32-x64**, **win32-arm64**, **darwin-x64**, and **darwin-arm64**.
+The SDK supports running the Copilot runtime **in-process** as a native library instead of spawning a separate CLI process. This eliminates process management overhead and simplifies deployment. In-process mode is currently experimental and supported on **linux-x64** (glibc), **linux-arm64** (glibc), **linuxmusl-x64**, **win32-x64**, **win32-arm64**, **darwin-x64**, and **darwin-arm64**.
 
 Because in-process mode is experimental, see the [Using experimental APIs](#using-experimental-apis) section for how to opt in.
 
@@ -97,7 +97,7 @@ Add both the SDK and the platform-specific native runtime to your project:
         <version>${copilot.version}</version>
         <classifier>linux-x64</classifier>
     </dependency>
-    <!-- Use linux-arm64, win32-x64, win32-arm64, darwin-x64, or darwin-arm64 on those target platforms -->
+    <!-- Use linux-arm64, linuxmusl-x64, win32-x64, win32-arm64, darwin-x64, or darwin-arm64 on those target platforms -->
     <!-- JNA (required for in-process mode) -->
     <dependency>
         <groupId>net.java.dev.jna</groupId>
@@ -178,6 +178,11 @@ directly.
 
 `CopilotClientOptions.setCwd(...)` sets the runtime process working directory, which otherwise inherits the current process working directory. `SessionConfig.setWorkingDirectory(...)` sets the session working directory, which otherwise defaults to the runtime process working directory.
 
+`CopilotClientOptions.setExtensionLaunchProvider(...)` configures an experimental
+connection-level resolver for extension launch profiles. The client installs the
+reverse-RPC handler and registers the provider during startup before sessions can
+be created.
+
 `SessionConfig.setAskUserVariant(AskUserVariant.ELICITATION)` selects the
 structured form-based `ask_user` tool when an elicitation handler is also set.
 The default is `AskUserVariant.LEGACY`. Re-supply the option and handler through
@@ -229,7 +234,46 @@ system prompt.
 
 Agent sources serialize as `agent-<id>`. Pass the agent ID without adding a
 prefix. The SDK preserves its case and whitespace and rejects null IDs.
-`sendAndWait` accepts the same source values as `send`.
+`sendAndWait` accepts the same source values as `send`. Sub-agent events remain
+visible to listeners but do not complete the wait or supply its reply.
+Synchronous listeners registered before `sendAndWait` finish processing the root
+`session.idle` event before its future completes. Event listeners run in
+registration order.
+
+## Structured output (experimental)
+
+Annotate a result record or class using the same compile-time schema-generation
+approach as `@CopilotTool`. No additional schema dependency is needed:
+
+```java
+@CopilotResponse
+public record Inventory(int count, String color) {}
+
+Inventory inventory = session.sendAndWait(
+    "Call get_inventory, then report the widget count and color.",
+    Inventory.class
+).get();
+```
+
+Enable annotation processing with `CopilotResponseProcessor` (automatically
+discoverable alongside the SDK's existing processors), and opt in to experimental
+APIs as described below. The processor reuses the custom-tool `SchemaGenerator`,
+closing record/class objects for strict output. Its existing type-mapping
+limitations apply: custom Jackson naming/converters and recursive types need an explicit schema.
+Provider restrictions, including optional-field and dictionary restrictions,
+still apply. Jackson deserialization is not full JSON Schema validation.
+
+For an explicit schema, use `new MessageOptions().setPrompt(...).setResponseSchema(schema)`
+with `send` or `sendAndWait`; schema-bearing `sendAndWait` returns the ordinary
+message event. Typed overloads accept message options and a timeout, clone the
+options, and reject explicit schemas and immediate delivery.
+
+Schemas apply to one run, including tools, steering, and stop-hook corrections;
+independent sends and subagents do not inherit them. Streaming stays text.
+Structured waits return the last correlated root message without tool requests at
+non-autopilot idle. Concurrent waits keep their own results; queued work can delay
+idle. Aborts, session errors after the run starts, and missing final output fail.
+Cancellation and timeout stop waiting without aborting the agent.
 
 ## Permission Handling
 
@@ -453,6 +497,69 @@ var resumed = client.resumeSession(sessionId, new ResumeSessionConfig()
 
 When `memory` is left unset, no memory configuration is sent and the runtime default applies. In the default `CopilotClientMode.COPILOT_CLI` the SDK leaves `memory` unset so the runtime applies its own default, while `CopilotClientMode.EMPTY` defaults `memory` to disabled unless you set it explicitly.
 
+## JSON-RPC error handling
+
+Server error responses surface as `com.github.copilot.JsonRpcException`, a
+`RuntimeException` with `getCode()`, `getMessage()`, and `getData()`. The data is a
+Jackson `JsonNode`: objects, arrays, strings, numbers, and booleans retain their
+JSON types, including empty values, zero, and false. Numeric fidelity follows
+Jackson's existing parser. Omitted data returns Java `null`; explicit JSON `null`
+returns a `NullNode` (`data.isNull()` is true).
+
+Future wrapping is unchanged. With `get()`, inspect the cause of
+`ExecutionException`:
+
+```java
+import com.github.copilot.JsonRpcException;
+import java.util.concurrent.ExecutionException;
+
+try {
+    client.ping("hello").get();
+} catch (ExecutionException ex) {
+    if (ex.getCause() instanceof JsonRpcException rpcError) {
+        System.err.println("RPC " + rpcError.getCode() + ": " + rpcError.getMessage());
+        var data = rpcError.getData();
+        if (data != null && !data.isNull()) {
+            // Inspect data according to the server's error contract.
+        }
+    } else {
+        throw ex; // Transport and local failures are not JSON-RPC error responses.
+    }
+}
+```
+
+The enclosing method must handle or declare both `InterruptedException` and the
+rethrown `ExecutionException`.
+With `join()`, the wrapper is `CompletionException` instead:
+
+```java
+import java.util.concurrent.CompletionException;
+
+try {
+    client.ping("hello").join();
+} catch (CompletionException ex) {
+    if (ex.getCause() instanceof JsonRpcException rpcError) {
+        System.err.println("RPC " + rpcError.getCode() + ": " + rpcError.getMessage());
+        var data = rpcError.getData();
+        if (data == null) {
+            // The data member was omitted.
+        } else if (data.isNull()) {
+            // The server explicitly supplied JSON null.
+        } else {
+            // Inspect data according to the server's error contract.
+        }
+    } else {
+        throw ex;
+    }
+}
+```
+
+Error data is not appended to `getMessage()` or `toString()`. Avoid logging it
+indiscriminately: server-provided data may contain sensitive information.
+`getData()` returns the shared Jackson node, not an immutable snapshot. Use
+`deepCopy()` before modifying a container node, particularly when multiple
+observers share the failed future.
+
 ## Using experimental APIs
 
 Some SDK APIs are marked as experimental with `@CopilotExperimental`. These APIs may change or be removed in future versions without notice.
@@ -607,9 +714,9 @@ CI enforces both checks. Spotless runs explicitly in CI; `mvn verify` alone does
 
 #### Development Setup for native embedding
 
-Run native-runtime Maven commands from the `java` directory. Native packaging requires Node.js in addition to JDK 25 and Maven because `copilot-native/scripts/fetch-native.mjs` retrieves the pinned runtime package from the corresponding GitHub release.
+Run native-runtime Maven commands from the `java` directory. Native packaging requires Node.js in addition to JDK 25 and Maven. In a standalone SDK checkout, `copilot-native/scripts/fetch-native.mjs` retrieves the pinned runtime package from the corresponding GitHub release. When the SDK is nested in `copilot-agent-runtime`, it instead stages the same-checkout artifacts from `dist-cli`; run `pnpm run build:cli` from the runtime repository first.
 
-On a native Linux glibc host, Maven activates `native-linux-x64` or `native-linux-arm64` for the matching architecture when `copilot.native.libc=glibc` is set. On Windows x64, Windows ARM64, Intel macOS, and Apple Silicon macOS, Maven activates `native-win32-x64`, `native-win32-arm64`, `native-darwin-x64`, or `native-darwin-arm64` automatically. The matching profile validates the host, runs the native script tests, fetches the pinned platform package from the corresponding `github/copilot-cli` release during `generate-resources`, packages the classifier JAR during `package`, and verifies its native contents.
+On a native Linux glibc host, Maven activates `native-linux-x64` or `native-linux-arm64` for the matching architecture when `copilot.native.libc=glibc` is set. On a Linux musl x64 host, Maven activates `native-linuxmusl-x64` when `copilot.native.libc=musl` is set. On Windows x64, Windows ARM64, Intel macOS, and Apple Silicon macOS, Maven activates `native-win32-x64`, `native-win32-arm64`, `native-darwin-x64`, or `native-darwin-arm64` automatically. The matching profile validates the host, runs the native script tests, stages the platform package during `generate-resources`, packages the classifier JAR during `package`, and verifies its native contents.
 
 Before opting in, validate that Node.js reports glibc for the build host:
 
@@ -644,7 +751,14 @@ node copilot-native/scripts/validate-native-host.mjs linux-arm64
 mvn -Pinprocess clean verify -Dcopilot.native.libc=glibc
 ```
 
-On Linux musl and other unsupported hosts, do not set `copilot.native.libc=glibc`. A normal build produces only the OS-neutral primary, sources, and Javadoc JARs; it does not run native script tests, download or stage native files, or produce a platform classifier JAR.
+The same command validates in-process mode on Linux musl x64:
+
+```bash
+node copilot-native/scripts/validate-native-host.mjs linuxmusl-x64
+mvn -Pinprocess clean verify -Dcopilot.native.libc=musl
+```
+
+On Linux musl ARM64 and other unsupported hosts, do not set `copilot.native.libc`. A normal build produces only the OS-neutral primary, sources, and Javadoc JARs; it does not run native script tests, download or stage native files, or produce a platform classifier JAR.
 
 To build only the OS-neutral artifacts on any host, or override the glibc opt-in, disable native download and packaging:
 

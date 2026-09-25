@@ -156,6 +156,8 @@ type Client struct {
 	sessionsMux             sync.Mutex
 	gitHubTokenProviders    map[string]GitHubTokenProvider
 	gitHubTokenProvidersMux sync.RWMutex
+	requestAdapter          *copilotRequestAdapter
+	requestAdapterMux       sync.Mutex
 	sessionOperations       map[string]*sessionOperation
 	sessionOperationsMux    sync.Mutex
 	isExternalServer        bool
@@ -499,6 +501,19 @@ func (c *Client) Start(ctx context.Context) error {
 		return errors.Join(err, killErr)
 	}
 
+	if c.options.ExtensionLaunchProvider != nil {
+		if _, err := c.RPC.RegisterExtensionLaunchProvider(ctx); err != nil {
+			c.client.Stop()
+			c.client = nil
+			c.conn = nil
+			c.RPC = nil
+			c.internalRPC = nil
+			killErr := c.killProcess()
+			c.state = stateError
+			return errors.Join(err, killErr)
+		}
+	}
+
 	if len(c.options.BuiltinPluginDirectories) > 0 {
 		if _, err := c.client.Request(ctx, "plugins.builtin.set", map[string]any{
 			"paths": c.options.BuiltinPluginDirectories,
@@ -588,6 +603,7 @@ func (c *Client) Stop() error {
 	c.sessions = make(map[string]*Session)
 	c.sessionsMux.Unlock()
 	c.clearGitHubTokenProviders()
+	c.closeCopilotRequestAdapter()
 
 	c.startStopMux.Lock()
 	defer c.startStopMux.Unlock()
@@ -711,6 +727,7 @@ func (c *Client) ForceStop() {
 		session.cancelPendingExternalTools()
 	}
 	c.clearGitHubTokenProviders()
+	c.closeCopilotRequestAdapter()
 
 	c.startStopMux.Lock()
 	defer c.startStopMux.Unlock()
@@ -895,6 +912,7 @@ func (c *Client) CreateSession(ctx context.Context, config *SessionConfig) (*Ses
 	req.SessionLimits = config.SessionLimits
 	req.IsExperimentalMode = config.EnableExperimentalMode
 	req.SkipCustomInstructions = config.SkipCustomInstructions
+	req.RefreshCustomInstructions = config.RefreshCustomInstructions
 	req.CustomAgentsLocalOnly = config.CustomAgentsLocalOnly
 	req.CoauthorEnabled = config.CoauthorEnabled
 	req.ManageScheduleEnabled = config.ManageScheduleEnabled
@@ -902,6 +920,7 @@ func (c *Client) CreateSession(ctx context.Context, config *SessionConfig) (*Ses
 	req.WorkingDirectory = config.WorkingDirectory
 	req.AdditionalDirectories = config.AdditionalDirectories
 	req.MCPServers = config.MCPServers
+	req.Diagnostics = config.Diagnostics
 	req.MCPOAuthTokenStorage = config.MCPOAuthTokenStorage
 	req.AuthClientIDMetadataURL = config.AuthClientIDMetadataURL
 	req.EnvValueMode = "direct"
@@ -1071,10 +1090,6 @@ func (c *Client) CreateSession(ctx context.Context, config *SessionConfig) (*Ses
 			s.registerBearerTokenProviders(bearerTokenProviders)
 		}
 
-		c.sessionsMux.Lock()
-		c.sessions[sessionID] = s
-		c.sessionsMux.Unlock()
-
 		if c.options.SessionFS != nil {
 			if config.CreateSessionFSProvider == nil {
 				unregisterSession(sessionID, s)
@@ -1089,6 +1104,10 @@ func (c *Client) CreateSession(ctx context.Context, config *SessionConfig) (*Ses
 			}
 			s.clientSessionAPIs.SessionFS = newSessionFSAdapter(provider)
 		}
+
+		c.sessionsMux.Lock()
+		c.sessions[sessionID] = s
+		c.sessionsMux.Unlock()
 		return s, nil
 	}
 
@@ -1322,6 +1341,7 @@ func (c *Client) ResumeSessionWithOptions(ctx context.Context, sessionID string,
 	}
 	req.ContinuePendingWork = config.ContinuePendingWork
 	req.MCPServers = config.MCPServers
+	req.Diagnostics = config.Diagnostics
 	req.MCPOAuthTokenStorage = config.MCPOAuthTokenStorage
 	req.AuthClientIDMetadataURL = config.AuthClientIDMetadataURL
 	req.EnvValueMode = "direct"
@@ -1428,6 +1448,23 @@ func (c *Client) ResumeSessionWithOptions(ctx context.Context, sessionID string,
 		session.registerBearerTokenProviders(bearerTokenProviders)
 	}
 
+	if c.options.SessionFS != nil {
+		if config.CreateSessionFSProvider == nil {
+			session.stopEventProcessing()
+			return nil, fmt.Errorf("CreateSessionFSProvider is required in session config when SessionFS is enabled in client options")
+		}
+		provider := config.CreateSessionFSProvider(session)
+		if c.options.SessionFS.Capabilities != nil && c.options.SessionFS.Capabilities.Sqlite {
+			if _, ok := provider.(SessionFSSqliteProvider); !ok {
+				session.stopEventProcessing()
+				return nil, fmt.Errorf("SessionFS capabilities declare SQLite support but the provider does not implement SessionFSSqliteProvider")
+			}
+		}
+		session.clientSessionAPIs.SessionFS = newSessionFSAdapter(provider)
+	}
+
+	// Publish only fully initialized handlers: the runtime may still be issuing
+	// SessionFS callbacks for the previous session while its replacement is built.
 	c.sessionsMux.Lock()
 	replacedSession := c.sessions[sessionID]
 	c.sessions[sessionID] = session
@@ -1449,21 +1486,6 @@ func (c *Client) ResumeSessionWithOptions(ctx context.Context, sessionID string,
 		// session (if any) but never returns this failed one to the caller, so
 		// its event consumer must be stopped here or it leaks forever.
 		session.stopEventProcessing()
-	}
-
-	if c.options.SessionFS != nil {
-		if config.CreateSessionFSProvider == nil {
-			restoreReplacedSession()
-			return nil, fmt.Errorf("CreateSessionFSProvider is required in session config when SessionFS is enabled in client options")
-		}
-		provider := config.CreateSessionFSProvider(session)
-		if c.options.SessionFS.Capabilities != nil && c.options.SessionFS.Capabilities.Sqlite {
-			if _, ok := provider.(SessionFSSqliteProvider); !ok {
-				restoreReplacedSession()
-				return nil, fmt.Errorf("SessionFS capabilities declare SQLite support but the provider does not implement SessionFSSqliteProvider")
-			}
-		}
-		session.clientSessionAPIs.SessionFS = newSessionFSAdapter(provider)
 	}
 
 	result, err := c.client.Request(ctx, "session.resume", req)
@@ -2486,15 +2508,24 @@ func (c *Client) setupNotificationHandler() {
 	// payload's sessionId. Always register the global handlers so the generated
 	// hooks.invoke handler is wired to our dispatcher.
 	handlers := &rpc.ClientGlobalAPIHandlers{
-		Hooks:       &hooksAdapter{client: c},
-		GitHubToken: &gitHubTokenAdapter{client: c},
+		ExtensionLaunchProvider: c.options.ExtensionLaunchProvider,
+		Hooks:                   &hooksAdapter{client: c},
+		GitHubToken:             &gitHubTokenAdapter{client: c},
 	}
 
 	if c.options.RequestHandler != nil {
 		llmInference := c.RPC.LlmInference
-		handlers.LlmInference = newCopilotRequestAdapter(c.options.RequestHandler, func() *rpc.ServerLlmInferenceAPI {
+		adapter := newCopilotRequestAdapter(c.options.RequestHandler, func() *rpc.ServerLlmInferenceAPI {
 			return llmInference
 		})
+		c.requestAdapterMux.Lock()
+		previous := c.requestAdapter
+		c.requestAdapter = adapter
+		c.requestAdapterMux.Unlock()
+		if previous != nil {
+			previous.close()
+		}
+		handlers.LlmInference = adapter
 	}
 	if c.options.OnGitHubTelemetry != nil {
 		handlers.GitHubTelemetry = &gitHubTelemetryAdapter{callback: c.options.OnGitHubTelemetry}
@@ -2532,6 +2563,7 @@ func (c *Client) clearGitHubTokenProviders() {
 }
 
 func (c *Client) handleConnectionClose() {
+	c.closeCopilotRequestAdapter()
 	c.clearGitHubTokenProviders()
 	c.sessionsMux.Lock()
 	sessions := make([]*Session, 0, len(c.sessions))
@@ -2549,6 +2581,15 @@ func (c *Client) handleConnectionClose() {
 		defer c.startStopMux.Unlock()
 		c.state = stateDisconnected
 	}()
+}
+
+func (c *Client) closeCopilotRequestAdapter() {
+	c.requestAdapterMux.Lock()
+	adapter := c.requestAdapter
+	c.requestAdapterMux.Unlock()
+	if adapter != nil {
+		adapter.close()
+	}
 }
 
 func (c *Client) lockSessionOperation(sessionID string) func() {

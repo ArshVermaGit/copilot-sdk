@@ -66,10 +66,16 @@ from .canvas import (
     CanvasProviderIdentity,
     ExtensionInfo,
 )
-from .copilot_request_handler import CopilotRequestHandler, create_copilot_request_adapter
+from .copilot_request_handler import (
+    CopilotRequestHandler,
+    _CopilotRequestAdapterHandler,
+    create_copilot_request_adapter,
+)
 from .generated.rpc import (
     ClientGlobalApiHandlers,
     ClientSessionApiHandlers,
+    DiagnosticsConfiguration,
+    ExtensionLaunchProviderHandler,
     GitHubTelemetryNotification,
     GitHubTokenAcquireReason,
     GitHubTokenAcquireRequest,
@@ -812,6 +818,7 @@ class _CopilotClientOptions:
     github_token: str | None = None
     base_directory: str | None = None
     builtin_plugin_directories: tuple[str, ...] = ()
+    extension_launch_provider: ExtensionLaunchProviderHandler | None = None
     use_logged_in_user: bool | None = None
     telemetry: TelemetryConfig | None = None
     session_fs: SessionFsConfig | None = None
@@ -1567,6 +1574,7 @@ class CopilotClient:
         github_token: str | None = None,
         base_directory: str | None = None,
         builtin_plugin_directories: Sequence[str] | None = None,
+        extension_launch_provider: ExtensionLaunchProviderHandler | None = None,
         use_logged_in_user: bool | None = None,
         telemetry: TelemetryConfig | None = None,
         session_fs: SessionFsConfig | None = None,
@@ -1606,6 +1614,9 @@ class CopilotClient:
             builtin_plugin_directories: Absolute paths to trusted plugin
                 directories bundled by the host. When non-empty, the complete
                 set is registered during startup before sessions can be created.
+            extension_launch_provider: Connection-level extension launch profile
+                provider. When set, it is registered during startup before any
+                session can be created.
             use_logged_in_user: Use the logged-in user for authentication.
                 ``None`` (default) resolves to ``True`` unless ``github_token``
                 is set.
@@ -1659,6 +1670,7 @@ class CopilotClient:
             github_token=github_token,
             base_directory=base_directory,
             builtin_plugin_directories=tuple(builtin_plugin_directories or ()),
+            extension_launch_provider=extension_launch_provider,
             use_logged_in_user=use_logged_in_user,
             telemetry=telemetry,
             session_fs=session_fs,
@@ -1772,6 +1784,7 @@ class CopilotClient:
             _validate_session_fs_config(options.session_fs)
         self._session_fs_config = options.session_fs
         self._request_handler = options.request_handler
+        self._llm_inference_adapter: _CopilotRequestAdapterHandler | None = None
 
     def _resolve_runtime_entrypoint(
         self,
@@ -1975,6 +1988,9 @@ class CopilotClient:
                 start_time,
             )
 
+            if self._options.extension_launch_provider is not None:
+                await self.rpc.register_extension_launch_provider()
+
             if self._options.builtin_plugin_directories:
                 assert self._client is not None
                 try:
@@ -2064,6 +2080,8 @@ class CopilotClient:
             ...         print(f"Cleanup error: {error.message}")
         """
         errors: list[StopError] = []
+        if self._llm_inference_adapter is not None:
+            self._llm_inference_adapter.cancel_pending()
 
         # Atomically take ownership of all sessions and clear the dict
         # so no other thread can access them
@@ -2198,6 +2216,9 @@ class CopilotClient:
             ... except asyncio.TimeoutError:
             ...     await client.force_stop()
         """
+        if self._llm_inference_adapter is not None:
+            self._llm_inference_adapter.cancel_pending()
+
         # Clear sessions immediately without trying to destroy them
         with self._sessions_lock:
             sessions = list(self._sessions.values())
@@ -2286,6 +2307,7 @@ class CopilotClient:
         excluded_builtin_agents: list[str] | None = None,
         session_limits: SessionLimitsConfig | None = None,
         skip_custom_instructions: bool | None = None,
+        refresh_custom_instructions: bool | None = None,
         custom_agents_local_only: bool | None = None,
         coauthor_enabled: bool | None = None,
         manage_schedule_enabled: bool | None = None,
@@ -2293,6 +2315,7 @@ class CopilotClient:
         streaming: bool | None = None,
         include_sub_agent_streaming_events: bool | None = None,
         mcp_servers: dict[str, MCPServerConfig] | None = None,
+        diagnostics: DiagnosticsConfiguration | None = None,
         mcp_oauth_token_storage: Literal["persistent", "in-memory"] | None = None,
         auth_client_id_metadata_url: str | None = None,
         embedding_cache_storage: Literal["persistent", "in-memory"] | None = None,
@@ -2419,6 +2442,11 @@ class CopilotClient:
                 name is configured.
             session_limits: **Experimental.** Limits applied to this session's
                 current accounting window.
+            refresh_custom_instructions: When True, invalidates the process-wide
+                custom-instruction discovery cache before constructing this new
+                session. Omitted or False retains the cache. Other sessions in this
+                runtime may observe updated instructions on later turns or discovery.
+                This does not watch files or enable disabled instruction loading.
             model_capabilities: Override individual model capabilities resolved by the runtime.
             streaming: Whether to enable streaming responses.
             include_sub_agent_streaming_events: Whether to include sub-agent streaming
@@ -2729,6 +2757,8 @@ class CopilotClient:
             payload["excludedBuiltinAgents"] = excluded_builtin_agents
         if session_limits is not None:
             payload["sessionLimits"] = _session_limits_to_wire(session_limits)
+        if refresh_custom_instructions is not None:
+            payload["refreshCustomInstructions"] = refresh_custom_instructions
 
         # Add model capabilities override if provided
         if model_capabilities:
@@ -2737,6 +2767,8 @@ class CopilotClient:
         # Add MCP servers configuration if provided
         if mcp_servers:
             payload["mcpServers"] = _mcp_servers_to_wire(mcp_servers)
+        if diagnostics is not None:
+            payload["diagnostics"] = diagnostics.to_dict()
         # Mode "empty" defaults MCP OAuth token storage to in-memory; caller wins.
         mcp_oauth_token_storage = _mcp_oauth_token_storage_default(mode, mcp_oauth_token_storage)
         if mcp_oauth_token_storage is not None:
@@ -3080,6 +3112,7 @@ class CopilotClient:
         streaming: bool | None = None,
         include_sub_agent_streaming_events: bool | None = None,
         mcp_servers: dict[str, MCPServerConfig] | None = None,
+        diagnostics: DiagnosticsConfiguration | None = None,
         mcp_oauth_token_storage: Literal["persistent", "in-memory"] | None = None,
         auth_client_id_metadata_url: str | None = None,
         embedding_cache_storage: Literal["persistent", "in-memory"] | None = None,
@@ -3520,6 +3553,8 @@ class CopilotClient:
         # TODO: disable_resume is not a keyword arg yet; keeping for future use
         if mcp_servers:
             payload["mcpServers"] = _mcp_servers_to_wire(mcp_servers)
+        if diagnostics is not None:
+            payload["diagnostics"] = diagnostics.to_dict()
         # Mode "empty" defaults MCP OAuth token storage to in-memory; caller wins.
         mcp_oauth_token_storage = _mcp_oauth_token_storage_default(mode, mcp_oauth_token_storage)
         if mcp_oauth_token_storage is not None:
@@ -4853,9 +4888,9 @@ class CopilotClient:
     def _register_client_global_handlers(self) -> None:
         if not self._client:
             return
-        llm_inference_adapter = None
+        self._llm_inference_adapter = None
         if self._request_handler is not None:
-            llm_inference_adapter = create_copilot_request_adapter(
+            self._llm_inference_adapter = create_copilot_request_adapter(
                 self._request_handler,
                 lambda: self._rpc.llm_inference if self._rpc is not None else None,
             )
@@ -4866,7 +4901,8 @@ class CopilotClient:
             self._client,
             ClientGlobalApiHandlers(
                 hooks=_HooksAdapter(self._get_session),
-                llm_inference=llm_inference_adapter,
+                extension_launch_provider=self._options.extension_launch_provider,
+                llm_inference=self._llm_inference_adapter,
                 git_hub_telemetry=github_telemetry_adapter,
                 git_hub_token=self._github_token_provider_adapter,
             ),
@@ -4891,10 +4927,13 @@ class CopilotClient:
         with self._github_token_providers_lock:
             self._github_token_providers.clear()
         client = self._client
+        llm_inference_adapter = self._llm_inference_adapter
         loop = client._loop if client is not None else None
         if loop is not None and not loop.is_closed():
 
             def cancel_pending_external_tools() -> None:
+                if llm_inference_adapter is not None:
+                    llm_inference_adapter.cancel_pending()
                 for session in sessions:
                     session._cancel_pending_external_tools()
 

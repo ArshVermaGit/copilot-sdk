@@ -134,6 +134,10 @@ type ClientOptions struct {
 	// runtime's complete trusted built-in plugin directory set before sessions
 	// can be created.
 	BuiltinPluginDirectories []string
+	// ExtensionLaunchProvider resolves launch profiles for extension entrypoints
+	// discovered by the runtime. When non-nil, Start registers the provider
+	// before any sessions can be created.
+	ExtensionLaunchProvider ExtensionLaunchProvider
 	// LogLevel for the runtime. When empty (the default), the runtime
 	// uses its own default level; the SDK does not pass --log-level.
 	// Recognized values: "none", "error", "warning", "info", "debug", "all".
@@ -210,6 +214,23 @@ type ClientOptions struct {
 	// for session state.
 	Mode ClientMode
 }
+
+// ExtensionLaunchProvider resolves launch profiles for extension entrypoints
+// discovered by the runtime.
+//
+// Experimental: this API may change or be removed.
+type ExtensionLaunchProvider = rpc.ExtensionLaunchProviderHandler
+
+// ExtensionLaunchProviderResolveRequest describes a discovered extension
+// entrypoint that may need a host-provided launch profile.
+type ExtensionLaunchProviderResolveRequest = rpc.ExtensionLaunchProviderResolveRequest
+
+// ExtensionLaunchProviderResolveResult contains the optional host-provided
+// launch profile for an extension entrypoint.
+type ExtensionLaunchProviderResolveResult = rpc.ExtensionLaunchProviderResolveResult
+
+// ExtensionLaunchProfile describes how the runtime should launch an extension.
+type ExtensionLaunchProfile = rpc.ExtensionLaunchProfile
 
 // ClientInfo identifies the integrating application on the `server.connect` handshake.
 //
@@ -504,6 +525,7 @@ type MCPAuthStaticClientConfig struct {
 	ClientSecret *string `json:"clientSecret,omitempty"`
 	GrantType    *string `json:"grantType,omitempty"`
 	PublicClient *bool   `json:"publicClient,omitempty"`
+	Scope        *string `json:"scope,omitempty"`
 }
 
 // MCPAuthRequest describes an MCP OAuth request that the SDK host can satisfy with a token.
@@ -1103,10 +1125,14 @@ func (c MCPStdioServerConfig) MarshalJSON() ([]byte, error) {
 //
 // See [MCPStdioServerConfig] for the semantics of the Tools field.
 type MCPHTTPServerConfig struct {
-	Tools   []string          `json:"tools,omitzero"`
-	Timeout int               `json:"timeout,omitempty"`
-	URL     string            `json:"url"`
-	Headers map[string]string `json:"headers,omitzero"`
+	Tools             []string                               `json:"tools,omitzero"`
+	Timeout           int                                    `json:"timeout,omitempty"`
+	URL               string                                 `json:"url"`
+	Headers           map[string]string                      `json:"headers,omitzero"`
+	OAuthClientID     *string                                `json:"oauthClientId,omitempty"`
+	OAuthScopes       []string                               `json:"oauthScopes,omitzero"`
+	OAuthPublicClient *bool                                  `json:"oauthPublicClient,omitempty"`
+	OAuthGrantType    *rpc.MCPServerConfigHTTPOauthGrantType `json:"oauthGrantType,omitempty"`
 }
 
 func (MCPHTTPServerConfig) mcpServerConfig() {}
@@ -1475,6 +1501,11 @@ type SessionConfig struct {
 	// SkipCustomInstructions, when non-nil, controls whether the runtime loads
 	// custom instruction files. See also [ClientOptions.Mode] = [ModeEmpty].
 	SkipCustomInstructions *bool
+	// RefreshCustomInstructions, when true, invalidates the process-wide custom-instruction
+	// discovery cache before constructing this new session. Nil or false retains the cache.
+	// Other sessions in this runtime may observe updated instructions on later turns
+	// or discovery. It does not watch files or enable disabled instruction loading.
+	RefreshCustomInstructions *bool
 	// CustomAgentsLocalOnly, when non-nil, restricts custom agents to those
 	// defined locally. See also [ClientOptions.Mode] = [ModeEmpty].
 	CustomAgentsLocalOnly *bool
@@ -1490,6 +1521,10 @@ type SessionConfig struct {
 	ModelCapabilities *rpc.ModelCapabilitiesOverride
 	// MCPServers configures MCP servers for the session
 	MCPServers map[string]MCPServerConfig
+	// Diagnostics enables explicitly configured session diagnostic sources.
+	// Diagnostics can contain MCP payloads, tool arguments, paths, and server
+	// stderr, so hosts must not upload or export them automatically.
+	Diagnostics *rpc.DiagnosticsConfiguration
 	// MCPOAuthTokenStorage controls how MCP OAuth tokens are stored for this session.
 	// When empty, the runtime default ("in-memory") is used.
 	MCPOAuthTokenStorage string
@@ -2053,6 +2088,9 @@ type ResumeSessionConfig struct {
 	IncludeSubAgentStreamingEvents *bool
 	// MCPServers configures MCP servers for the session
 	MCPServers map[string]MCPServerConfig
+	// Diagnostics updates explicitly configured sources. Leave it nil on a
+	// resident resume to preserve the current settings.
+	Diagnostics *rpc.DiagnosticsConfiguration
 	// MCPOAuthTokenStorage controls how MCP OAuth tokens are stored for this session.
 	// When empty, the runtime default ("in-memory") is used.
 	MCPOAuthTokenStorage string
@@ -2455,6 +2493,10 @@ func MessageSourceAgent(id string) MessageSource {
 
 // MessageOptions configures a message to send
 type MessageOptions struct {
+	// ResponseSchema is a per-run JSON Schema. Independent sends do not inherit it.
+	// Immediate steering inherits the active format and must not specify its own.
+	// Use RPC.Send for schema name, description and strictness options.
+	ResponseSchema map[string]any
 	// Prompt is the message to send
 	Prompt string
 	// Source identifies the message origin independently of Mode and AgentMode.
@@ -2634,6 +2676,7 @@ type createSessionRequest struct {
 	SessionLimits                      *rpc.SessionLimitsConfig               `json:"sessionLimits,omitempty"`
 	IsExperimentalMode                 *bool                                  `json:"isExperimentalMode,omitempty"`
 	SkipCustomInstructions             *bool                                  `json:"skipCustomInstructions,omitempty"`
+	RefreshCustomInstructions          *bool                                  `json:"refreshCustomInstructions,omitempty"`
 	CustomAgentsLocalOnly              *bool                                  `json:"customAgentsLocalOnly,omitempty"`
 	CoauthorEnabled                    *bool                                  `json:"coauthorEnabled,omitempty"`
 	ManageScheduleEnabled              *bool                                  `json:"manageScheduleEnabled,omitempty"`
@@ -2650,6 +2693,7 @@ type createSessionRequest struct {
 	IncludeSubAgentStreamingEvents     *bool                                  `json:"includeSubAgentStreamingEvents,omitempty"`
 	EnableGitHubTelemetryForwarding    *bool                                  `json:"enableGitHubTelemetryForwarding,omitempty"`
 	MCPServers                         map[string]MCPServerConfig             `json:"mcpServers,omitempty"`
+	Diagnostics                        *rpc.DiagnosticsConfiguration          `json:"diagnostics,omitempty"`
 	MCPOAuthTokenStorage               string                                 `json:"mcpOAuthTokenStorage,omitempty"`
 	AuthClientIDMetadataURL            string                                 `json:"authClientIdMetadataUrl,omitempty"`
 	EnvValueMode                       string                                 `json:"envValueMode,omitempty"`
@@ -2762,6 +2806,7 @@ type resumeSessionRequest struct {
 	IncludeSubAgentStreamingEvents     *bool                                  `json:"includeSubAgentStreamingEvents,omitempty"`
 	EnableGitHubTelemetryForwarding    *bool                                  `json:"enableGitHubTelemetryForwarding,omitempty"`
 	MCPServers                         map[string]MCPServerConfig             `json:"mcpServers,omitempty"`
+	Diagnostics                        *rpc.DiagnosticsConfiguration          `json:"diagnostics,omitempty"`
 	MCPOAuthTokenStorage               string                                 `json:"mcpOAuthTokenStorage,omitempty"`
 	AuthClientIDMetadataURL            string                                 `json:"authClientIdMetadataUrl,omitempty"`
 	EnvValueMode                       string                                 `json:"envValueMode,omitempty"`
@@ -2938,16 +2983,17 @@ type sessionAbortRequest struct {
 }
 
 type sessionSendRequest struct {
-	SessionID      string            `json:"sessionId"`
-	Prompt         string            `json:"prompt"`
-	Source         MessageSource     `json:"source,omitempty"`
-	DisplayPrompt  string            `json:"displayPrompt,omitempty"`
-	Attachments    []Attachment      `json:"attachments,omitempty"`
-	Mode           string            `json:"mode,omitempty"`
-	AgentMode      AgentMode         `json:"agentMode,omitempty"`
-	Traceparent    string            `json:"traceparent,omitempty"`
-	Tracestate     string            `json:"tracestate,omitempty"`
-	RequestHeaders map[string]string `json:"requestHeaders,omitempty"`
+	ResponseFormat *rpc.ResponseFormat `json:"responseFormat,omitempty"`
+	SessionID      string              `json:"sessionId"`
+	Prompt         string              `json:"prompt"`
+	Source         MessageSource       `json:"source,omitempty"`
+	DisplayPrompt  string              `json:"displayPrompt,omitempty"`
+	Attachments    []Attachment        `json:"attachments,omitempty"`
+	Mode           string              `json:"mode,omitempty"`
+	AgentMode      AgentMode           `json:"agentMode,omitempty"`
+	Traceparent    string              `json:"traceparent,omitempty"`
+	Tracestate     string              `json:"tracestate,omitempty"`
+	RequestHeaders map[string]string   `json:"requestHeaders,omitempty"`
 }
 
 // sessionSendResponse is the response from session.send

@@ -722,9 +722,15 @@ When streaming is off (the default), only the final `assistant.message` and `ass
 
 #### Subscribing before the session starts
 
-`session.subscribe()` can only be called once the session exists, so any event the runtime emits while `session.create` / `session.resume` is still in flight is broadcast with no receiver installed and is not delivered. Ephemeral events such as `session.idle` are not written to the session log either, so `get_messages` can't recover them afterwards.
+`session.subscribe()` can only be called once the session exists. On create, events dispatched before a subscriber is installed are not delivered. Ephemeral events such as `session.idle` are not written to the session log either, so `get_messages` can't recover them afterwards.
 
-`Client::prepare_session` / `Client::prepare_resume_session` close that window. They return a `PreparedSession` that owns the session's broadcast channel up front:
+On resume with no active prepared subscriber, the SDK instead retains all routed startup events, durable and ephemeral, in an ordered bootstrap queue. The first `session.subscribe()` call claims that queue synchronously, even before the subscription is polled. It receives the complete prefix and any events dispatched while catching up, then atomically switches to bounded live delivery. Later subscribers receive newly dispatched live events immediately, even while the owner is draining.
+
+**The resume bootstrap is unbounded until its owner catches up.** Subscribe and drain promptly: a caller that never subscribes or cannot catch up can retain arbitrarily many events. Dropping the owner discards its unread backlog without transferring it to another subscriber. Stopping the session event loop releases an unclaimed backlog; a claimed backlog can still drain after shutdown without keeping the sender alive. This guarantee covers events routed to the session, not overflow in the bounded client-global notification router.
+
+For create and resume calls with a client-known session ID, the SDK starts its event loop before sending the RPC so it can answer session-scoped requests issued during startup. Cloud creates with a server-assigned ID register the loop after the response identifies the session.
+
+`Client::prepare_session` / `Client::prepare_resume_session` let observers subscribe before protocol activity begins, including multiple startup observers. They return a `PreparedSession` that owns the session's broadcast channel up front:
 
 ```rust,ignore
 let prepared = client.prepare_session(
@@ -744,11 +750,11 @@ let session = prepared.start().await?;
 
 `prepare_*` is synchronous and inert — it validates the buffer capacity, allocates a local channel and cancellation token, and touches neither the router nor the transport until `start()` is first polled. `start(self)` consumes the handle and `PreparedSession` is deliberately not `Clone`, so a prepared session can never spawn two event loops. Dropping an unstarted handle leaves no state and closes its subscriptions; dropping the `start()` future cancels the startup, unregisters the session, and lets a same-ID retry succeed. Cleanup removes only the exact registration that startup owned, so a retry started while an abandoned attempt is still unwinding is never evicted by it.
 
-The buffer is finite — `session::DEFAULT_EVENT_BUFFER_CAPACITY` (512) unless `event_buffer_capacity` overrides it, and `Some(0)` is rejected as `ErrorKind::InvalidConfig` rather than clamped. Subscribers that fall behind observe `RecvErrorKind::Lagged` with the skipped count instead of applying backpressure, so a consumer that needs a lossless view of a large startup burst must configure enough capacity or drain concurrently with `start()`.
+Prepared subscriptions and live delivery use a finite buffer — `session::DEFAULT_EVENT_BUFFER_CAPACITY` (512) unless `event_buffer_capacity` overrides it, and `Some(0)` is rejected as `ErrorKind::InvalidConfig` rather than clamped. Subscribers that fall behind observe `RecvErrorKind::Lagged` with the skipped count instead of applying backpressure, so a prepared consumer that needs a lossless view of a large startup burst must configure enough capacity or drain concurrently with `start()`. An active prepared subscriber disables the implicit resume bootstrap; a resume started without one uses the one-shot bootstrap described above.
 
 For cloud sessions where the server assigns the session ID, notifications can't be routed until the create response arrives; the guarantee is that *routed* events are never dropped for lack of a receiver. Pin `session_id` for full pre-response coverage.
 
-`create_session` / `resume_session` are unchanged wrappers over `prepare_*(...)?.start()`, with identical RPC sequences and error kinds.
+`create_session` / `resume_session` remain wrappers over `prepare_*(...)?.start()`, with unchanged RPC sequences and error kinds.
 
 ### Infinite Sessions
 
@@ -865,7 +871,7 @@ For fire-and-forget messaging where you need to block until the agent finishes:
 use std::time::Duration;
 use github_copilot_sdk::MessageOptions;
 
-// Sends a message and blocks until session.idle or session.error
+// Sends a message and blocks until the root session.idle or session.error
 session
     .send_and_wait(
         MessageOptions::new("Fix the bug").with_wait_timeout(Duration::from_secs(120)),
@@ -873,7 +879,53 @@ session
     .await?;
 ```
 
-Default timeout is 60 seconds. Only one `send_and_wait` can be active per session — concurrent calls return an error.
+Default timeout is 60 seconds. Only one unformatted `send_and_wait` can be active
+per session; it also prevents other sends until it completes. Events attributed
+to a sub-agent (with a non-empty `agentId`) are still delivered to subscribers,
+but cannot supply the reply or end the parent's wait.
+The terminal event is queued to existing subscriptions before the wait returns;
+subscribers consume their streams independently and do not delay completion.
+
+### Structured output (experimental)
+
+Enable the existing `derive` feature and use the same `schemars`/Serde integration
+as typed custom tools:
+
+```rust,no_run
+# #[cfg(feature = "derive")]
+# mod example {
+use schemars::JsonSchema;
+use serde::Deserialize;
+
+#[derive(Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+struct Inventory {
+    count: i32,
+    color: String,
+}
+
+# async fn example(session: &github_copilot_sdk::session::Session) -> Result<(), github_copilot_sdk::Error> {
+let inventory: Inventory = session
+    .send_and_wait_typed("Call get_inventory, then report the widget count and color.")
+    .await?;
+# Ok(())
+# }
+# }
+```
+
+The helper uses the existing `schema_for::<T>()` generator and deserializes the
+final JSON. Serde deserialization is not full JSON Schema validation. Provider
+schema restrictions apply; `deny_unknown_fields` closes objects for strict output.
+For explicit schemas, `MessageOptions::with_response_schema` works with `send` or
+`send_and_wait` without the `derive` feature and returns ordinary events.
+
+Schemas apply to one run, including tools, steering, and stop-hook corrections,
+not independent sends or subagents. Streaming remains text. Structured waits
+select the last correlated root message without tool requests at non-autopilot
+idle and support concurrent structured waits with independent results. Later
+queued work can delay idle. Aborts, session errors after the run starts, missing
+output, and event-stream lag fail the wait. Dropping the future or timing out
+unsubscribes without aborting the agent. Immediate steering cannot set a schema.
 
 ### Newtypes
 
@@ -991,10 +1043,10 @@ none of them are scheduled for removal.
   without string-splicing.
 - **`Client::prepare_session` / `prepare_resume_session`** — return an inert
   `PreparedSession` whose `subscribe()` installs an event receiver before any
-  protocol activity, so startup events (including ephemeral `session.idle`)
-  aren't dropped. Other SDKs register callbacks on a config object instead,
-  which sidesteps the problem in a way Rust's broadcast-based `subscribe()`
-  cannot.
+  protocol activity, including multiple startup observers, subject to bounded
+  delivery. Without a prepared observer, resume retains routed events for the
+  first `Session::subscribe()` owner until it catches up; create remains
+  live-only. Other SDKs install event callbacks before session startup.
 
 ## Layout
 
@@ -1031,6 +1083,20 @@ github-copilot-sdk = { version = "1", features = ["bundled-in-process"] }
 `CliProgram::Path` and raw `ClientOptions::extra_args` apply only to
 child-process transports. Set `COPILOT_CLI_PATH` only when using an externally
 provisioned compatible runtime package with in-process transport.
+
+Applications that already ship a compatible runtime can enable `local-runtime`
+instead. This enables `Transport::InProcess` without downloading, extracting,
+or embedding SDK-managed runtime artifacts:
+
+```toml
+github-copilot-sdk = { version = "1", default-features = false, features = ["local-runtime"] }
+```
+
+The default `bundled-cli` feature takes precedence when both features are
+enabled, preserving bundled behavior for `--all-features` builds.
+
+`COPILOT_CLI_PATH` must point to the application's CLI entrypoint, with the
+compatible native runtime library next to it.
 
 For builds that prefer a smaller artifact, disable the `bundled-cli` feature:
 
@@ -1070,8 +1136,10 @@ github-copilot-sdk = { version = "1", default-features = false }
    - **`bundled-cli` on (default):** embeds the full CLI release archive and a
      separately filtered runtime archive containing `copilot-runtime[.exe]`,
      `runtime.node`, and required assets.
-   - **`bundled-in-process` on:** the runtime archive additionally contains the
+   - **`in-process` on:** the runtime archive additionally contains the
      platform-native runtime library (`.dll`, `.so`, or `.dylib`).
+   - **`local-runtime` on and `bundled-cli` off:** skips this acquisition step
+     entirely because the application supplies the runtime package.
    - **`bundled-cli` off:** downloads only the runtime package and extracts its
      managed runtime artifacts directly into the platform cache using staging
      files and atomic renames.
@@ -1115,7 +1183,15 @@ COPILOT_CLI_EXTRACT_DIR = { value = "vendor/copilot", relative = true, force = t
 
 ### Skipping the bundle entirely
 
-Set `COPILOT_SKIP_CLI_DOWNLOAD=1` at build time to disable the entire download / bundle / cache mechanism — `build.rs` returns immediately without touching the network. Use this when you always supply the managed runtime via `ClientOptions::program = CliProgram::Path(...)`. Works regardless of the `bundled-cli` feature state; runtime resolution falls through to `Error::BinaryNotFound` unless an applicable explicit source resolves.
+Enable `local-runtime` to disable the entire download / bundle / cache
+mechanism for applications that host a locally supplied runtime in process.
+`build.rs` returns immediately without touching the network, and runtime
+resolution requires `COPILOT_CLI_PATH` to identify the supplied package.
+
+`COPILOT_SKIP_CLI_DOWNLOAD=1` remains available as an explicit build-time
+override for managed child-process consumers. It works regardless of the
+`bundled-cli` feature state; runtime resolution falls through to
+`Error::BinaryNotFound` unless an applicable explicit source resolves.
 
 ### Resolution priority
 
@@ -1188,7 +1264,9 @@ and `CARGO_CFG_TARGET_ENV` (cross-compilation works).
 | Feature | Default | Description |
 | ------- | ------- | ----------- |
 | `bundled-cli` | ✓ | Embeds the managed wrapper pair and compatible CLI artifact. Disable via `default-features = false` when supplying the runtime explicitly. |
-| `bundled-in-process` | — | Enables `Transport::InProcess`, implies `bundled-cli`, and additionally embeds the platform-native runtime library. |
+| `in-process` | — | Enables `Transport::InProcess` while preserving the selected runtime acquisition policy. |
+| `local-runtime` | — | Enables `in-process` and, when `bundled-cli` is disabled, disables SDK-managed runtime download, extraction, and embedding. The application must supply a compatible runtime package through `COPILOT_CLI_PATH`. |
+| `bundled-in-process` | — | Enables `in-process`, implies `bundled-cli`, and additionally embeds the platform-native runtime library. |
 | `derive` | — | `schema_for::<T>()` for generating JSON Schema from Rust types (adds `schemars`). |
 
 ```toml
@@ -1197,6 +1275,9 @@ github-copilot-sdk = "1"
 
 # Enable the in-process transport and bundle its native runtime library.
 github-copilot-sdk = { version = "1", features = ["bundled-in-process"] }
+
+# Enable the in-process transport with an application-supplied runtime.
+github-copilot-sdk = { version = "1", default-features = false, features = ["local-runtime"] }
 
 # Opt out of bundling — supply the CLI explicitly at runtime.
 github-copilot-sdk = { version = "1", default-features = false }

@@ -4,11 +4,13 @@
 #![allow(clippy::unwrap_used)]
 
 use github_copilot_sdk::rpc::{
-    Extension, ExtensionList, ExtensionSource, ExtensionStatus, ExtensionsDisableRequest,
-    ExtensionsEnableRequest, FleetStartRequest, FleetStartResult, ModelSetAllowedModelsRequest,
-    ModelSetAllowedModelsResult, ModelSwitchAutoTierRequest, ModelSwitchAutoTierResult,
-    ModelSwitchAutoTierStatus, QueuePendingItems, QueuePendingItemsKind, SandboxConfig,
-    SendAgentMode, TasksStartAgentRequest,
+    AcceptedEnqueueCommandResult, ConnectorAccountRequest, ConnectorCatalogStatus,
+    ConnectorConnectRequest, ConnectorContinueRequest, ConnectorReconcileRequest,
+    EnqueueCommandResult, Extension, ExtensionList, ExtensionSource, ExtensionStatus,
+    ExtensionsDisableRequest, ExtensionsEnableRequest, FleetStartRequest, FleetStartResult,
+    ModelSetAllowedModelsRequest, ModelSetAllowedModelsResult, ModelSwitchAutoTierRequest,
+    ModelSwitchAutoTierResult, ModelSwitchAutoTierStatus, QueuePendingItems, QueuePendingItemsKind,
+    SandboxConfig, SendAgentMode, TasksStartAgentRequest, UnsupportedEnqueueCommandResult,
 };
 use github_copilot_sdk::session_events::{
     PermissionRequest, PermissionRequestedData, SessionEventData, TypedSessionEvent,
@@ -131,6 +133,68 @@ fn tasks_start_agent_request_fields_are_accessible() {
 }
 
 #[test]
+fn connector_request_dtos_use_public_camel_case_wire_fields() {
+    let account = ConnectorAccountRequest {
+        account_id: "account-1".to_string(),
+    };
+    assert_eq!(
+        serde_json::to_value(account).unwrap(),
+        serde_json::json!({ "accountId": "account-1" })
+    );
+
+    let connector = ConnectorConnectRequest {
+        account_id: "account-1".to_string(),
+        connector_name: "github".to_string(),
+    };
+    assert_eq!(
+        serde_json::to_value(connector).unwrap(),
+        serde_json::json!({
+            "accountId": "account-1",
+            "connectorName": "github",
+        })
+    );
+
+    let continuation = ConnectorContinueRequest {
+        continuation_id: "continuation-1".to_string(),
+        deadline_ms: 30_000,
+        max_attempts: 5,
+        poll_interval_ms: 1_000,
+    };
+    assert_eq!(
+        serde_json::to_value(continuation).unwrap(),
+        serde_json::json!({
+            "continuationId": "continuation-1",
+            "deadlineMs": 30_000,
+            "maxAttempts": 5,
+            "pollIntervalMs": 1_000,
+        })
+    );
+
+    let reconcile = ConnectorReconcileRequest {
+        account_id: "account-1".to_string(),
+        refresh_catalog: Some(true),
+    };
+    assert_eq!(
+        serde_json::to_value(reconcile).unwrap(),
+        serde_json::json!({
+            "accountId": "account-1",
+            "refreshCatalog": true,
+        })
+    );
+}
+
+#[test]
+fn connector_catalog_unknown_wire_value_has_a_distinct_variant() {
+    let service_unknown: ConnectorCatalogStatus =
+        serde_json::from_value(serde_json::json!("unknown")).unwrap();
+    let future_status: ConnectorCatalogStatus =
+        serde_json::from_value(serde_json::json!("future_status")).unwrap();
+
+    assert_eq!(service_unknown, ConnectorCatalogStatus::UnknownValue);
+    assert_eq!(future_status, ConnectorCatalogStatus::Unknown);
+}
+
+#[test]
 fn model_allowed_models_request_and_result_preserve_contract_fields() {
     let replace = ModelSetAllowedModelsRequest {
         allowed_models: Some(vec!["gpt-5.4".to_string(), "gpt-5-mini".to_string()]),
@@ -186,21 +250,24 @@ fn permission_event_exposes_managed_approval_required() {
 }
 
 #[test]
-fn queue_pending_message_id_uses_camel_case_wire_name() {
+fn queue_pending_item_metadata_uses_camel_case_wire_names() {
     let item = QueuePendingItems {
         agent_mode: SendAgentMode::Interactive,
         display_text: "second message".to_string(),
         id: "batch-1".to_string(),
         kind: QueuePendingItemsKind::Message,
         message_id: Some("message-2".to_string()),
+        source: Some("api".to_string()),
     };
 
     let serialized = serde_json::to_value(&item).unwrap();
     assert_eq!(serialized["id"], "batch-1");
     assert_eq!(serialized["messageId"], "message-2");
+    assert_eq!(serialized["source"], "api");
 
     let deserialized: QueuePendingItems = serde_json::from_value(serialized).unwrap();
     assert_eq!(deserialized.message_id.as_deref(), Some("message-2"));
+    assert_eq!(deserialized.source.as_deref(), Some("api"));
 }
 
 #[test]
@@ -214,11 +281,52 @@ fn queue_pending_message_id_is_optional_for_older_hosts() {
     .unwrap();
 
     assert_eq!(item.message_id, None);
+    assert_eq!(item.source, None);
+    let serialized = serde_json::to_value(item).unwrap();
+    assert!(serialized.get("messageId").is_none());
+    assert!(serialized.get("source").is_none());
+}
+
+#[test]
+fn enqueue_command_result_preserves_boolean_discriminator() {
+    let accepted: EnqueueCommandResult = serde_json::from_value(serde_json::json!({
+        "queued": true,
+        "queueId": "queue-1"
+    }))
+    .unwrap();
+    assert!(matches!(
+        &accepted,
+        EnqueueCommandResult::AcceptedEnqueueCommandResult(_)
+    ));
+    assert_eq!(
+        serde_json::to_value(&accepted).unwrap(),
+        serde_json::json!({ "queued": true, "queueId": "queue-1" })
+    );
+
+    let unsupported: EnqueueCommandResult =
+        serde_json::from_value(serde_json::json!({ "queued": false, "queueId": null })).unwrap();
+    assert!(matches!(
+        &unsupported,
+        EnqueueCommandResult::UnsupportedEnqueueCommandResult(_)
+    ));
+    assert_eq!(
+        serde_json::to_value(&unsupported).unwrap(),
+        serde_json::json!({ "queued": false })
+    );
+
     assert!(
-        serde_json::to_value(item)
-            .unwrap()
-            .get("messageId")
-            .is_none()
+        serde_json::to_value(AcceptedEnqueueCommandResult {
+            queued: false,
+            queue_id: "queue-1".to_string(),
+        })
+        .is_err()
+    );
+    assert!(
+        serde_json::to_value(UnsupportedEnqueueCommandResult {
+            queued: true,
+            queue_id: None,
+        })
+        .is_err()
     );
 }
 

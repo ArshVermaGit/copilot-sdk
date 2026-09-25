@@ -19,7 +19,7 @@ using System.Threading;
 namespace GitHub.Copilot.Rpc;
 
 /// <summary>Server liveness response, including the echoed message, current server timestamp, and protocol version.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PingResult
 {
     /// <summary>Echoed message (or default greeting).</summary>
@@ -36,7 +36,7 @@ public sealed class PingResult
 }
 
 /// <summary>Optional message to echo back to the caller.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PingRequest
 {
     /// <summary>Optional message to echo back.</summary>
@@ -45,7 +45,7 @@ internal sealed class PingRequest
 }
 
 /// <summary>Handshake result reporting the server's protocol version and package version on success.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ConnectResult
 {
     /// <summary>Always true on success.</summary>
@@ -66,7 +66,7 @@ internal sealed class ConnectResult
 }
 
 /// <summary>Identity of the integrating host, declared once on the `server.connect` handshake so telemetry from this connection is attributed to a single, consistent surface. All fields are optional; omit them to keep the default attribution.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ConnectClientInfo
 {
     /// <summary>Name of the host editor, e.g. `"vscode"`.</summary>
@@ -87,14 +87,14 @@ internal sealed class ConnectClientInfo
 }
 
 /// <summary>Connection-level opt-ins for the `server.connect` handshake. Transport authentication is consumed by the native protocol boundary before dispatch.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ConnectRequest
 {
     /// <summary>Identity of the integrating host. Optional; omit it to keep the default attribution.</summary>
     [JsonPropertyName("clientInfo")]
     public ConnectClientInfo? ClientInfo { get; set; }
 
-    /// <summary>Opt this connection in to GitHub telemetry forwarding for its lifetime. When set, the runtime forwards every internal telemetry event it emits — across all sessions, plus sessionless events — to this connection over the `gitHubTelemetry.event` notification. Regular events are also written to the runtime's normal GitHub/CTS path (dual-write); host-only compatibility events are forward-only and intentionally skip that path. Intended for first-party hosts that re-emit the events into their own telemetry stores. Both unrestricted and restricted events are forwarded, each tagged with a `restricted` discriminator; a backstop drops restricted events when restricted telemetry is disabled — using the process-global gate for ordinary events and an explicit session-scoped decision for host-only events.</summary>
+    /// <summary>Opt this connection in to GitHub telemetry forwarding for its lifetime. When set, the runtime forwards this host's telemetry across all its sessions, its sessionless events, and explicitly process-wide events over the `gitHubTelemetry.event` notification. Connections intentionally sharing one server receive that server's events; independently embedded runtime hosts do not receive each other's host-owned events. Regular events are also written to the runtime's normal GitHub/CTS path (dual-write); host-only compatibility events are forward-only and intentionally skip that path. Intended for first-party hosts that re-emit the events into their own telemetry stores. Both unrestricted and restricted events are forwarded, each tagged with a `restricted` discriminator; a backstop drops restricted events when restricted telemetry is disabled — using the process-global gate for ordinary events and an explicit session-scoped decision for host-only events.</summary>
     [JsonPropertyName("enableGitHubTelemetryForwarding")]
     public bool? EnableGitHubTelemetryForwarding { get; set; }
 
@@ -108,7 +108,7 @@ internal sealed class ConnectRequest
 }
 
 /// <summary>One server-discovered hook action from user, repository, plugin, or managed-policy configuration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DiscoveredHook
 {
     /// <summary>Durable content hash used by hook enablement. Identical actions may intentionally share this key. Omitted when changing the user's disabled-hooks setting cannot change the action's current server-discovered state, including managed-policy hooks, session-start prompt actions, actions suppressed by disable-all settings, and projectless plugin actions that require project-directory expansion.</summary>
@@ -141,7 +141,7 @@ public sealed class DiscoveredHook
 }
 
 /// <summary>Server-discovered hook actions and partial-load diagnostics from user, repository, plugin, and managed-policy sources. Concrete sessions may include additional session-specific hook sources.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HooksDiscoverResult
 {
     /// <summary>Errors for hook sources or actions that could not be loaded, making the result partially incomplete. Other valid actions are still returned. Project-resolution and repository-settings errors are prefixed with their project path.</summary>
@@ -158,7 +158,7 @@ public sealed class HooksDiscoverResult
 }
 
 /// <summary>Optional project paths and host-exclusion behavior for server-scoped hook discovery.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class HooksDiscoverRequest
 {
     /// <summary>When true, omit host-owned user and plugin hook rows and their diagnostics. Managed-policy hooks and trusted repository hooks remain visible, and host disabledHooks still contribute to each remaining row's effective enabled state. This filters sources rather than simulating a host with no settings.</summary>
@@ -171,7 +171,7 @@ internal sealed class HooksDiscoverRequest
 }
 
 /// <summary>Active server-driven promotion for a model, including its discount and optional expiry.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelBillingPromo
 {
     /// <summary>Percentage discount (0-100) applied while the promotion is active. May be fractional.</summary>
@@ -196,7 +196,7 @@ public sealed class ModelBillingPromo
 }
 
 /// <summary>Long context tier pricing (available for models with extended context windows).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelBillingTokenPricesLongContext
 {
     /// <summary>Use cacheReadPrice instead. AI Credits cost per billing batch of cached tokens.</summary>
@@ -241,7 +241,7 @@ public sealed class ModelBillingTokenPricesLongContext
 }
 
 /// <summary>Token-level pricing information for this model.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelBillingTokenPrices
 {
     /// <summary>Number of tokens per standard billing batch.</summary>
@@ -294,7 +294,7 @@ public sealed class ModelBillingTokenPrices
 }
 
 /// <summary>Billing information.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelBilling
 {
     /// <summary>Whole-number percentage discount (0-100) applied to usage billed through this model. Populated for the synthetic `auto` model, where requests routed by auto-mode are billed at a reduced rate; absent for concrete models.</summary>
@@ -315,7 +315,7 @@ public sealed class ModelBilling
 }
 
 /// <summary>Vision-specific limits.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelCapabilitiesLimitsVision
 {
     /// <summary>Maximum image size in bytes.</summary>
@@ -332,7 +332,7 @@ public sealed class ModelCapabilitiesLimitsVision
 }
 
 /// <summary>Token limits for prompts, outputs, and context window.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelCapabilitiesLimits
 {
     /// <summary>Maximum total context window size in tokens.</summary>
@@ -353,7 +353,7 @@ public sealed class ModelCapabilitiesLimits
 }
 
 /// <summary>Feature flags indicating what the model supports.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelCapabilitiesSupports
 {
     /// <summary>Resolved Anthropic adaptive-thinking capability — unsupported / optional / required / adaptive_only. 'required' models reject thinking.type='enabled' with HTTP 400 but still accept 'disabled' (e.g. opus-4.7/4.8/5, sonnet-5); 'adaptive_only' models accept nothing but 'adaptive' (e.g. fable, mythos).</summary>
@@ -364,13 +364,17 @@ public sealed class ModelCapabilitiesSupports
     [JsonPropertyName("reasoningEffort")]
     public bool? ReasoningEffort { get; set; }
 
+    /// <summary>Whether this model supports canonical tool calling.</summary>
+    [JsonPropertyName("toolCalls")]
+    public bool? ToolCalls { get; set; }
+
     /// <summary>Whether this model supports vision/image input.</summary>
     [JsonPropertyName("vision")]
     public bool? Vision { get; set; }
 }
 
 /// <summary>Model capabilities and limits.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelCapabilities
 {
     /// <summary>Token limits for prompts, outputs, and context window.</summary>
@@ -383,7 +387,7 @@ public sealed class ModelCapabilities
 }
 
 /// <summary>A service-published message about a model, carrying a stable machine-readable code alongside human-readable text.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelMessage
 {
     /// <summary>Stable machine-readable identifier for the message, such as `client_version_deprecated`. Hosts can key custom presentation off this; unrecognized codes should fall back to displaying `message`.</summary>
@@ -396,7 +400,7 @@ public sealed class ModelMessage
 }
 
 /// <summary>Policy state (if applicable).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelPolicy
 {
     /// <summary>Current policy state for this model.</summary>
@@ -409,7 +413,7 @@ public sealed class ModelPolicy
 }
 
 /// <summary>Service-published warning text that hosts should display when presenting a model.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelWarningText
 {
     /// <summary>Data-retention warning for the model. The text may contain Markdown links and should be rendered as Markdown when supported.</summary>
@@ -418,7 +422,7 @@ public sealed class ModelWarningText
 }
 
 /// <summary>Copilot model metadata, including identifier, display name, capabilities, policy, billing, reasoning efforts, and picker categories.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class Model
 {
     /// <summary>Billing information.</summary>
@@ -479,7 +483,7 @@ public sealed class Model
 }
 
 /// <summary>List of Copilot models available to the resolved user, including capabilities and billing metadata.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelList
 {
     /// <summary>List of available models with full metadata.</summary>
@@ -488,7 +492,7 @@ public sealed class ModelList
 }
 
 /// <summary>RPC data type for ModelsList operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ModelsListRequest
 {
     /// <summary>GitHub token accepted for compatibility with existing SDK clients. When provided, resolves this token instead of using the current account.</summary>
@@ -501,7 +505,7 @@ internal sealed class ModelsListRequest
 }
 
 /// <summary>A well-known model in the runtime's built-in catalog.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class BuiltInModelCatalogEntry
 {
     /// <summary>Well-known runtime model ID suitable for provider or provider-model metadata. This is not necessarily the provider-facing deployment or model name and does not indicate CAPI entitlement or provider availability.</summary>
@@ -510,7 +514,7 @@ public sealed class BuiltInModelCatalogEntry
 }
 
 /// <summary>The running runtime's complete catalog of well-known built-in model IDs, including supported models and additional IDs with built-in metadata.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class BuiltInModelCatalog
 {
     /// <summary>Built-in model entries.</summary>
@@ -518,8 +522,42 @@ public sealed class BuiltInModelCatalog
     public IList<BuiltInModelCatalogEntry> Models { get => field ??= []; set; }
 }
 
+/// <summary>Whether this host can run one sandbox policy feature. A session whose effective policy uses an unsupported feature fails each sandboxed command with `reason`.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class SandboxHostCapability
+{
+    /// <summary>The policy feature, as an extensible string: ignore names you do not recognize. Known values: `network` (sandboxed commands can reach the network; on Linux this needs the tooling for Bubblewrap's private network namespace, such as slirp4netns), `network_filtering` (host rules and the sandbox proxy; on Linux this needs the same tooling as `network`; on Windows it needs Process Security Environment 1.1 host-loopback support, and a policy that uses it must also set `network.allowLocalNetwork`), `denied_paths` (native enforcement of `filesystem.deniedPaths`), and `shell` (shell commands inside the sandbox; on Windows this needs Process Security Environment 1.1 filesystem enumeration support).</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Human-readable reason and remedy when the feature is unsupported, such as a package to install or an OS update. Present only when `supported` is false.</summary>
+    [JsonPropertyName("reason")]
+    public string? Reason { get; set; }
+
+    /// <summary>Whether this host can run the feature.</summary>
+    [JsonPropertyName("supported")]
+    public bool Supported { get; set; }
+}
+
+/// <summary>Whether the host running this runtime can run the command sandbox. The runtime checks `supported` once per process. A capability answer can change while the process runs, for example after the user installs a missing package.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class SandboxHostSupport
+{
+    /// <summary>Sandbox policy features whose availability varies between hosts that can run the backend. Empty when `supported` is false, because no feature can run without a backend. Later runtimes can add entries; ignore an entry whose `name` you do not recognize.</summary>
+    [JsonPropertyName("capabilities")]
+    public IList<SandboxHostCapability> Capabilities { get => field ??= []; set; }
+
+    /// <summary>Human-readable reason the sandbox cannot run on this host. Present only when `supported` is false.</summary>
+    [JsonPropertyName("reason")]
+    public string? Reason { get; set; }
+
+    /// <summary>Whether a process-containment backend is usable on this host: Seatbelt on macOS, Bubblewrap on Linux, or ProcessContainer on Windows.</summary>
+    [JsonPropertyName("supported")]
+    public bool Supported { get; set; }
+}
+
 /// <summary>Built-in tool metadata with identifier, optional namespaced name, description, input-parameter schema, and usage instructions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class Tool
 {
     /// <summary>Description of what the tool does.</summary>
@@ -541,10 +579,15 @@ public sealed class Tool
     /// <summary>JSON Schema for the tool's input parameters.</summary>
     [JsonPropertyName("parameters")]
     public IDictionary<string, JsonElement>? Parameters { get; set; }
+
+    /// <summary>Telemetry-safety policy for the tool name and input names, not input values. Treat omitted metadata as unsafe.</summary>
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+    [JsonPropertyName("safeForTelemetry")]
+    public JsonElement? SafeForTelemetry { get; set; }
 }
 
 /// <summary>Built-in tools available for the requested model, with their parameters and instructions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolList
 {
     /// <summary>List of available built-in tools with metadata.</summary>
@@ -553,7 +596,7 @@ public sealed class ToolList
 }
 
 /// <summary>Optional model identifier whose tool overrides should be applied to the listing.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ToolsListRequest
 {
     /// <summary>Optional model ID — when provided, the returned tool list reflects model-specific overrides.</summary>
@@ -562,7 +605,7 @@ internal sealed class ToolsListRequest
 }
 
 /// <summary>Quota usage snapshot for a Copilot quota type, including entitlement, used requests, overage, reset date, and remaining percentage.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AccountQuotaSnapshot
 {
     /// <summary>Number of requests included in the entitlement, or -1 for unlimited entitlements.</summary>
@@ -599,7 +642,7 @@ public sealed class AccountQuotaSnapshot
 }
 
 /// <summary>Quota usage snapshots for the resolved user, keyed by quota type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AccountGetQuotaResult
 {
     /// <summary>Quota snapshots keyed by type (e.g., chat, completions, premium_interactions).</summary>
@@ -608,7 +651,7 @@ public sealed class AccountGetQuotaResult
 }
 
 /// <summary>RPC data type for AccountGetQuota operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class AccountGetQuotaRequest
 {
     /// <summary>GitHub token accepted for compatibility with existing SDK clients. When provided, resolves this token instead of using the current account.</summary>
@@ -622,7 +665,7 @@ internal sealed class AccountGetQuotaRequest
 
 /// <summary>Authentication credentials accepted only at native protocol ingress. Runtime outputs use credential-free `AuthIdentity` metadata.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -643,7 +686,7 @@ public partial class AuthInfo
 
 
 /// <summary>Endpoint URLs from the raw Copilot `/copilot_internal/v2/token` user-response passthrough.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CopilotUserResponseEndpoints
 {
     /// <summary>Copilot API endpoint URL.</summary>
@@ -667,6 +710,14 @@ public sealed class CopilotUserResponseEndpoints
     public string? Telemetry { get; set; }
 }
 
+/// <summary>RPC data type for CopilotUserResponseEnterpriseListItem operations.</summary>
+public sealed class CopilotUserResponseEnterpriseListItem
+{
+    /// <summary>JavaScript-safe numeric database ID of the enterprise.</summary>
+    [JsonPropertyName("id")]
+    public long? Id { get; set; }
+}
+
 /// <summary>RPC data type for CopilotUserResponseOrganizationListItem operations.</summary>
 public sealed class CopilotUserResponseOrganizationListItem
 {
@@ -684,7 +735,7 @@ public sealed class CopilotUserResponseOrganizationListItem
 }
 
 /// <summary>Chat quota snapshot from the raw Copilot user-response passthrough, with entitlement, overage, remaining quota, reset, and billing fields.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CopilotUserResponseQuotaSnapshotsChat
 {
     /// <summary>Number of requests/units included in the entitlement for this period; `-1` denotes an unlimited entitlement.</summary>
@@ -737,7 +788,7 @@ public sealed class CopilotUserResponseQuotaSnapshotsChat
 }
 
 /// <summary>Completions quota snapshot from the raw Copilot user-response passthrough, with entitlement, overage, remaining quota, reset, and billing fields.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CopilotUserResponseQuotaSnapshotsCompletions
 {
     /// <summary>Number of requests/units included in the entitlement for this period; `-1` denotes an unlimited entitlement.</summary>
@@ -790,7 +841,7 @@ public sealed class CopilotUserResponseQuotaSnapshotsCompletions
 }
 
 /// <summary>Premium-interactions quota snapshot from the raw Copilot user-response passthrough, with entitlement, overage, remaining quota, reset, and billing fields.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CopilotUserResponseQuotaSnapshotsPremiumInteractions
 {
     /// <summary>Number of requests/units included in the entitlement for this period; `-1` denotes an unlimited entitlement.</summary>
@@ -843,7 +894,7 @@ public sealed class CopilotUserResponseQuotaSnapshotsPremiumInteractions
 }
 
 /// <summary>Quota snapshot map from the raw Copilot user-response passthrough, with chat, completions, premium-interactions, and other entries.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CopilotUserResponseQuotaSnapshots
 {
     /// <summary>Chat quota snapshot from the raw Copilot user-response passthrough, with entitlement, overage, remaining quota, reset, and billing fields.</summary>
@@ -860,7 +911,7 @@ public sealed class CopilotUserResponseQuotaSnapshots
 }
 
 /// <summary>Snapshot of the authenticated user's Copilot subscription info, if known. Mirrors the GitHub API `/copilot_internal/v2/token` user response shape — the runtime trusts this verbatim and does not re-fetch when set.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CopilotUserResponse
 {
     /// <summary>Copilot access SKU identifier (e.g. `free_limited_copilot`, `copilot_for_business_seat_quota`) used to gate model and feature access.</summary>
@@ -910,6 +961,10 @@ public sealed class CopilotUserResponse
     /// <summary>Endpoint URLs from the raw Copilot `/copilot_internal/v2/token` user-response passthrough.</summary>
     [JsonPropertyName("endpoints")]
     public CopilotUserResponseEndpoints? Endpoints { get; set; }
+
+    /// <summary>Enterprises that provide the user's Copilot license; malformed entries are normalized to null or ID-less shapes.</summary>
+    [JsonPropertyName("enterprise_list")]
+    public IList<CopilotUserResponseEnterpriseListItem?>? EnterpriseList { get; set; }
 
     /// <summary>Whether MCP (Model Context Protocol) support is enabled for the user.</summary>
     [JsonPropertyName("is_mcp_enabled")]
@@ -970,7 +1025,7 @@ public sealed class CopilotUserResponse
 
 /// <summary>Authentication-info input variant for GitHub-internal HMAC auth, carrying the public GitHub host and HMAC secret.</summary>
 /// <remarks>The <c>hmac</c> variant of <see cref="AuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AuthInfoHmac : AuthInfo
 {
     /// <inheritdoc />
@@ -993,7 +1048,7 @@ public partial class AuthInfoHmac : AuthInfo
 
 /// <summary>Authentication-info input variant for a token sourced from an environment variable, with host, optional login, token, and env var name.</summary>
 /// <remarks>The <c>env</c> variant of <see cref="AuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AuthInfoEnv : AuthInfo
 {
     /// <inheritdoc />
@@ -1025,7 +1080,7 @@ public partial class AuthInfoEnv : AuthInfo
 
 /// <summary>Authentication-info input variant for SDK-configured token authentication, carrying host and the secret token value.</summary>
 /// <remarks>The <c>token</c> variant of <see cref="AuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AuthInfoToken : AuthInfo
 {
     /// <inheritdoc />
@@ -1053,7 +1108,7 @@ public partial class AuthInfoToken : AuthInfo
 
 /// <summary>Authentication-info variant backed by an SDK GitHub token callback. It carries routing metadata but never a plaintext token.</summary>
 /// <remarks>The <c>token-provider</c> variant of <see cref="AuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AuthInfoTokenProvider : AuthInfo
 {
     /// <inheritdoc />
@@ -1076,7 +1131,7 @@ public partial class AuthInfoTokenProvider : AuthInfo
 
 /// <summary>Authentication-info variant for direct Copilot API token auth sourced from environment variables, with public GitHub host.</summary>
 /// <remarks>The <c>copilot-api-token</c> variant of <see cref="AuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AuthInfoCopilotApiToken : AuthInfo
 {
     /// <inheritdoc />
@@ -1095,7 +1150,7 @@ public partial class AuthInfoCopilotApiToken : AuthInfo
 
 /// <summary>Authentication-info variant for OAuth user auth, with host and login; the token remains in the runtime secret store.</summary>
 /// <remarks>The <c>user</c> variant of <see cref="AuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AuthInfoUser : AuthInfo
 {
     /// <inheritdoc />
@@ -1118,7 +1173,7 @@ public partial class AuthInfoUser : AuthInfo
 
 /// <summary>Authentication-info input variant for GitHub CLI credentials, carrying host, login, and the `gh auth token` value.</summary>
 /// <remarks>The <c>gh-cli</c> variant of <see cref="AuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AuthInfoGhCli : AuthInfo
 {
     /// <inheritdoc />
@@ -1145,7 +1200,7 @@ public partial class AuthInfoGhCli : AuthInfo
 
 /// <summary>Authentication-info input variant for API-key authentication to a non-GitHub LLM provider, carrying the secret `apiKey` and host.</summary>
 /// <remarks>The <c>api-key</c> variant of <see cref="AuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AuthInfoApiKey : AuthInfo
 {
     /// <inheritdoc />
@@ -1167,7 +1222,7 @@ public partial class AuthInfoApiKey : AuthInfo
 }
 
 /// <summary>Current authentication state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AccountGetCurrentAuthResult
 {
     /// <summary>Authentication errors from the last auth attempt, if any.</summary>
@@ -1180,7 +1235,7 @@ public sealed class AccountGetCurrentAuthResult
 }
 
 /// <summary>Authenticated account entry returned by `account.getAllUsers`.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AccountAllUsers
 {
     /// <summary>Authentication information for this user.</summary>
@@ -1197,7 +1252,7 @@ public sealed class AccountAllUsers
 }
 
 /// <summary>Result of a successful login; throws on failure.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AccountLoginResult
 {
     /// <summary>Whether the credential was persisted to a secure store (system keychain, or the config file when plaintext storage is enabled). False when no secure store was available and the token was not saved, so the consumer can decide how to proceed.</summary>
@@ -1206,7 +1261,7 @@ public sealed class AccountLoginResult
 }
 
 /// <summary>Credentials to validate and store. Omit login to resolve the authenticated user from the token.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class AccountLoginRequest
 {
     /// <summary>GitHub host URL.</summary>
@@ -1223,7 +1278,7 @@ internal sealed class AccountLoginRequest
 }
 
 /// <summary>Logout result indicating if more users remain.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AccountLogoutResult
 {
     /// <summary>Whether other authenticated users remain after logout.</summary>
@@ -1232,7 +1287,7 @@ public sealed class AccountLogoutResult
 }
 
 /// <summary>User to log out.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class AccountLogoutRequest
 {
     /// <summary>Authentication information for the user to log out.</summary>
@@ -1245,7 +1300,7 @@ internal sealed class AccountLogoutRequest
 }
 
 /// <summary>Confirmation that the secret values were registered.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SecretsAddFilterValuesResult
 {
     /// <summary>Whether the values were successfully registered.</summary>
@@ -1254,7 +1309,7 @@ public sealed class SecretsAddFilterValuesResult
 }
 
 /// <summary>Secret values to add to the redaction filter.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SecretsAddFilterValuesRequest
 {
     /// <summary>Raw secret values to register for redaction.</summary>
@@ -1263,7 +1318,7 @@ internal sealed class SecretsAddFilterValuesRequest
 }
 
 /// <summary>Concrete configuration file containing an MCP server declaration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpSourceFile
 {
     /// <summary>RFC 6901 JSON Pointer to the server declaration, when known.</summary>
@@ -1278,7 +1333,7 @@ public sealed class McpSourceFile
 }
 
 /// <summary>Plugin identity associated with an MCP server declaration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpSourcePlugin
 {
     /// <summary>Canonical plugin identity.</summary>
@@ -1301,7 +1356,7 @@ public sealed class McpSourcePlugin
 }
 
 /// <summary>Canonical identity and location of the effective MCP server declaration. The declaration is uniquely addressed by this source id together with the discovered server name.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpSourceRef
 {
     /// <summary>Open semantic editability identifier. Known values are editable and read-only.</summary>
@@ -1332,7 +1387,7 @@ public sealed class McpSourceRef
 }
 
 /// <summary>MCP server discovered by `mcp.discover`, with config source, optional plugin source, transport type, and enabled state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DiscoveredMcpServer
 {
     /// <summary>Canonical identity and location of the effective server declaration.</summary>
@@ -1368,7 +1423,7 @@ public sealed class DiscoveredMcpServer
 }
 
 /// <summary>MCP servers discovered from user, workspace, plugin, and built-in sources.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpDiscoverResult
 {
     /// <summary>MCP servers discovered from all sources.</summary>
@@ -1377,7 +1432,7 @@ public sealed class McpDiscoverResult
 }
 
 /// <summary>Optional working directory used as context for MCP server discovery.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpDiscoverRequest
 {
     /// <summary>Whether to include canonical effectiveSource metadata for each discovered server. Callers must opt in so protocol-3 clients retain the legacy closed response shape.</summary>
@@ -1391,7 +1446,7 @@ internal sealed class McpDiscoverRequest
 
 /// <summary>Outcome of an mcp.planInstall call: either a normalised plan, or one typed refusal. Nothing is written in either case.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -1417,10 +1472,10 @@ public partial class McpPlanInstallResult
 
 
 /// <summary>The protocol version and capability set the runtime actually honoured for a successful catalog operation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CatalogNegotiatedContract
 {
-    /// <summary>Wire features the runtime understood for this operation. Always a superset of the caller's required features, because any shortfall is a refusal instead. Operation availability remains a separate typed result.</summary>
+    /// <summary>Wire features the runtime understood for this operation. Includes the five original catalog capabilities and only explicitly requested supported additions, in supported order without duplicates. Capabilities that introduce new success-union variants or operations are therefore included only when explicitly required, preserving older protocol-v3 clients. Always a superset of the caller's required features, because any shortfall is a refusal instead. Operation availability remains a separate typed result.</summary>
     [JsonPropertyName("grantedCapabilities")]
     public IList<CatalogCapability> GrantedCapabilities { get => field ??= []; set; }
 
@@ -1429,8 +1484,8 @@ public sealed class CatalogNegotiatedContract
     public long RuntimeProtocolVersion { get; set; }
 }
 
-/// <summary>One change applying the plan would make, described rather than serialised so the configuration payload stays behind the runtime boundary.</summary>
-[Experimental(Diagnostics.Experimental)]
+/// <summary>The configuration-change alternative for the transportChoices entry at the same index. Only the selected alternative is applied; entries are not cumulative. The payload stays behind the runtime boundary.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpPlanConfigurationChange
 {
     /// <summary>Names of the configuration fields the change would set, without their values.</summary>
@@ -1457,7 +1512,7 @@ public sealed class McpPlanConfigurationChange
 }
 
 /// <summary>Normalised identity of the MCP server a plan targets, independent of how the card spelled it.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpPlanResourceIdentity
 {
     /// <summary>Canonical, normalised name of the server, for example `io.github.owner/server`.</summary>
@@ -1482,7 +1537,7 @@ public sealed class McpPlanResourceIdentity
 }
 
 /// <summary>Outcome of evaluating the planned server against registry and enterprise policy. Evaluation is read-only.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpPlanPolicyResult
 {
     /// <summary>What policy decided for this server.</summary>
@@ -1501,7 +1556,7 @@ public sealed class McpPlanPolicyResult
 }
 
 /// <summary>Semantic digest of a strictly parsed and schema-validated JSON MCP card. Both URL-backed and embedded cards are canonicalised with RFC 8785 JSON Canonicalization Scheme, encoded as UTF-8, and hashed with SHA-256.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CardDigest
 {
     /// <summary>Digest algorithm and canonical representation.</summary>
@@ -1518,7 +1573,7 @@ public sealed class CardDigest
 }
 
 /// <summary>Provenance of the exact validated JSON MCP card content bound privately to a completed plan and its opaque handle.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpPlanProvenance
 {
     /// <summary>Authority associated with the validated card, without path, query, or credentials. Inert untrusted data.</summary>
@@ -1541,7 +1596,7 @@ public sealed class McpPlanProvenance
 }
 
 /// <summary>Where a plan would be written.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpPlanTarget
 {
     /// <summary>Configuration key the server would be recorded under within that scope.</summary>
@@ -1557,7 +1612,7 @@ public sealed class McpPlanTarget
 
 /// <summary>One eligible way to run the server, represented as a tagged package or remote variant so package identity and endpoint states cannot contradict the install method.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>installMethod</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "installMethod",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -1573,7 +1628,7 @@ public partial class McpPlanTransportChoice
 
 /// <summary>One non-secret value a transport choice needs, represented as a scalar or enumerated variant so enum values cannot be missing or attached to another type.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -1589,7 +1644,7 @@ public partial class McpPlanRequiredValue
 
 /// <summary>One non-secret scalar value a transport choice needs before it can be applied.</summary>
 /// <remarks>The <c>scalar</c> variant of <see cref="McpPlanRequiredValue"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanRequiredValueScalar : McpPlanRequiredValue
 {
     /// <inheritdoc />
@@ -1640,7 +1695,7 @@ public partial class McpPlanRequiredValueScalar : McpPlanRequiredValue
 
 /// <summary>One enumerated non-secret value a transport choice needs before it can be applied. The permitted values are structurally required.</summary>
 /// <remarks>The <c>enum</c> variant of <see cref="McpPlanRequiredValue"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanRequiredValueEnum : McpPlanRequiredValue
 {
     /// <inheritdoc />
@@ -1694,7 +1749,7 @@ public partial class McpPlanRequiredValueEnum : McpPlanRequiredValue
 }
 
 /// <summary>A secret a transport choice needs, referenced by placeholder. No secret value ever appears in a plan, and the placeholder resolves against the keychain only when a plan is applied.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpPlanSecretPlaceholder
 {
     /// <summary>Key the secret is supplied under. Inert untrusted data.</summary>
@@ -1716,7 +1771,7 @@ public sealed class McpPlanSecretPlaceholder
 
 /// <summary>An eligible local-package transport choice. Package identity is required and a remote endpoint cannot be represented.</summary>
 /// <remarks>The <c>package</c> variant of <see cref="McpPlanTransportChoice"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanTransportChoicePackage : McpPlanTransportChoice
 {
     /// <inheritdoc />
@@ -1759,7 +1814,7 @@ public partial class McpPlanTransportChoicePackage : McpPlanTransportChoice
 
 /// <summary>An eligible remote-endpoint transport choice. The endpoint is required and package identity cannot be represented.</summary>
 /// <remarks>The <c>remote</c> variant of <see cref="McpPlanTransportChoice"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanTransportChoiceRemote : McpPlanTransportChoice
 {
     /// <inheritdoc />
@@ -1794,10 +1849,10 @@ public partial class McpPlanTransportChoiceRemote : McpPlanTransportChoice
 }
 
 /// <summary>A normalised, inert description of what installing an MCP server would involve. Carries no raw card, no install specification, and no secret value.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpInstallPlan
 {
-    /// <summary>The configuration changes installing would make, described rather than serialised, so the mutable configuration payload stays behind the runtime boundary.</summary>
+    /// <summary>Alternative configuration changes, with exactly one entry for each transportChoices entry in the same order. Only the entry for the subsequently selected transport applies; these are not cumulative writes. Payloads remain behind the runtime boundary.</summary>
     [JsonPropertyName("configurationChanges")]
     public IList<McpPlanConfigurationChange> ConfigurationChanges { get => field ??= []; set; }
 
@@ -1831,7 +1886,7 @@ public sealed class McpInstallPlan
     [JsonPropertyName("reloadRequired")]
     public bool ReloadRequired { get; set; }
 
-    /// <summary>Whether the plan cannot be applied without further input, because a required value has no default or a secret must be supplied.</summary>
+    /// <summary>True only when every eligible transport choice needs additional values or secrets. False means at least one choice needs no additional configuration, not that every choice is ready. A later apply operation must validate the selected choice's own inputs, secrets and policy after explicit confirmation.</summary>
     [JsonPropertyName("requiresInteractiveConfiguration")]
     public bool RequiresInteractiveConfiguration { get; set; }
 
@@ -1846,7 +1901,7 @@ public sealed class McpInstallPlan
 
 /// <summary>A computed MCP install plan. Nothing has been applied: the plan describes what installing would change, and the plan handle is what a later apply operation would consume.</summary>
 /// <remarks>The <c>planned</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultPlanned : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -1864,7 +1919,7 @@ public partial class McpPlanInstallResultPlanned : McpPlanInstallResult
 
 /// <summary>The caller's protocol version or required capabilities cannot be honoured. Returned instead of a partial or ambiguous success.</summary>
 /// <remarks>The <c>negotiation-refused</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultNegotiationRefused : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -1900,7 +1955,7 @@ public partial class McpPlanInstallResultNegotiationRefused : McpPlanInstallResu
 
 /// <summary>A presented handle was not accepted. Handles are runtime-instance scoped, TTL-bound, and single-use, so each way of failing is reported distinctly.</summary>
 /// <remarks>The <c>handle-rejected</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultHandleRejected : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -1922,9 +1977,9 @@ public partial class McpPlanInstallResultHandleRejected : McpPlanInstallResult
     public required CatalogHandleRejectionReason Reason { get; set; }
 }
 
-/// <summary>The request was rejected before any work was done, because a bounded field fell outside its permitted range or a required field was unusable.</summary>
+/// <summary>The request was rejected because a bounded field fell outside its permitted range or a required field was unusable. Pagination may also be rejected by the authority after a continuation request; repeat the search without page.</summary>
 /// <remarks>The <c>invalid-request</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultInvalidRequest : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -1944,7 +1999,7 @@ public partial class McpPlanInstallResultInvalidRequest : McpPlanInstallResult
 
 /// <summary>An optional catalog authentication exchange did not establish the caller's identity. Anonymous search remains supported; this refusal is reserved for an operation that cannot continue after the attempted exchange. It is distinct from `policy-rejected` and from a network failure, and the reason identifies the recovery action.</summary>
 /// <remarks>The <c>authentication-required</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultAuthenticationRequired : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -1964,7 +2019,7 @@ public partial class McpPlanInstallResultAuthenticationRequired : McpPlanInstall
 
 /// <summary>Registry or enterprise policy refused the operation.</summary>
 /// <remarks>The <c>policy-rejected</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultPolicyRejected : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -1984,7 +2039,7 @@ public partial class McpPlanInstallResultPolicyRejected : McpPlanInstallResult
 
 /// <summary>The runtime could not reach the catalog authority or retrieve a card. Covers being offline as well as transport-level failure.</summary>
 /// <remarks>The <c>network-failure</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultNetworkFailure : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -2014,7 +2069,7 @@ public partial class McpPlanInstallResultNetworkFailure : McpPlanInstallResult
 
 /// <summary>Retrieval was refused by the runtime's hardened fetch boundary before any request left the process, or before a redirect was followed.</summary>
 /// <remarks>The <c>unsafe-retrieval</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultUnsafeRetrieval : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -2034,7 +2089,7 @@ public partial class McpPlanInstallResultUnsafeRetrieval : McpPlanInstallResult
 
 /// <summary>A card could not be parsed or did not satisfy its declared media type's schema.</summary>
 /// <remarks>The <c>malformed-card</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultMalformedCard : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -2059,7 +2114,7 @@ public partial class McpPlanInstallResultMalformedCard : McpPlanInstallResult
 
 /// <summary>An upstream catalog response broke the wire contract. Most importantly, every result must carry exactly one of a URL or embedded data: a result carrying both, or neither, is refused here rather than being guessed at.</summary>
 /// <remarks>The <c>contract-violation</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultContractViolation : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -2079,7 +2134,7 @@ public partial class McpPlanInstallResultContractViolation : McpPlanInstallResul
 
 /// <summary>No transport this runtime can use is available for the requested server.</summary>
 /// <remarks>The <c>unavailable-transport</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultUnavailableTransport : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -2099,7 +2154,7 @@ public partial class McpPlanInstallResultUnavailableTransport : McpPlanInstallRe
 
 /// <summary>The candidate is discoverable but cannot be installed. `application/ai-skill` resolves here, because it stays searchable while remaining typed non-installable.</summary>
 /// <remarks>The <c>not-installable</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultNotInstallable : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -2119,7 +2174,7 @@ public partial class McpPlanInstallResultNotInstallable : McpPlanInstallResult
 
 /// <summary>The operation is not available on this runtime. Distinct from a network failure: nothing was attempted.</summary>
 /// <remarks>The <c>unavailable</c> variant of <see cref="McpPlanInstallResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallResultUnavailable : McpPlanInstallResult
 {
     /// <inheritdoc />
@@ -2138,7 +2193,7 @@ public partial class McpPlanInstallResultUnavailable : McpPlanInstallResult
 }
 
 /// <summary>The protocol version and capability set a caller requires, supplied on every catalog request so negotiation cannot be skipped by omission.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CatalogClientContract
 {
     /// <summary>SDK protocol version the caller was generated against. A caller below the runtime's minimum supported version is refused rather than served a partial result.</summary>
@@ -2152,7 +2207,7 @@ public sealed class CatalogClientContract
 
 /// <summary>What an install plan is computed from: a candidate handle from a previous search, or a card supplied directly.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -2168,7 +2223,7 @@ public partial class McpPlanInstallSource
 
 /// <summary>Plan from a candidate returned by a previous catalog search.</summary>
 /// <remarks>The <c>candidate</c> variant of <see cref="McpPlanInstallSource"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallSourceCandidate : McpPlanInstallSource
 {
     /// <inheritdoc />
@@ -2182,7 +2237,7 @@ public partial class McpPlanInstallSourceCandidate : McpPlanInstallSource
     [JsonPropertyName("candidateHandle")]
     public required string CandidateHandle { get; set; }
 
-    /// <summary>The runtime- or authority-minted `searchId` returned with the search that produced this candidate. A search implementation binds it to private candidate-handle context; a planning implementation must verify that context before returning a plan. The unavailable planning implementation in this contract layer validates presence but does not claim the verification has occurred. It identifies a search rather than a person and must never be joined with user identity to re-identify anyone.</summary>
+    /// <summary>The runtime- or authority-minted `searchId` returned with the search that produced this candidate. Planning verifies the private correlation and atomically consumes a matching candidate before downstream work, including attempts that subsequently fail or report unavailable. A mismatched search does not consume the candidate. It identifies a search rather than a person and must never be joined with user identity to re-identify anyone.</summary>
     [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
     [MinLength(1)]
     [MaxLength(64)]
@@ -2192,7 +2247,7 @@ public partial class McpPlanInstallSourceCandidate : McpPlanInstallSource
 
 /// <summary>A card supplied directly by the caller. Exactly one of a URL or embedded data, encoded structurally so neither both nor neither can be expressed.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -2208,7 +2263,7 @@ public partial class McpServerCardReference
 
 /// <summary>An MCP server card to be retrieved from a URL through the runtime's hardened fetch boundary.</summary>
 /// <remarks>The <c>url</c> variant of <see cref="McpServerCardReference"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpServerCardReferenceUrl : McpServerCardReference
 {
     /// <inheritdoc />
@@ -2229,7 +2284,7 @@ public partial class McpServerCardReferenceUrl : McpServerCardReference
 
 /// <summary>An MCP server card supplied inline as an inert document.</summary>
 /// <remarks>The <c>embedded</c> variant of <see cref="McpServerCardReference"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpServerCardReferenceEmbedded : McpServerCardReference
 {
     /// <inheritdoc />
@@ -2250,7 +2305,7 @@ public partial class McpServerCardReferenceEmbedded : McpServerCardReference
 
 /// <summary>Plan from a card supplied directly by the caller, without a preceding search.</summary>
 /// <remarks>The <c>card</c> variant of <see cref="McpPlanInstallSource"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpPlanInstallSourceCard : McpPlanInstallSource
 {
     /// <inheritdoc />
@@ -2263,7 +2318,7 @@ public partial class McpPlanInstallSourceCard : McpPlanInstallSource
 }
 
 /// <summary>A side-effect-free request for an MCP install plan. Computing a plan never writes configuration, stores a secret, or reloads MCP servers.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpPlanInstallRequest
 {
     /// <summary>Protocol version and capabilities the caller requires.</summary>
@@ -2280,7 +2335,7 @@ internal sealed class McpPlanInstallRequest
 }
 
 /// <summary>User-configured MCP servers, keyed by server name.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpConfigList
 {
     /// <summary>All MCP servers from user config, keyed by name.</summary>
@@ -2289,7 +2344,7 @@ public sealed class McpConfigList
 }
 
 /// <summary>MCP server name and configuration to add to user configuration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpConfigAddRequest
 {
     /// <summary>MCP server configuration (stdio process or remote HTTP/SSE).</summary>
@@ -2305,7 +2360,7 @@ internal sealed class McpConfigAddRequest
 }
 
 /// <summary>MCP server name and replacement configuration to write to user configuration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpConfigUpdateRequest
 {
     /// <summary>MCP server configuration (stdio process or remote HTTP/SSE).</summary>
@@ -2321,7 +2376,7 @@ internal sealed class McpConfigUpdateRequest
 }
 
 /// <summary>MCP server name to remove from user configuration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpConfigRemoveRequest
 {
     /// <summary>OAuth Client ID Metadata Document URL whose persisted credentials should also be removed.</summary>
@@ -2337,7 +2392,7 @@ internal sealed class McpConfigRemoveRequest
 }
 
 /// <summary>MCP server names to enable for new sessions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpConfigEnableRequest
 {
     /// <summary>Names of MCP servers to enable. Each server is removed from the persisted disabled list so new sessions spawn it. Unknown or already-enabled names are ignored.</summary>
@@ -2346,7 +2401,7 @@ internal sealed class McpConfigEnableRequest
 }
 
 /// <summary>MCP server names to disable for new sessions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpConfigDisableRequest
 {
     /// <summary>Names of MCP servers to disable. Each server is added to the persisted disabled list so new sessions skip it. Already-disabled names are ignored. Active sessions keep their current connections until they end.</summary>
@@ -2355,7 +2410,7 @@ internal sealed class McpConfigDisableRequest
 }
 
 /// <summary>Installed plugin that contributes a discovered extension.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DiscoveredExtensionPlugin
 {
     /// <summary>Installed plugin name.</summary>
@@ -2364,7 +2419,7 @@ public sealed class DiscoveredExtensionPlugin
 }
 
 /// <summary>Discovered extension metadata and persistent enablement state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DiscoveredExtension
 {
     /// <summary>Whether this extension's persistent per-ID preference is enabled.</summary>
@@ -2393,7 +2448,7 @@ public sealed class DiscoveredExtension
 }
 
 /// <summary>Extensions discovered from persisted Copilot home state and their effective loading mode. Launch-scoped additional plugins are not included.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DiscoveredExtensions
 {
     /// <summary>Discovered user and enabled installed-plugin extensions from persisted Copilot home state.</summary>
@@ -2406,7 +2461,7 @@ public sealed class DiscoveredExtensions
 }
 
 /// <summary>Source-qualified extension identifiers to persistently enable for future sessions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class DiscoveredExtensionsEnableRequest
 {
     /// <summary>Source-qualified user or plugin extension IDs to enable.</summary>
@@ -2415,7 +2470,7 @@ internal sealed class DiscoveredExtensionsEnableRequest
 }
 
 /// <summary>Source-qualified extension identifiers to persistently disable for future sessions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class DiscoveredExtensionsDisableRequest
 {
     /// <summary>Source-qualified user or plugin extension IDs to disable.</summary>
@@ -2425,7 +2480,7 @@ internal sealed class DiscoveredExtensionsDisableRequest
 
 /// <summary>Outcome of a catalog.search call: either bounded inert candidates, or one typed refusal. Never a partial success.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -2448,14 +2503,15 @@ public partial class CatalogSearchResult
 }
 
 
-/// <summary>One inert catalog result, represented as an MCP server or discovery-only AI skill variant so kind, media type, provenance, and installability cannot contradict each other.</summary>
+/// <summary>One inert catalog result, represented as an MCP server, discovery-only AI skill, or opt-in Agent Plugin variant so kind, media type, provenance, and available operations cannot contradict each other.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
 [JsonDerivedType(typeof(CatalogCandidateMcpServer), "mcp-server")]
 [JsonDerivedType(typeof(CatalogCandidateAiSkill), "ai-skill")]
+[JsonDerivedType(typeof(CatalogCandidatePlugin), "plugin")]
 public partial class CatalogCandidate
 {
     /// <summary>The type discriminator.</summary>
@@ -2465,7 +2521,7 @@ public partial class CatalogCandidate
 
 
 /// <summary>Where and when an MCP server catalog reference was observed. Discovery provenance deliberately carries no content digest because search does not establish the exact validated content a later plan will bind.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CatalogMcpServerCandidateProvenance
 {
     /// <summary>Host of the catalog authority that advertised the reference, without path, query, or credentials. Inert untrusted data.</summary>
@@ -2485,7 +2541,7 @@ public sealed class CatalogMcpServerCandidateProvenance
 
 /// <summary>Where a candidate's card came from. Exactly one of a URL or embedded data: the union has no variant carrying both, and no variant carrying neither, so the rule holds structurally rather than by validation.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -2501,7 +2557,7 @@ public partial class CatalogCandidateSource
 
 /// <summary>Candidate whose card is retrieved from a URL through the runtime's hardened fetch boundary.</summary>
 /// <remarks>The <c>url</c> variant of <see cref="CatalogCandidateSource"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogCandidateSourceUrl : CatalogCandidateSource
 {
     /// <inheritdoc />
@@ -2517,7 +2573,7 @@ public partial class CatalogCandidateSourceUrl : CatalogCandidateSource
 
 /// <summary>Candidate whose card reference arrived inline. The document and its content-derived properties stay behind the runtime boundary.</summary>
 /// <remarks>The <c>embedded</c> variant of <see cref="CatalogCandidateSource"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogCandidateSourceEmbedded : CatalogCandidateSource
 {
     /// <inheritdoc />
@@ -2527,7 +2583,7 @@ public partial class CatalogCandidateSourceEmbedded : CatalogCandidateSource
 
 /// <summary>A versioned, bounded trust observation carried unchanged with a catalog candidate and its private handle context. Current observations require a recognised T1/T2 tier; every non-current state structurally forbids a tier. Eligibility remains `unknown` while Agent Finder supplies no exposure decision, and states absent from its current wire are never inferred from age, relevance, popularity, or a tier transition.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>status</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "status",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -2547,7 +2603,7 @@ public partial class CatalogTrustSnapshot
 
 
 /// <summary>Where and when the runtime observed the trust metadata. Observation time is not the authority's evaluation time and must not be used to infer staleness.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CatalogTrustProvenance
 {
     /// <summary>ISO 8601 timestamp with a timezone offset at which the runtime observed the search result carrying this trust field.</summary>
@@ -2564,7 +2620,7 @@ public sealed class CatalogTrustProvenance
 
 /// <summary>A recognised current Agent Finder T1 or T2 trust tier.</summary>
 /// <remarks>The <c>current</c> variant of <see cref="CatalogTrustSnapshot"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogTrustSnapshotCurrent : CatalogTrustSnapshot
 {
     /// <inheritdoc />
@@ -2590,7 +2646,7 @@ public partial class CatalogTrustSnapshotCurrent : CatalogTrustSnapshot
 
 /// <summary>Discriminator: the authority omitted trust metadata.</summary>
 /// <remarks>The <c>absent</c> variant of <see cref="CatalogTrustSnapshot"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogTrustSnapshotAbsent : CatalogTrustSnapshot
 {
     /// <inheritdoc />
@@ -2612,7 +2668,7 @@ public partial class CatalogTrustSnapshotAbsent : CatalogTrustSnapshot
 
 /// <summary>Discriminator: the authority explicitly marked the assessment stale.</summary>
 /// <remarks>The <c>stale</c> variant of <see cref="CatalogTrustSnapshot"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogTrustSnapshotStale : CatalogTrustSnapshot
 {
     /// <inheritdoc />
@@ -2634,7 +2690,7 @@ public partial class CatalogTrustSnapshotStale : CatalogTrustSnapshot
 
 /// <summary>Discriminator: the authority explicitly reported a downgraded assessment.</summary>
 /// <remarks>The <c>downgraded</c> variant of <see cref="CatalogTrustSnapshot"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogTrustSnapshotDowngraded : CatalogTrustSnapshot
 {
     /// <inheritdoc />
@@ -2656,7 +2712,7 @@ public partial class CatalogTrustSnapshotDowngraded : CatalogTrustSnapshot
 
 /// <summary>Discriminator: the authority explicitly revoked the assessment.</summary>
 /// <remarks>The <c>revoked</c> variant of <see cref="CatalogTrustSnapshot"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogTrustSnapshotRevoked : CatalogTrustSnapshot
 {
     /// <inheritdoc />
@@ -2678,7 +2734,7 @@ public partial class CatalogTrustSnapshotRevoked : CatalogTrustSnapshot
 
 /// <summary>Discriminator: the authority supplied a bounded trust value this runtime does not understand.</summary>
 /// <remarks>The <c>unsupported</c> variant of <see cref="CatalogTrustSnapshot"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogTrustSnapshotUnsupported : CatalogTrustSnapshot
 {
     /// <inheritdoc />
@@ -2700,7 +2756,7 @@ public partial class CatalogTrustSnapshotUnsupported : CatalogTrustSnapshot
 
 /// <summary>Discriminator: the trust field was empty, unbounded, or had the wrong JSON type.</summary>
 /// <remarks>The <c>malformed</c> variant of <see cref="CatalogTrustSnapshot"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogTrustSnapshotMalformed : CatalogTrustSnapshot
 {
     /// <inheritdoc />
@@ -2722,7 +2778,7 @@ public partial class CatalogTrustSnapshotMalformed : CatalogTrustSnapshot
 
 /// <summary>An inert MCP server catalog result. Every free-text field is untrusted external data and must never be treated as an instruction, and the handle is the only way to refer to the candidate in a later operation.</summary>
 /// <remarks>The <c>mcp-server</c> variant of <see cref="CatalogCandidate"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogCandidateMcpServer : CatalogCandidate
 {
     /// <inheritdoc />
@@ -2782,7 +2838,7 @@ public partial class CatalogCandidateMcpServer : CatalogCandidate
 }
 
 /// <summary>Where and when an AI skill catalog reference was observed. Discovery provenance deliberately carries no content digest because search does not establish the exact validated content a later plan will bind.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CatalogAiSkillCandidateProvenance
 {
     /// <summary>Host of the catalog authority that advertised the reference, without path, query, or credentials. Inert untrusted data.</summary>
@@ -2793,7 +2849,7 @@ public sealed class CatalogAiSkillCandidateProvenance
 
     /// <summary>Media type advertised for the referenced AI skill card.</summary>
     [JsonPropertyName("mediaType")]
-    public string MediaType { get; set; } = string.Empty;
+    public CatalogAiSkillMediaType MediaType { get; set; }
 
     /// <summary>ISO 8601 timestamp at which the runtime observed the catalog reference. This is not a retrieval or validation timestamp.</summary>
     [JsonPropertyName("observedAt")]
@@ -2802,7 +2858,7 @@ public sealed class CatalogAiSkillCandidateProvenance
 
 /// <summary>An inert AI skill catalog result. AI skills are discovery-only and cannot be represented as installable through this surface.</summary>
 /// <remarks>The <c>ai-skill</c> variant of <see cref="CatalogCandidate"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogCandidateAiSkill : CatalogCandidate
 {
     /// <inheritdoc />
@@ -2834,11 +2890,11 @@ public partial class CatalogCandidateAiSkill : CatalogCandidate
 
     /// <summary>AI skills are discovery-only and cannot be installed through this surface.</summary>
     [JsonPropertyName("installability")]
-    public required string Installability { get; set; }
+    public required CatalogAiSkillInstallability Installability { get; set; }
 
     /// <summary>Media type of the underlying AI skill card.</summary>
     [JsonPropertyName("mediaType")]
-    public required string MediaType { get; set; }
+    public required CatalogAiSkillMediaType MediaType { get; set; }
 
     /// <summary>Where the catalog reference was observed, without the card itself or any content digest.</summary>
     [JsonPropertyName("provenance")]
@@ -2861,9 +2917,148 @@ public partial class CatalogCandidateAiSkill : CatalogCandidate
     public CatalogTrustSnapshot? Trust { get; set; }
 }
 
-/// <summary>A completed catalog search: inert candidate summaries, each carrying a single-use handle.</summary>
+/// <summary>Where and when an Agent Plugin catalog reference was observed. Discovery provenance deliberately carries no descriptor URL, raw data, candidate handle, or content digest.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class CatalogAgentPluginCandidateProvenance
+{
+    /// <summary>Host of the catalog authority that advertised the reference, without path, query, or credentials. Inert untrusted data.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [JsonPropertyName("authority")]
+    public string Authority { get; set; } = string.Empty;
+
+    /// <summary>Canonical Agent Plugin media type.</summary>
+    [JsonPropertyName("mediaType")]
+    public CatalogAgentPluginMediaType MediaType { get; set; }
+
+    /// <summary>ISO 8601 timestamp at which the runtime observed the catalog reference. This is not a retrieval or validation timestamp.</summary>
+    [JsonPropertyName("observedAt")]
+    public string ObservedAt { get; set; } = string.Empty;
+}
+
+/// <summary>Syntactically validated GitHub repository provenance declared by catalog metadata. This is a source claim rather than proof that the descriptor URL resolves to the repository.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class CatalogPluginRepositorySource
+{
+    /// <summary>Case-preserving safe relative POSIX path derived from metadata.repoPath.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(256)]
+    [JsonPropertyName("path")]
+    public string Path { get; set; } = string.Empty;
+
+    /// <summary>Canonical lowercase owner/repository name derived from metadata.sourceSet.</summary>
+    [RegularExpression("^[a-z0-9_.-]+/[a-z0-9_.-]+$")]
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(3)]
+    [MaxLength(256)]
+    [JsonPropertyName("repository")]
+    public string Repository { get; set; } = string.Empty;
+}
+
+/// <summary>An inert Agent Plugin catalog result. Its canonical catalog identity, declared version, repository source claim, and explicit compatibility tags are safe to correlate, while its descriptor, URL, raw data, and installed-plugin state remain runtime-private. This contract-only variant does not mint or expose a candidate handle.</summary>
+/// <remarks>The <c>plugin</c> variant of <see cref="CatalogCandidate"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogCandidatePlugin : CatalogCandidate
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "plugin";
+
+    /// <summary>Explicit validated compatibility tags, in canonical order. An empty list means the source declared no recognised compatibility; clients must not infer compatibility from other fields. `canvas-only` requires both `canvas` and `github-copilot`.</summary>
+    [JsonPropertyName("compatibilityTags")]
+    public required IList<CatalogAgentPluginCompatibilityTag> CompatibilityTags { get; set; }
+
+    /// <summary>Description taken verbatim from the card. Inert untrusted text.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(1000)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    /// <summary>Display name taken verbatim from the card. Inert untrusted text.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(200)]
+    [JsonPropertyName("displayName")]
+    public required string DisplayName { get; set; }
+
+    /// <summary>Validated, normalised catalogue resource URN. This identity comes only from the catalog identifier and is never inferred from display text or installed-plugin state.</summary>
+    [JsonPropertyName("identity")]
+    public required string Identity { get; set; }
+
+    /// <summary>Canonical Agent Plugin media type.</summary>
+    [JsonPropertyName("mediaType")]
+    public required CatalogAgentPluginMediaType MediaType { get; set; }
+
+    /// <summary>Where the Agent Plugin catalog reference was observed, without its descriptor, URL, raw data, or content digest.</summary>
+    [JsonPropertyName("provenance")]
+    public required CatalogAgentPluginCandidateProvenance Provenance { get; set; }
+
+    /// <summary>Publisher taken verbatim from the card. Inert untrusted text.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(200)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("publisher")]
+    public string? Publisher { get; set; }
+
+    /// <summary>Bounded repository provenance declared through the catalog's sourceSet and repoPath metadata. It contains no descriptor URL.</summary>
+    [JsonPropertyName("source")]
+    public required CatalogPluginRepositorySource Source { get; set; }
+
+    /// <summary>Versioned trust metadata observed from the catalog authority. Optional for protocol-3 compatibility and emitted only when the caller also requires the trust-snapshot capability.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("trust")]
+    public CatalogTrustSnapshot? Trust { get; set; }
+
+    /// <summary>Optional version declared by the catalog source. Omitted rather than guessed when the source supplies no version.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("version")]
+    public string? Version { get; set; }
+}
+
+/// <summary>Authority-reported navigation metadata, returned only to callers requiring catalog-search-pagination and only when a supported token is present. Tokenless first-page and continuation responses omit this object; no counts are inferred from candidates. The opaque token may be retained for previous or numbered navigation even when hasNextPage is false.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class CatalogSearchPagination
+{
+    /// <summary>One-based page returned by the authority.</summary>
+    [JsonPropertyName("currentPage")]
+    public int CurrentPage { get; set; }
+
+    /// <summary>Whether the authority token advertises a valid next target within the navigation window. Not inferred from token presence, truncated, or currentPage being less than pageCount.</summary>
+    [JsonPropertyName("hasNextPage")]
+    public bool HasNextPage { get; set; }
+
+    /// <summary>Navigation window ceiling ceil(1000 / pageSize), not the number of existing pages. Legal targets must not exceed this ceiling or the token's signed pageCount.</summary>
+    [JsonPropertyName("maxPage")]
+    public int MaxPage { get; set; }
+
+    /// <summary>Backend-reported page count, which may exceed maxPage. Present pagination metadata always describes a multi-page result; zero- and single-page responses omit pagination. Navigation targets must also be within the signed pageCount carried by the supplied token.</summary>
+    [JsonPropertyName("pageCount")]
+    public long PageCount { get; set; }
+
+    /// <summary>Page size bound to the search, equal to the effective request limit.</summary>
+    [JsonPropertyName("pageSize")]
+    public int PageSize { get; set; }
+
+    /// <summary>Opaque authority-issued pagination token. Only the runtime decodes it or changes targetPage; SDK consumers must not decode, modify or log it. It has no runtime-created expiry or cache.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(4096)]
+    [JsonPropertyName("token")]
+    public string Token { get; set; } = string.Empty;
+
+    /// <summary>Backend-reported count for this response, not the number of returned candidates. Its relationship to the full query result set is unknown.</summary>
+    [JsonPropertyName("totalCount")]
+    public long TotalCount { get; set; }
+
+    /// <summary>The relationship of totalCount to the complete query result set is unknown; neither exactness nor a lower-bound guarantee is implied.</summary>
+    [JsonPropertyName("totalCountRelation")]
+    public CatalogSearchTotalCountRelation TotalCountRelation { get; set; }
+}
+
+/// <summary>A completed catalog search containing inert candidate summaries. MCP server and AI skill variants carry a single-use handle; the Agent Plugin variant is handleless.</summary>
 /// <remarks>The <c>succeeded</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultSucceeded : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -2878,6 +3073,11 @@ public partial class CatalogSearchResultSucceeded : CatalogSearchResult
     [JsonPropertyName("negotiated")]
     public required CatalogNegotiatedContract Negotiated { get; set; }
 
+    /// <summary>Navigation metadata for callers explicitly requiring catalog-search-pagination. Omitted when the authority returns no token, including tokenless first-page and continuation responses. Counts are never substituted from candidates.length.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("pagination")]
+    public CatalogSearchPagination? Pagination { get; set; }
+
     /// <summary>Pseudonymous identifier for this search, issued by the runtime or by the catalog authority it queried and never by the caller, so it cannot be forged or replayed to attribute an install to a search that never happened. Always present on a success, so a result set can be tied to the installs it leads to. It identifies a search rather than a person: it is derived from no user, account, device, or query data, and must never be joined with user identity to re-identify anyone.</summary>
     [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
     [MinLength(1)]
@@ -2885,14 +3085,14 @@ public partial class CatalogSearchResultSucceeded : CatalogSearchResult
     [JsonPropertyName("searchId")]
     public required string SearchId { get; set; }
 
-    /// <summary>Whether further matches existed beyond the requested limit.</summary>
+    /// <summary>Legacy indication that the authority returned a page token. Preserved for compatibility; this is not a has-next-page indicator. Use pagination.hasNextPage when pagination metadata is present.</summary>
     [JsonPropertyName("truncated")]
     public required bool Truncated { get; set; }
 }
 
 /// <summary>The caller's protocol version or required capabilities cannot be honoured. Returned instead of a partial or ambiguous success.</summary>
 /// <remarks>The <c>negotiation-refused</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultNegotiationRefused : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -2928,7 +3128,7 @@ public partial class CatalogSearchResultNegotiationRefused : CatalogSearchResult
 
 /// <summary>The request asked for a candidate kind this runtime does not serve.</summary>
 /// <remarks>The <c>unsupported-kind</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultUnsupportedKind : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -2950,9 +3150,9 @@ public partial class CatalogSearchResultUnsupportedKind : CatalogSearchResult
     public required IList<CatalogCandidateKind> SupportedKinds { get; set; }
 }
 
-/// <summary>The request was rejected before any work was done, because a bounded field fell outside its permitted range or a required field was unusable.</summary>
+/// <summary>The request was rejected because a bounded field fell outside its permitted range or a required field was unusable. Pagination may also be rejected by the authority after a continuation request; repeat the search without page.</summary>
 /// <remarks>The <c>invalid-request</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultInvalidRequest : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -2972,7 +3172,7 @@ public partial class CatalogSearchResultInvalidRequest : CatalogSearchResult
 
 /// <summary>An optional catalog authentication exchange did not establish the caller's identity. Anonymous search remains supported; this refusal is reserved for an operation that cannot continue after the attempted exchange. It is distinct from `policy-rejected` and from a network failure, and the reason identifies the recovery action.</summary>
 /// <remarks>The <c>authentication-required</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultAuthenticationRequired : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -2992,7 +3192,7 @@ public partial class CatalogSearchResultAuthenticationRequired : CatalogSearchRe
 
 /// <summary>Registry or enterprise policy refused the operation.</summary>
 /// <remarks>The <c>policy-rejected</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultPolicyRejected : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -3012,7 +3212,7 @@ public partial class CatalogSearchResultPolicyRejected : CatalogSearchResult
 
 /// <summary>The runtime could not reach the catalog authority or retrieve a card. Covers being offline as well as transport-level failure.</summary>
 /// <remarks>The <c>network-failure</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultNetworkFailure : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -3042,7 +3242,7 @@ public partial class CatalogSearchResultNetworkFailure : CatalogSearchResult
 
 /// <summary>Retrieval was refused by the runtime's hardened fetch boundary before any request left the process, or before a redirect was followed.</summary>
 /// <remarks>The <c>unsafe-retrieval</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultUnsafeRetrieval : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -3062,7 +3262,7 @@ public partial class CatalogSearchResultUnsafeRetrieval : CatalogSearchResult
 
 /// <summary>A card could not be parsed or did not satisfy its declared media type's schema.</summary>
 /// <remarks>The <c>malformed-card</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultMalformedCard : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -3087,7 +3287,7 @@ public partial class CatalogSearchResultMalformedCard : CatalogSearchResult
 
 /// <summary>An upstream catalog response broke the wire contract. Most importantly, every result must carry exactly one of a URL or embedded data: a result carrying both, or neither, is refused here rather than being guessed at.</summary>
 /// <remarks>The <c>contract-violation</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultContractViolation : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -3107,7 +3307,7 @@ public partial class CatalogSearchResultContractViolation : CatalogSearchResult
 
 /// <summary>The operation is not available on this runtime. Distinct from a network failure: nothing was attempted.</summary>
 /// <remarks>The <c>unavailable</c> variant of <see cref="CatalogSearchResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class CatalogSearchResultUnavailable : CatalogSearchResult
 {
     /// <inheritdoc />
@@ -3125,21 +3325,41 @@ public partial class CatalogSearchResultUnavailable : CatalogSearchResult
     public required CatalogUnavailableReason Reason { get; set; }
 }
 
+/// <summary>An explicit numbered-page request. The SDK treats the token as opaque; only the runtime decodes it and changes its targetPage. Authority validation binds navigation to the original search. No snapshot stability or token TTL is promised.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class CatalogSearchPage
+{
+    /// <summary>Requested one-based page. Must not exceed either the token's signed pageCount or the navigation window ceil(1000 / pageSize). Repeat the search without page to discover newly available pages beyond that signed pageCount.</summary>
+    [JsonPropertyName("number")]
+    public int Number { get; set; }
+
+    /// <summary>Opaque authority-issued pagination token from an earlier response. Never decode, modify or log it in an SDK consumer.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(4096)]
+    [JsonPropertyName("token")]
+    public string Token { get; set; } = string.Empty;
+}
+
 /// <summary>A bounded catalog search. Both the query length and the result count are capped by the schema so a caller cannot request an unbounded scan.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CatalogSearchRequest
 {
     /// <summary>Protocol version and capabilities the caller requires.</summary>
     [JsonPropertyName("contract")]
     public CatalogClientContract Contract { get => field ??= new(); set; }
 
-    /// <summary>Restrict results to these candidate kinds. When omitted, every kind the runtime supports is searched.</summary>
+    /// <summary>Restrict results to these candidate kinds. Agent Plugins are opt-in and require the `agent-plugin-discovery` capability so protocol-v3 clients generated before that variant cannot receive an unknown result; when omitted, the backwards-compatible MCP server and AI skill kinds are searched.</summary>
     [JsonPropertyName("kinds")]
     public IList<CatalogCandidateKind>? Kinds { get; set; }
 
     /// <summary>Maximum number of candidates to return. Defaults to 10 when omitted.</summary>
     [JsonPropertyName("limit")]
     public int? Limit { get; set; }
+
+    /// <summary>Numbered navigation using metadata from an earlier response. Requires catalog-search-pagination and the same query, kinds and effective limit. Omit for a fresh first-page search.</summary>
+    [JsonPropertyName("page")]
+    public CatalogSearchPage? Page { get; set; }
 
     /// <summary>Free-text search query. Persisted as tool input for session continuity, but omitted from telemetry.</summary>
     [RegularExpression("\\S")]
@@ -3150,8 +3370,292 @@ internal sealed class CatalogSearchRequest
     public string Query { get; set; } = string.Empty;
 }
 
+/// <summary>Typed outcome of catalog.select. Only the selected host result carries a fresh candidate handle; the model-facing projection removes both that handle and searchId.</summary>
+/// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonPolymorphic(
+    TypeDiscriminatorPropertyName = "kind",
+    UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
+[JsonDerivedType(typeof(CatalogSelectionResultSelected), "selected")]
+[JsonDerivedType(typeof(CatalogSelectionResultDeclined), "declined")]
+[JsonDerivedType(typeof(CatalogSelectionResultCancelled), "cancelled")]
+[JsonDerivedType(typeof(CatalogSelectionResultTimedOut), "timed-out")]
+[JsonDerivedType(typeof(CatalogSelectionResultInvalid), "invalid")]
+[JsonDerivedType(typeof(CatalogSelectionResultStale), "stale")]
+[JsonDerivedType(typeof(CatalogSelectionResultReplayed), "replayed")]
+[JsonDerivedType(typeof(CatalogSelectionResultForeign), "foreign")]
+[JsonDerivedType(typeof(CatalogSelectionResultWrongKind), "wrong-kind")]
+[JsonDerivedType(typeof(CatalogSelectionResultNegotiationRefused), "negotiation-refused")]
+[JsonDerivedType(typeof(CatalogSelectionResultInvalidRequest), "invalid-request")]
+[JsonDerivedType(typeof(CatalogSelectionResultUnavailable), "unavailable")]
+public partial class CatalogSelectionResult
+{
+    /// <summary>The type discriminator.</summary>
+    [JsonPropertyName("kind")]
+    public virtual string Kind { get; set; } = string.Empty;
+}
+
+
+/// <summary>The chosen candidate was transferred into a fresh bounded single-use handle for a later explicit planning request.</summary>
+/// <remarks>The <c>selected</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultSelected : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "selected";
+
+    /// <summary>Fresh single-use candidate handle accepted by mcp.planInstall. Returned only to the native host and never included in model-tool output.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(256)]
+    [JsonPropertyName("candidateHandle")]
+    public required string CandidateHandle { get; set; }
+
+    /// <summary>The exact search identifier privately bound to the selected candidate.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(64)]
+    [JsonPropertyName("searchId")]
+    public required string SearchId { get; set; }
+}
+
+/// <summary>The caller explicitly declined every candidate and the retained search state was released.</summary>
+/// <remarks>The <c>declined</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultDeclined : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "declined";
+
+    /// <summary>The search identifier privately bound to the released selection group.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(64)]
+    [JsonPropertyName("searchId")]
+    public required string SearchId { get; set; }
+}
+
+/// <summary>The caller cancelled the selection interaction and the retained search state was released.</summary>
+/// <remarks>The <c>cancelled</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultCancelled : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "cancelled";
+
+    /// <summary>The search identifier privately bound to the released selection group.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(64)]
+    [JsonPropertyName("searchId")]
+    public required string SearchId { get; set; }
+}
+
+/// <summary>The host declared that its live selection interaction timed out, and the retained search state was released.</summary>
+/// <remarks>The <c>timed-out</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultTimedOut : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "timed-out";
+
+    /// <summary>The search identifier privately bound to the released selection group.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(64)]
+    [JsonPropertyName("searchId")]
+    public required string SearchId { get; set; }
+}
+
+/// <summary>The selection reference was malformed or unknown.</summary>
+/// <remarks>The <c>invalid</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultInvalid : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "invalid";
+
+    /// <summary>Human-readable explanation safe to surface. Never contains the presented reference or private candidate state.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(1000)]
+    [JsonPropertyName("message")]
+    public required string Message { get; set; }
+}
+
+/// <summary>The runtime-enforced selection reference lifetime elapsed before the request arrived.</summary>
+/// <remarks>The <c>stale</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultStale : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "stale";
+
+    /// <summary>Human-readable explanation safe to surface. Never contains the presented reference or private candidate state.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(1000)]
+    [JsonPropertyName("message")]
+    public required string Message { get; set; }
+}
+
+/// <summary>The selection group was already terminated or its pending host hand-off was already claimed.</summary>
+/// <remarks>The <c>replayed</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultReplayed : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "replayed";
+
+    /// <summary>Human-readable explanation safe to surface. Never contains the presented reference or private candidate state.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(1000)]
+    [JsonPropertyName("message")]
+    public required string Message { get; set; }
+}
+
+/// <summary>The selection reference belongs to another runtime instance or session.</summary>
+/// <remarks>The <c>foreign</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultForeign : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "foreign";
+
+    /// <summary>Human-readable explanation safe to surface. Never contains the presented reference or private candidate state.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(1000)]
+    [JsonPropertyName("message")]
+    public required string Message { get; set; }
+}
+
+/// <summary>The presented opaque handle was issued for another catalog operation.</summary>
+/// <remarks>The <c>wrong-kind</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultWrongKind : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "wrong-kind";
+
+    /// <summary>Human-readable explanation safe to surface. Never contains the presented reference or private candidate state.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(1000)]
+    [JsonPropertyName("message")]
+    public required string Message { get; set; }
+}
+
+/// <summary>The caller's protocol version or required capabilities cannot be honoured. Returned instead of a partial or ambiguous success.</summary>
+/// <remarks>The <c>negotiation-refused</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultNegotiationRefused : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "negotiation-refused";
+
+    /// <summary>Human-readable explanation, safe to surface. Never contains a query, URL, handle, or secret.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(1000)]
+    [JsonPropertyName("message")]
+    public required string Message { get; set; }
+
+    /// <summary>Lowest caller protocol version this runtime will serve.</summary>
+    [JsonPropertyName("minimumSupportedProtocolVersion")]
+    public required long MinimumSupportedProtocolVersion { get; set; }
+
+    /// <summary>Whether the version or the capability set was the problem.</summary>
+    [JsonPropertyName("reason")]
+    public required CatalogNegotiationRefusedReason Reason { get; set; }
+
+    /// <summary>Protocol version of the runtime that refused the request.</summary>
+    [JsonPropertyName("runtimeProtocolVersion")]
+    public required long RuntimeProtocolVersion { get; set; }
+
+    /// <summary>Capabilities this runtime can safely advertise to this caller. The complete five-capability protocol-3 legacy set is always present; every capability added after that baseline appears only when the caller required it, so an older closed-enum decoder can still consume a refusal. This list does not imply that every deployment has enabled every operation.</summary>
+    [JsonPropertyName("supportedCapabilities")]
+    public required IList<string> SupportedCapabilities { get; set; }
+
+    /// <summary>The subset of the caller's bounded extensible capability identifiers this runtime cannot honour.</summary>
+    [JsonPropertyName("unsupportedCapabilities")]
+    public required IList<string> UnsupportedCapabilities { get; set; }
+}
+
+/// <summary>The request was rejected because a bounded field fell outside its permitted range or a required field was unusable. Pagination may also be rejected by the authority after a continuation request; repeat the search without page.</summary>
+/// <remarks>The <c>invalid-request</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultInvalidRequest : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "invalid-request";
+
+    /// <summary>Which request field was rejected.</summary>
+    [JsonPropertyName("field")]
+    public required CatalogInvalidRequestField Field { get; set; }
+
+    /// <summary>Human-readable explanation, safe to surface. Never echoes the offending value, nor a query, URL, handle, or secret.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(1000)]
+    [JsonPropertyName("message")]
+    public required string Message { get; set; }
+}
+
+/// <summary>The operation is not available on this runtime. Distinct from a network failure: nothing was attempted.</summary>
+/// <remarks>The <c>unavailable</c> variant of <see cref="CatalogSelectionResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class CatalogSelectionResultUnavailable : CatalogSelectionResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "unavailable";
+
+    /// <summary>Human-readable explanation, safe to surface. Never contains a query, URL, handle, or secret.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MaxLength(1000)]
+    [JsonPropertyName("message")]
+    public required string Message { get; set; }
+
+    /// <summary>Why the operation is unavailable.</summary>
+    [JsonPropertyName("reason")]
+    public required CatalogUnavailableReason Reason { get; set; }
+}
+
+/// <summary>Terminates one retained catalog selection group through an opaque reference previously returned by the model-safe search projection.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class CatalogSelectionRequest
+{
+    /// <summary>Protocol version and capabilities the caller requires.</summary>
+    [JsonPropertyName("contract")]
+    public CatalogClientContract Contract { get => field ??= new(); set; }
+
+    /// <summary>The terminal outcome declared by the caller. Timed-out means the host's live interaction deadline elapsed; a reference whose runtime TTL elapsed is rejected separately as stale.</summary>
+    [JsonPropertyName("outcome")]
+    public CatalogSelectionDecision Outcome { get; set; }
+
+    /// <summary>Opaque runtime-instance scoped reference to one visible candidate. For a non-selected outcome, any candidate reference from the same search closes that search's retained group.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(256)]
+    [JsonPropertyName("selectionRef")]
+    public string SelectionRef { get; set; } = string.Empty;
+
+    /// <summary>Locally owned root session whose retained search state is being resolved.</summary>
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Safe for generated string properties: JSON Schema minLength/maxLength map to string length validation, not reflection over trimmed Count members")]
+    [MinLength(1)]
+    [MaxLength(256)]
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
 /// <summary>Information about an installed plugin tracked in global state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class InstalledPluginInfo
 {
     /// <summary>Opaque, stable hash identifying a direct (non-marketplace) install source. Present only for direct repo / URL / local installs; absent for marketplace plugins. Same source yields the same id; distinct sources never collide.</summary>
@@ -3162,9 +3666,21 @@ public sealed class InstalledPluginInfo
     [JsonPropertyName("enabled")]
     public bool Enabled { get; set; }
 
+    /// <summary>Whether the managed desired plugin currently has an installed or live record. Set to false for a managed desired entry retained in the listing after installation or reconciliation failed.</summary>
+    [JsonPropertyName("installed")]
+    public bool? Installed { get; set; }
+
     /// <summary>Absolute path of the marketplace directory a live plugin was resolved from. Present only on live, never-persisted records — a plugin belonging to a directory/local marketplace, which is loaded from its real directory on every pass instead of a copy under the installed-plugins cache. Its presence is what marks a listed plugin as live: such a plugin is always present on disk, so `enabled` is its only meaningful state and it is never "not installed".</summary>
     [JsonPropertyName("installedFrom")]
     public string? InstalledFrom { get; set; }
+
+    /// <summary>Whether enterprise managed settings control this plugin's enabled state.</summary>
+    [JsonPropertyName("managed")]
+    public bool? Managed { get; set; }
+
+    /// <summary>The enabled state required by enterprise managed settings, when this plugin spec is managed.</summary>
+    [JsonPropertyName("managedDesiredEnabled")]
+    public bool? ManagedDesiredEnabled { get; set; }
 
     /// <summary>Marketplace the plugin came from. Empty string ("") for direct repo / URL / local installs.</summary>
     [JsonPropertyName("marketplace")]
@@ -3184,7 +3700,7 @@ public sealed class InstalledPluginInfo
 }
 
 /// <summary>Plugins installed in user/global state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PluginListResult
 {
     /// <summary>Installed plugins.</summary>
@@ -3193,7 +3709,7 @@ public sealed class PluginListResult
 }
 
 /// <summary>Result of installing a plugin.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PluginInstallResult
 {
     /// <summary>Set when the install path is deprecated (e.g. direct repo / URL / local installs). Callers should surface this to end users.</summary>
@@ -3218,7 +3734,7 @@ public sealed class PluginInstallResult
 }
 
 /// <summary>Plugin source and optional working directory for relative-path resolution.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsInstallRequest
 {
     /// <summary>Plugin install spec. Accepts the same forms as the CLI: "plugin@marketplace" (marketplace install), "owner/repo" or "owner/repo:subpath" (GitHub direct), an http/https/ssh URL, or a local path. Direct (non-marketplace) installs are deprecated and will produce a deprecationWarning in the result.</summary>
@@ -3231,7 +3747,7 @@ internal sealed class PluginsInstallRequest
 }
 
 /// <summary>Name (or spec) of the plugin to uninstall.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsUninstallRequest
 {
     /// <summary>Stable source identity for a direct (non-marketplace) install. Disambiguates uninstall when multiple installed plugins share the same name.</summary>
@@ -3244,7 +3760,7 @@ internal sealed class PluginsUninstallRequest
 }
 
 /// <summary>Result of updating a single plugin.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PluginUpdateResult
 {
     /// <summary>Version after the update, when reported by the plugin manifest.</summary>
@@ -3261,7 +3777,7 @@ public sealed class PluginUpdateResult
 }
 
 /// <summary>Name (or spec) of the plugin to update.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsUpdateRequest
 {
     /// <summary>Plugin name or "plugin@marketplace" spec to update.</summary>
@@ -3270,7 +3786,7 @@ internal sealed class PluginsUpdateRequest
 }
 
 /// <summary>Per-plugin result from updating all plugins, with versions, skills installed, success flag, and optional error.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PluginUpdateAllEntry
 {
     /// <summary>Error message (failure only).</summary>
@@ -3303,7 +3819,7 @@ public sealed class PluginUpdateAllEntry
 }
 
 /// <summary>Result of updating all installed plugins.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PluginUpdateAllResult
 {
     /// <summary>Per-plugin update results in deterministic order.</summary>
@@ -3312,7 +3828,7 @@ public sealed class PluginUpdateAllResult
 }
 
 /// <summary>Plugin names (or specs) to enable, plus the optional working directory the repository-controlled guard is evaluated against.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsEnableRequest
 {
     /// <summary>Plugin names or "plugin@marketplace" specs to enable. Unknown names are ignored. Non-marketplace direct installs are always enabled and cannot be toggled via this API.</summary>
@@ -3325,7 +3841,7 @@ internal sealed class PluginsEnableRequest
 }
 
 /// <summary>Plugin names (or specs) to disable, plus the optional working directory the repository-controlled guard is evaluated against.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsDisableRequest
 {
     /// <summary>Plugin names or "plugin@marketplace" specs to disable. Unknown names are ignored. Non-marketplace direct installs cannot be disabled via this API; uninstall them instead. Plugin-owned MCP servers are stopped in active sessions immediately; other plugin contributions remain available until each session reloads plugins.</summary>
@@ -3338,7 +3854,7 @@ internal sealed class PluginsDisableRequest
 }
 
 /// <summary>Trusted built-in plugin directories to use for this runtime process.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsBuiltinSetRequest
 {
     /// <summary>Complete replacement set of trusted built-in plugin directories. Every entry must be an absolute local filesystem path no longer than 4096 characters.</summary>
@@ -3347,12 +3863,20 @@ internal sealed class PluginsBuiltinSetRequest
 }
 
 /// <summary>Registered marketplace summary.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MarketplaceInfo
 {
+    /// <summary>Whether the managed marketplace currently resolved into the runtime marketplace registry. Set to false when the desired managed entry is retained for governance visibility after loading or reconciliation failed.</summary>
+    [JsonPropertyName("available")]
+    public bool? Available { get; set; }
+
     /// <summary>True when this is a default marketplace shipped with the runtime. Defaults are not removable.</summary>
     [JsonPropertyName("isDefault")]
     public bool? IsDefault { get; set; }
+
+    /// <summary>Whether enterprise managed settings provide and control this marketplace entry.</summary>
+    [JsonPropertyName("managed")]
+    public bool? Managed { get; set; }
 
     /// <summary>Marketplace name (matches the @marketplace suffix in plugin specs).</summary>
     [JsonPropertyName("name")]
@@ -3364,7 +3888,7 @@ public sealed class MarketplaceInfo
 }
 
 /// <summary>All registered marketplaces, including built-in defaults.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MarketplaceListResult
 {
     /// <summary>Registered marketplaces.</summary>
@@ -3373,7 +3897,7 @@ public sealed class MarketplaceListResult
 }
 
 /// <summary>Result of registering a new marketplace.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MarketplaceAddResult
 {
     /// <summary>Final name of the marketplace as resolved from its manifest.</summary>
@@ -3382,7 +3906,7 @@ public sealed class MarketplaceAddResult
 }
 
 /// <summary>Marketplace source and optional working directory for relative-path resolution.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsMarketplacesAddRequest
 {
     /// <summary>Marketplace source. Accepts the same forms as the CLI: "owner/repo" or "owner/repo#ref" (GitHub), an http/https/ssh URL (optionally with #ref), a git scp-style URL (user@host:path), or a local path. The marketplace's own name (from its manifest) is used as the registration key.</summary>
@@ -3395,7 +3919,7 @@ internal sealed class PluginsMarketplacesAddRequest
 }
 
 /// <summary>Outcome of the remove attempt, including dependent-plugin info when applicable.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MarketplaceRemoveResult
 {
     /// <summary>Names of installed plugins that prevented removal. Populated only when `removed=false`.</summary>
@@ -3408,7 +3932,7 @@ public sealed class MarketplaceRemoveResult
 }
 
 /// <summary>Name of the marketplace to remove and an optional force flag.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsMarketplacesRemoveRequest
 {
     /// <summary>When true, also uninstall every plugin sourced from this marketplace. When false (default), removal is a no-op if any plugin from this marketplace is installed and the dependent plugin names are returned in the result.</summary>
@@ -3421,7 +3945,7 @@ internal sealed class PluginsMarketplacesRemoveRequest
 }
 
 /// <summary>Plugin entry advertised by a marketplace.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MarketplacePluginInfo
 {
     /// <summary>Short description from the marketplace catalog, when present.</summary>
@@ -3434,7 +3958,7 @@ public sealed class MarketplacePluginInfo
 }
 
 /// <summary>Plugins advertised by the marketplace.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MarketplaceBrowseResult
 {
     /// <summary>Plugins advertised by the marketplace.</summary>
@@ -3443,7 +3967,7 @@ public sealed class MarketplaceBrowseResult
 }
 
 /// <summary>Name of the marketplace whose plugin catalog to fetch.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsMarketplacesBrowseRequest
 {
     /// <summary>Marketplace name to browse.</summary>
@@ -3452,7 +3976,7 @@ internal sealed class PluginsMarketplacesBrowseRequest
 }
 
 /// <summary>Per-marketplace refresh result, including marketplace name, success flag, and optional failure error.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MarketplaceRefreshEntry
 {
     /// <summary>Error message (failure only).</summary>
@@ -3469,7 +3993,7 @@ public sealed class MarketplaceRefreshEntry
 }
 
 /// <summary>Result of refreshing one or more marketplace catalogs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MarketplaceRefreshResult
 {
     /// <summary>Per-marketplace refresh results in deterministic order.</summary>
@@ -3478,7 +4002,7 @@ public sealed class MarketplaceRefreshResult
 }
 
 /// <summary>RPC data type for PluginsMarketplacesRefresh operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PluginsMarketplacesRefreshRequest
 {
     /// <summary>Marketplace name to refresh. When omitted, every registered marketplace is refreshed.</summary>
@@ -3487,7 +4011,7 @@ internal sealed class PluginsMarketplacesRefreshRequest
 }
 
 /// <summary>Server-side skill metadata, including name, description, source, enabled/invocable state, path, project path, and argument hint.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerSkill
 {
     /// <summary>Optional freeform hint describing the skill's expected arguments, from the `argument-hint` frontmatter field.</summary>
@@ -3528,7 +4052,7 @@ public sealed class ServerSkill
 }
 
 /// <summary>Skills discovered across global and project sources.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerSkillList
 {
     /// <summary>Messages for skills that failed to load (e.g. malformed SKILL.md). Empty when host skills are excluded so host-local paths are not disclosed to multitenant callers.</summary>
@@ -3541,12 +4065,16 @@ public sealed class ServerSkillList
 }
 
 /// <summary>Optional project paths and additional skill directories to include in discovery.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SkillsDiscoverRequest
 {
     /// <summary>When true, omit skills from the host's global sources (personal, custom, plugin, and built-in), returning only project-scoped skills. For multitenant deployments.</summary>
     [JsonPropertyName("excludeHostSkills")]
     public bool? ExcludeHostSkills { get; set; }
+
+    /// <summary>Optional skill scan paths to exclude from discovery.</summary>
+    [JsonPropertyName("ignoredSkillsLocations")]
+    public IList<string>? IgnoredSkillsLocations { get; set; }
 
     /// <summary>Optional list of project directory paths to scan for project-scoped skills.</summary>
     [JsonPropertyName("projectPaths")]
@@ -3558,7 +4086,7 @@ internal sealed class SkillsDiscoverRequest
 }
 
 /// <summary>Canonical directory where skills can be discovered or created, with scope, preference, and optional project path.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SkillDiscoveryPath
 {
     /// <summary>Absolute path of the create/discovery target (may not exist on disk yet).</summary>
@@ -3579,7 +4107,7 @@ public sealed class SkillDiscoveryPath
 }
 
 /// <summary>Canonical locations where skills can be created so the runtime will recognize them.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SkillDiscoveryPathList
 {
     /// <summary>Canonical skill create/discovery directories, in priority order.</summary>
@@ -3588,12 +4116,16 @@ public sealed class SkillDiscoveryPathList
 }
 
 /// <summary>Optional project paths to enumerate.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SkillsGetDiscoveryPathsRequest
 {
     /// <summary>When true, omit the host's personal and custom skill directories, leaving only project directories. For multitenant deployments.</summary>
     [JsonPropertyName("excludeHostSkills")]
     public bool? ExcludeHostSkills { get; set; }
+
+    /// <summary>Optional skill scan paths to exclude from discovery.</summary>
+    [JsonPropertyName("ignoredSkillsLocations")]
+    public IList<string>? IgnoredSkillsLocations { get; set; }
 
     /// <summary>Optional list of project directory paths. When omitted or empty, only personal and custom directories are returned.</summary>
     [JsonPropertyName("projectPaths")]
@@ -3601,7 +4133,7 @@ internal sealed class SkillsGetDiscoveryPathsRequest
 }
 
 /// <summary>Skill names to mark as disabled in global configuration, replacing any previous list.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SkillsConfigSetDisabledSkillsRequest
 {
     /// <summary>List of skill names to disable.</summary>
@@ -3610,7 +4142,7 @@ internal sealed class SkillsConfigSetDisabledSkillsRequest
 }
 
 /// <summary>Adds or removes a single skill from the global disabled list, leaving every other entry untouched.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SkillsConfigSetSkillDisabledRequest
 {
     /// <summary>True to disable the skill, false to enable it.</summary>
@@ -3622,8 +4154,8 @@ internal sealed class SkillsConfigSetSkillDisabledRequest
     public string Name { get; set; } = string.Empty;
 }
 
-/// <summary>Agent metadata, including identifiers, display details, source, tools, model, models, MCP servers, skills, and file path.</summary>
-[Experimental(Diagnostics.Experimental)]
+/// <summary>Agent metadata, including identifiers, display details, source, tools, model, models, reasoning effort, MCP servers, skills, and file path.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentInfo
 {
     /// <summary>Description of the agent's purpose.</summary>
@@ -3643,7 +4175,7 @@ public sealed class AgentInfo
     public string Id { get; set; } = string.Empty;
 
     /// <summary>MCP server configurations attached to this agent, keyed by server name. Server config shape mirrors the MCP `mcpServers` schema.</summary>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     [JsonPropertyName("mcpServers")]
     public IDictionary<string, JsonElement>? McpServers { get; set; }
 
@@ -3671,6 +4203,10 @@ public sealed class AgentInfo
     [JsonPropertyName("prompt")]
     public string? Prompt { get; set; }
 
+    /// <summary>Authored reasoning effort for this agent. Applied on selection to models that support it; omitted means no authored preference.</summary>
+    [JsonPropertyName("reasoningEffort")]
+    public string? ReasoningEffort { get; set; }
+
     /// <summary>Skill names preloaded into this agent's context. Omitted means none.</summary>
     [JsonPropertyName("skills")]
     public IList<string>? Skills { get; set; }
@@ -3689,7 +4225,7 @@ public sealed class AgentInfo
 }
 
 /// <summary>Agents discovered across user, project, plugin, and remote sources.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerAgentList
 {
     /// <summary>All discovered agents across all sources.</summary>
@@ -3698,7 +4234,7 @@ public sealed class ServerAgentList
 }
 
 /// <summary>Optional project paths to include in agent discovery.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class AgentsDiscoverRequest
 {
     /// <summary>When true, omit the host's agents (the user-level agent directory and all plugin agents), leaving only project and remote agents. For multitenant deployments.</summary>
@@ -3711,7 +4247,7 @@ internal sealed class AgentsDiscoverRequest
 }
 
 /// <summary>Canonical directory where custom agents can be discovered or created, with scope, preference, and optional project path.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentDiscoveryPath
 {
     /// <summary>Absolute path of the search/create directory (may not exist on disk yet).</summary>
@@ -3732,7 +4268,7 @@ public sealed class AgentDiscoveryPath
 }
 
 /// <summary>Canonical locations where custom agents can be created so the runtime will recognize them.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentDiscoveryPathList
 {
     /// <summary>Canonical agent create/discovery directories, in priority order.</summary>
@@ -3741,7 +4277,7 @@ public sealed class AgentDiscoveryPathList
 }
 
 /// <summary>Optional project paths to include when enumerating agent discovery directories.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class AgentsGetDiscoveryPathsRequest
 {
     /// <summary>When true, omit the host's user-level agent directory, leaving only project directories. For multitenant deployments (mirrors `discover`'s `excludeHostAgents`).</summary>
@@ -3754,7 +4290,7 @@ internal sealed class AgentsGetDiscoveryPathsRequest
 }
 
 /// <summary>Loaded instruction source for a session, including path, content, category, location, applicability, and optional description.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class InstructionSource
 {
     /// <summary>Glob pattern(s) from frontmatter — when set, this instruction applies only to matching files.</summary>
@@ -3799,7 +4335,7 @@ public sealed class InstructionSource
 }
 
 /// <summary>Instruction sources discovered across user, repository, and plugin sources.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerInstructionSourceList
 {
     /// <summary>All discovered instruction sources.</summary>
@@ -3808,7 +4344,7 @@ public sealed class ServerInstructionSourceList
 }
 
 /// <summary>Optional project paths to include in instruction discovery.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class InstructionsDiscoverRequest
 {
     /// <summary>When true, omit the host's instruction sources (user/home-level files and plugin rules), leaving only repository and working-directory sources. For multitenant deployments.</summary>
@@ -3821,7 +4357,7 @@ internal sealed class InstructionsDiscoverRequest
 }
 
 /// <summary>Canonical file or directory where custom instructions can be discovered or created, with location, kind, preference, and project path.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class InstructionDiscoveryPath
 {
     /// <summary>Whether the target is a single file or a directory of instruction files.</summary>
@@ -3846,7 +4382,7 @@ public sealed class InstructionDiscoveryPath
 }
 
 /// <summary>Canonical files and directories where custom instructions can be created so the runtime will recognize them.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class InstructionDiscoveryPathList
 {
     /// <summary>Canonical instruction create/discovery files and directories, in priority order.</summary>
@@ -3855,7 +4391,7 @@ public sealed class InstructionDiscoveryPathList
 }
 
 /// <summary>Optional project paths to include when enumerating instruction discovery targets.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class InstructionsGetDiscoveryPathsRequest
 {
     /// <summary>When true, omit the host's user-level instruction targets, leaving only repository targets. For multitenant deployments (mirrors `discover`'s `excludeHostInstructions`).</summary>
@@ -3868,7 +4404,7 @@ internal sealed class InstructionsGetDiscoveryPathsRequest
 }
 
 /// <summary>A literal choice the command input accepts, with a human-facing description.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SlashCommandInputChoice
 {
     /// <summary>Human-readable description shown alongside the choice.</summary>
@@ -3881,7 +4417,7 @@ public sealed class SlashCommandInputChoice
 }
 
 /// <summary>Optional unstructured input hint.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SlashCommandInput
 {
     /// <summary>Optional literal choices the input accepts, each with a human-facing description; clients may render these as selectable options.</summary>
@@ -3906,7 +4442,7 @@ public sealed class SlashCommandInput
 }
 
 /// <summary>Slash-command metadata with name, aliases, description, kind, input hint, execution allowance, and schedulability.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SlashCommandInfo
 {
     /// <summary>Canonical aliases without leading slashes.</summary>
@@ -3943,7 +4479,7 @@ public sealed class SlashCommandInfo
 }
 
 /// <summary>Slash commands available in the session, after applying any include/exclude filters.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CommandList
 {
     /// <summary>Commands available in this session.</summary>
@@ -3952,7 +4488,7 @@ public sealed class CommandList
 }
 
 /// <summary>A single user setting's effective value alongside its default, so consumers can render settings left at their default.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UserSettingMetadata
 {
     /// <summary>The centrally-known default for this setting (null when no default is registered).</summary>
@@ -3969,7 +4505,7 @@ public sealed class UserSettingMetadata
 }
 
 /// <summary>Per-key metadata for every known user setting (settings.json overlaid with the legacy config.json, config.json wins), including settings left at their default. Excludes repository- and enterprise-managed overrides.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UserSettingsGetResult
 {
     /// <summary>Every known user setting keyed by setting name, each with its effective value, default, and whether it is at the default.</summary>
@@ -3978,7 +4514,7 @@ public sealed class UserSettingsGetResult
 }
 
 /// <summary>Outcome of writing user settings.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UserSettingsSetResult
 {
     /// <summary>Top-level keys whose write landed in settings.json but is shadowed by a value still present in the legacy config.json (config.json wins on read). The write does not take effect until the legacy value is removed.</summary>
@@ -3987,7 +4523,7 @@ public sealed class UserSettingsSetResult
 }
 
 /// <summary>Partial user settings to write to settings.json. Each top-level key is written individually, replacing the existing value; a key whose value is null is removed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UserSettingsSetRequest
 {
     /// <summary>Partial user settings to write, as a free-form object keyed by setting name.</summary>
@@ -3996,7 +4532,7 @@ internal sealed class UserSettingsSetRequest
 }
 
 /// <summary>Validated device-managed settings discovered before a session exists.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ManagedSettingsReadResult
 {
     /// <summary>Discovery or validation error text when managed settings could not be read safely.</summary>
@@ -4009,7 +4545,7 @@ public sealed class ManagedSettingsReadResult
 }
 
 /// <summary>Indicates whether the calling client was registered as the session filesystem provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsSetProviderResult
 {
     /// <summary>Whether the provider was set successfully.</summary>
@@ -4018,7 +4554,7 @@ public sealed class SessionFsSetProviderResult
 }
 
 /// <summary>Optional capabilities declared by the provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsSetProviderCapabilities
 {
     /// <summary>Whether the provider supports SQLite query/exists operations.</summary>
@@ -4026,8 +4562,8 @@ public sealed class SessionFsSetProviderCapabilities
     public bool? Sqlite { get; set; }
 }
 
-/// <summary>Initial working directory, session-state path layout, and path conventions used to register the calling SDK client as the session filesystem provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+/// <summary>Initial working directory, session-state path layout, and path conventions used to register the calling SDK client as the session filesystem provider. A registered provider is authoritative for path interpretation and filesystem facts used by workspace permission validation. Paths are interpreted lexically; home-relative paths (`~` and `~/...`) and Windows drive-relative paths such as `C:foo` are unsupported. Until provider-side canonicalization is supported, providers must not expose symlinks inside allowed roots that escape those roots.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionFsSetProviderRequest
 {
     /// <summary>Optional capabilities declared by the provider.</summary>
@@ -4038,7 +4574,7 @@ internal sealed class SessionFsSetProviderRequest
     [JsonPropertyName("conventions")]
     public SessionFsSetProviderConventions Conventions { get; set; }
 
-    /// <summary>Initial working directory for sessions.</summary>
+    /// <summary>Absolute initial working directory for sessions. Registering the provider establishes this path as the root of its virtual namespace; the runtime does not require the provider to materialize or stat it before creating a session.</summary>
     [JsonPropertyName("initialCwd")]
     public string InitialCwd { get; set; } = string.Empty;
 
@@ -4048,7 +4584,7 @@ internal sealed class SessionFsSetProviderRequest
 }
 
 /// <summary>Indicates whether the calling client was registered as the LLM inference provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LlmInferenceSetProviderResult
 {
     /// <summary>Whether the provider was set successfully.</summary>
@@ -4057,7 +4593,7 @@ public sealed class LlmInferenceSetProviderResult
 }
 
 /// <summary>Whether the start frame was accepted.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LlmInferenceHttpResponseStartResult
 {
     /// <summary>True when the response start was matched to a pending request; false when unknown.</summary>
@@ -4066,7 +4602,7 @@ public sealed class LlmInferenceHttpResponseStartResult
 }
 
 /// <summary>Response head.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class LlmInferenceHttpResponseStartRequest
 {
     /// <summary>HTTP response headers, preserving multiple values per name.</summary>
@@ -4087,7 +4623,7 @@ internal sealed class LlmInferenceHttpResponseStartRequest
 }
 
 /// <summary>Whether the chunk was accepted.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LlmInferenceHttpResponseChunkResult
 {
     /// <summary>True when the chunk was matched to a pending request; false when unknown.</summary>
@@ -4096,7 +4632,7 @@ public sealed class LlmInferenceHttpResponseChunkResult
 }
 
 /// <summary>Set to terminate the response with a transport-level failure. Implies end-of-stream; any further chunks for this requestId are ignored.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LlmInferenceHttpResponseChunkError
 {
     /// <summary>Optional machine-readable error code.</summary>
@@ -4109,7 +4645,7 @@ public sealed class LlmInferenceHttpResponseChunkError
 }
 
 /// <summary>A response body chunk or terminal error.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class LlmInferenceHttpResponseChunkRequest
 {
     /// <summary>When true, `data` is base64-encoded bytes. When absent or false, `data` is UTF-8 text.</summary>
@@ -4134,7 +4670,7 @@ internal sealed class LlmInferenceHttpResponseChunkRequest
 }
 
 /// <summary>Pre-resolved working-directory context for session startup.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionContext
 {
     /// <summary>Active git branch.</summary>
@@ -4159,7 +4695,7 @@ public sealed class SessionContext
 }
 
 /// <summary>GitHub repository the remote session belongs to.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteSessionMetadataRepository
 {
     /// <summary>Branch associated with the remote session.</summary>
@@ -4176,7 +4712,7 @@ public sealed class RemoteSessionMetadataRepository
 }
 
 /// <summary>Remote session metadata for the session to hand off (typically obtained from `sessions.list` with `source: "remote"`).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteSessionMetadataValue
 {
     /// <summary>Most recent working directory context.</summary>
@@ -4245,7 +4781,7 @@ public sealed class RemoteSessionMetadataValue
 }
 
 /// <summary>`sessions.open` handoff progress update with step, status, and optional message.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsOpenProgress
 {
     /// <summary>Optional step message.</summary>
@@ -4262,7 +4798,7 @@ public sealed class SessionsOpenProgress
 }
 
 /// <summary>Result of opening a session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionOpenResult
 {
     /// <summary>Remote session metadata, present when status is `connected`.</summary>
@@ -4291,7 +4827,7 @@ public sealed class SessionOpenResult
 }
 
 /// <summary>Identifier and optional friendly name assigned to the newly forked session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsForkResult
 {
     /// <summary>Friendly name assigned to the forked session, if any.</summary>
@@ -4304,7 +4840,7 @@ public sealed class SessionsForkResult
 }
 
 /// <summary>Source session identifier to fork from, optional event-ID boundary, and optional friendly name for the new session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsForkRequest
 {
     /// <summary>Optional friendly name to assign to the forked session.</summary>
@@ -4321,7 +4857,7 @@ internal sealed class SessionsForkRequest
 }
 
 /// <summary>Repository associated with the connected remote session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ConnectedRemoteSessionMetadataRepository
 {
     /// <summary>Branch associated with the remote session.</summary>
@@ -4338,7 +4874,7 @@ public sealed class ConnectedRemoteSessionMetadataRepository
 }
 
 /// <summary>Metadata for a connected remote session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ConnectedRemoteSessionMetadata
 {
     /// <summary>Neutral SDK discriminator for the connected remote session kind.</summary>
@@ -4387,7 +4923,7 @@ public sealed class ConnectedRemoteSessionMetadata
 }
 
 /// <summary>Remote session connection result.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteSessionConnectionResult
 {
     /// <summary>Metadata for a connected remote session.</summary>
@@ -4400,7 +4936,7 @@ public sealed class RemoteSessionConnectionResult
 }
 
 /// <summary>Remote session connection parameters.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ConnectRemoteSessionParams
 {
     /// <summary>Session ID to connect to.</summary>
@@ -4410,7 +4946,7 @@ internal sealed class ConnectRemoteSessionParams
 
 /// <summary>Local or remote session metadata entry. Narrow on `isRemote` to access source-specific fields.</summary>
 /// <remarks>Data type discriminated by <c>isRemote</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SessionListEntry
 {
     /// <summary>The boolean discriminator.</summary>
@@ -4506,7 +5042,7 @@ public partial class SessionListEntry
 }
 
 /// <summary>Sessions matching the filter, ordered most-recently-modified first.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionList
 {
     /// <summary>Sessions ordered most-recently-modified first. Discriminated by `isRemote`.</summary>
@@ -4515,7 +5051,7 @@ public sealed class SessionList
 }
 
 /// <summary>Optional filter applied to the returned sessions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionListFilter
 {
     /// <summary>Match sessions whose context.branch equals this value.</summary>
@@ -4536,7 +5072,7 @@ public sealed class SessionListFilter
 }
 
 /// <summary>Optional source filter, metadata-load limit, and context filter applied to the returned sessions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsListRequest
 {
     /// <summary>Optional filter applied to the returned sessions.</summary>
@@ -4561,7 +5097,7 @@ internal sealed class SessionsListRequest
 }
 
 /// <summary>Persisted local session metadata, including identifiers, timestamps, summary/name, client, context, detached state, and task ID.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LocalSessionMetadataValue
 {
     /// <summary>Runtime client name that created/last resumed this session.</summary>
@@ -4606,7 +5142,7 @@ public sealed class LocalSessionMetadataValue
 }
 
 /// <summary>Persisted local session metadata when the session exists.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetMetadataResult
 {
     /// <summary>Local session metadata, omitted when the session does not exist.</summary>
@@ -4615,7 +5151,7 @@ internal sealed class SessionsGetMetadataResult
 }
 
 /// <summary>Session ID whose persisted metadata should be read.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetMetadataRequest
 {
     /// <summary>Session ID to inspect.</summary>
@@ -4625,7 +5161,7 @@ internal sealed class SessionsGetMetadataRequest
 
 /// <summary>Client metadata outcome for one requested local session.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>status</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "status",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -4643,7 +5179,7 @@ public partial class SessionsClientMetadataEntry
 
 
 /// <summary>The <c>ok</c> variant of <see cref="SessionsClientMetadataEntry"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SessionsClientMetadataEntryOk : SessionsClientMetadataEntry
 {
     /// <inheritdoc />
@@ -4660,7 +5196,7 @@ public partial class SessionsClientMetadataEntryOk : SessionsClientMetadataEntry
 }
 
 /// <summary>The <c>notFound</c> variant of <see cref="SessionsClientMetadataEntry"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SessionsClientMetadataEntryNotFound : SessionsClientMetadataEntry
 {
     /// <inheritdoc />
@@ -4673,7 +5209,7 @@ public partial class SessionsClientMetadataEntryNotFound : SessionsClientMetadat
 }
 
 /// <summary>The <c>corrupt</c> variant of <see cref="SessionsClientMetadataEntry"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SessionsClientMetadataEntryCorrupt : SessionsClientMetadataEntry
 {
     /// <inheritdoc />
@@ -4686,7 +5222,7 @@ public partial class SessionsClientMetadataEntryCorrupt : SessionsClientMetadata
 }
 
 /// <summary>The <c>unsupportedVersion</c> variant of <see cref="SessionsClientMetadataEntry"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SessionsClientMetadataEntryUnsupportedVersion : SessionsClientMetadataEntry
 {
     /// <inheritdoc />
@@ -4699,7 +5235,7 @@ public partial class SessionsClientMetadataEntryUnsupportedVersion : SessionsCli
 }
 
 /// <summary>The <c>unavailable</c> variant of <see cref="SessionsClientMetadataEntry"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SessionsClientMetadataEntryUnavailable : SessionsClientMetadataEntry
 {
     /// <inheritdoc />
@@ -4720,7 +5256,7 @@ public partial class SessionsClientMetadataEntryUnavailable : SessionsClientMeta
 }
 
 /// <summary>Bounded batch request for client-owned metadata from persisted local sessions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetClientMetadataRequest
 {
     /// <summary>Case-sensitive keys to project from each valid bag. Each key must be non-empty, at most 256 UTF-8 bytes, and outside the reserved `copilot/` and `github/` namespaces. Omit to return every entry.</summary>
@@ -4733,7 +5269,7 @@ internal sealed class SessionsGetClientMetadataRequest
 }
 
 /// <summary>Batch of session events returned by a read, with cursor and continuation metadata.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class EventsReadResult
 {
     /// <summary>Opaque cursor for the next read. Pass back unchanged in the next read.cursor to continue from where this read left off. Always present, even when no events were returned. For a backward read this cursor pages toward OLDER events; keep passing `direction: backward` with it (the cursor is also self-describing, so backward paging continues correctly).</summary>
@@ -4754,7 +5290,7 @@ public sealed class EventsReadResult
 }
 
 /// <summary>Pagination options for reading an inactive or active local session's persisted event journal.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsReadPersistedEventsRequest
 {
     /// <summary>Opaque, process-local, single-use cursor returned by the previous persisted-event read. Omit on the first call and issue continuations sequentially; reusing the same cursor returns an expired terminal page.</summary>
@@ -4775,7 +5311,7 @@ internal sealed class SessionsReadPersistedEventsRequest
 }
 
 /// <summary>Recent local session IDs that contain user-visible history.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsListNonEmptySessionIdsResult
 {
     /// <summary>Session IDs ordered newest-first.</summary>
@@ -4784,7 +5320,7 @@ internal sealed class SessionsListNonEmptySessionIdsResult
 }
 
 /// <summary>Limit for non-empty local session IDs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsListNonEmptySessionIdsRequest
 {
     /// <summary>Maximum number of session IDs to return.</summary>
@@ -4793,7 +5329,7 @@ internal sealed class SessionsListNonEmptySessionIdsRequest
 }
 
 /// <summary>ID of the local session bound to the given GitHub task, or omitted when none.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsFindByTaskIDResult
 {
     /// <summary>Omitted when no local session is bound to that GitHub task.</summary>
@@ -4802,7 +5338,7 @@ public sealed class SessionsFindByTaskIDResult
 }
 
 /// <summary>GitHub task ID to look up.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsFindByTaskIDRequest
 {
     /// <summary>GitHub task ID to look up.</summary>
@@ -4811,7 +5347,7 @@ internal sealed class SessionsFindByTaskIDRequest
 }
 
 /// <summary>Session ID matching the prefix, omitted when no unique match exists.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsFindByPrefixResult
 {
     /// <summary>Omitted when no unique session matches the prefix (no match or ambiguous).</summary>
@@ -4820,7 +5356,7 @@ public sealed class SessionsFindByPrefixResult
 }
 
 /// <summary>UUID prefix to resolve to a unique session ID.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsFindByPrefixRequest
 {
     /// <summary>UUID prefix (&gt;=7 hex chars, &lt;36 chars). Returns the unique session ID, or undefined when there is no match or the prefix matches multiple sessions.</summary>
@@ -4829,7 +5365,7 @@ internal sealed class SessionsFindByPrefixRequest
 }
 
 /// <summary>Most-relevant session ID for the supplied context, or omitted when no sessions exist.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsGetLastForContextResult
 {
     /// <summary>Most-relevant session ID for the supplied context, or omitted when no sessions exist.</summary>
@@ -4838,7 +5374,7 @@ public sealed class SessionsGetLastForContextResult
 }
 
 /// <summary>Optional working-directory context used to score session relevance.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetLastForContextRequest
 {
     /// <summary>Optional working-directory context used to score session relevance. When omitted the most-recently-modified session wins.</summary>
@@ -4847,7 +5383,7 @@ internal sealed class SessionsGetLastForContextRequest
 }
 
 /// <summary>Absolute path to the session's events.jsonl file on disk.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetEventFilePathResult
 {
     /// <summary>Absolute path to the session's events.jsonl file.</summary>
@@ -4856,7 +5392,7 @@ internal sealed class SessionsGetEventFilePathResult
 }
 
 /// <summary>Session ID whose event-log file path to compute.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetEventFilePathRequest
 {
     /// <summary>Session ID whose event-log file path to compute.</summary>
@@ -4865,7 +5401,7 @@ internal sealed class SessionsGetEventFilePathRequest
 }
 
 /// <summary>Map of sessionId -&gt; on-disk size in bytes for each session's workspace directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionSizes
 {
     /// <summary>Map of sessionId -&gt; on-disk size in bytes for the session's workspace directory.</summary>
@@ -4874,7 +5410,7 @@ public sealed class SessionSizes
 }
 
 /// <summary>Session IDs from the input set that are currently in use by another process.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsCheckInUseResult
 {
     /// <summary>Session IDs from the input set that are currently held by another running process via an alive lock file.</summary>
@@ -4883,7 +5419,7 @@ public sealed class SessionsCheckInUseResult
 }
 
 /// <summary>Session IDs to test for live in-use locks.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsCheckInUseRequest
 {
     /// <summary>Session IDs to test for live in-use locks.</summary>
@@ -4892,7 +5428,7 @@ internal sealed class SessionsCheckInUseRequest
 }
 
 /// <summary>The session's persisted remote-steerable flag, or omitted when no value has been persisted.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetPersistedRemoteSteerableResult
 {
     /// <summary>The session's persisted remote-steerable flag if recorded; omitted when no value has been persisted.</summary>
@@ -4901,7 +5437,7 @@ internal sealed class SessionsGetPersistedRemoteSteerableResult
 }
 
 /// <summary>Session ID to look up the persisted remote-steerable flag for.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetPersistedRemoteSteerableRequest
 {
     /// <summary>Session ID to look up the persisted remote-steerable flag for.</summary>
@@ -4910,13 +5446,13 @@ internal sealed class SessionsGetPersistedRemoteSteerableRequest
 }
 
 /// <summary>Closes a session: emits shutdown, flushes pending events to disk, releases the in-use lock, disposes the active session. Idempotent: succeeds even if the session is not currently active.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsCloseResult
 {
 }
 
 /// <summary>Session ID to close.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsCloseRequest
 {
     /// <summary>Session ID to close.</summary>
@@ -4925,7 +5461,7 @@ internal sealed class SessionsCloseRequest
 }
 
 /// <summary>Map of sessionId -&gt; bytes freed by removing the session's workspace directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionBulkDeleteResult
 {
     /// <summary>Map of sessionId -&gt; bytes freed by removing the session's workspace directory. Sessions whose deletion failed are omitted from this map (failures are logged on the server but not surfaced per-id; check the map for absent IDs to detect them).</summary>
@@ -4934,7 +5470,7 @@ public sealed class SessionBulkDeleteResult
 }
 
 /// <summary>Session IDs to close, deactivate, and delete from disk.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsBulkDeleteRequest
 {
     /// <summary>Session IDs to close, deactivate, and delete from disk.</summary>
@@ -4943,7 +5479,7 @@ internal sealed class SessionsBulkDeleteRequest
 }
 
 /// <summary>Session ID to delete from disk.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsDeleteRequest
 {
     /// <summary>Session ID to delete.</summary>
@@ -4956,7 +5492,7 @@ internal sealed class SessionsDeleteRequest
 }
 
 /// <summary>Outcome of the prune operation: deleted IDs, dry-run candidates, skipped IDs, total bytes freed, and the dry-run flag.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionPruneResult
 {
     /// <summary>Session IDs that would be deleted in dry-run mode (always empty otherwise).</summary>
@@ -4981,7 +5517,7 @@ public sealed class SessionPruneResult
 }
 
 /// <summary>Age threshold and optional flags controlling which old sessions are pruned (or simulated when dryRun is true).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsPruneOldRequest
 {
     /// <summary>When true, only report what would be deleted without performing any deletion.</summary>
@@ -5002,13 +5538,13 @@ internal sealed class SessionsPruneOldRequest
 }
 
 /// <summary>Flush a session's pending events to disk. No-op when no writer exists for the session (e.g., already closed).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsSaveResult
 {
 }
 
 /// <summary>Session ID whose pending events should be flushed to disk.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsSaveRequest
 {
     /// <summary>Session ID whose pending events should be flushed to disk.</summary>
@@ -5017,13 +5553,13 @@ internal sealed class SessionsSaveRequest
 }
 
 /// <summary>Release the in-use lock held by this process for the given session. No-op when this process does not currently hold a lock for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsReleaseLockResult
 {
 }
 
 /// <summary>Session ID whose in-use lock should be released.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsReleaseLockRequest
 {
     /// <summary>Session ID whose in-use lock should be released.</summary>
@@ -5032,7 +5568,7 @@ internal sealed class SessionsReleaseLockRequest
 }
 
 /// <summary>The enriched metadata records, with summary and context fields backfilled where available. Sessions confirmed empty and unnamed are omitted.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionEnrichMetadataResult
 {
     /// <summary>Enriched records, with summary and context backfilled. Sessions confirmed empty and unnamed may be omitted.</summary>
@@ -5041,7 +5577,7 @@ public sealed class SessionEnrichMetadataResult
 }
 
 /// <summary>Session metadata records to enrich with summary and context information.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsEnrichMetadataRequest
 {
     /// <summary>Session metadata records to enrich. Records that already have summary and context are returned unchanged.</summary>
@@ -5050,13 +5586,13 @@ internal sealed class SessionsEnrichMetadataRequest
 }
 
 /// <summary>Reload all hooks (user, plugin, optionally repo) and apply them to the active session. Call after installing or removing plugins so their hooks take effect immediately. No-op when no active session matches the given sessionId.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsReloadPluginHooksResult
 {
 }
 
 /// <summary>Active session ID and an optional flag for deferring repo-level hooks until folder trust.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsReloadPluginHooksRequest
 {
     /// <summary>When true, skip repo-level hooks. Use before folder trust is confirmed; loadDeferredRepoHooks loads them post-trust.</summary>
@@ -5069,7 +5605,7 @@ internal sealed class SessionsReloadPluginHooksRequest
 }
 
 /// <summary>Queued repo-level startup prompts and the total hook command count after loading.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionLoadDeferredRepoHooksResult
 {
     /// <summary>Total hook command count (user + plugin + repo) loaded for the session by this call. Captured atomically with startupPrompts so callers don't need to read a separate counter.</summary>
@@ -5082,7 +5618,7 @@ public sealed class SessionLoadDeferredRepoHooksResult
 }
 
 /// <summary>Active session ID whose deferred repo-level hooks should be loaded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsLoadDeferredRepoHooksRequest
 {
     /// <summary>Active session ID whose deferred repo-level hooks should be loaded.</summary>
@@ -5091,13 +5627,13 @@ internal sealed class SessionsLoadDeferredRepoHooksRequest
 }
 
 /// <summary>Replace the manager-wide additional plugins. New session creations and subsequent hook reloads see the new set; already-running sessions keep their existing hook installation until the next reload.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionsSetAdditionalPluginsResult
 {
 }
 
 /// <summary>Installed plugin record from global state, with marketplace, version, install time, enabled state, cache path, and source.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class InstalledPlugin
 {
     /// <summary>Path where the plugin is cached locally.</summary>
@@ -5138,7 +5674,7 @@ public sealed class InstalledPlugin
 }
 
 /// <summary>Manager-wide additional plugins to register; replaces any previously-configured set.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsSetAdditionalPluginsRequest
 {
     /// <summary>Manager-wide additional plugins to register. Replaces any previously-configured set. Pass an empty array to clear.</summary>
@@ -5147,7 +5683,7 @@ internal sealed class SessionsSetAdditionalPluginsRequest
 }
 
 /// <summary>Dynamic-context board entry count, when available.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetBoardEntryCountResult
 {
     /// <summary>Board entry count, when available.</summary>
@@ -5156,7 +5692,7 @@ internal sealed class SessionsGetBoardEntryCountResult
 }
 
 /// <summary>Session ID whose board entry count should be returned.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsGetBoardEntryCountRequest
 {
     /// <summary>Session ID whose board entry count should be returned.</summary>
@@ -5166,7 +5702,7 @@ internal sealed class SessionsGetBoardEntryCountRequest
 
 /// <summary>State of the runtime-managed remote-control singleton.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>state</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "state",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -5184,7 +5720,7 @@ public partial class RemoteControlStatus
 
 /// <summary>Remote control is not connected.</summary>
 /// <remarks>The <c>off</c> variant of <see cref="RemoteControlStatus"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class RemoteControlStatusOff : RemoteControlStatus
 {
     /// <inheritdoc />
@@ -5194,7 +5730,7 @@ public partial class RemoteControlStatusOff : RemoteControlStatus
 
 /// <summary>Remote control is in the middle of initial setup.</summary>
 /// <remarks>The <c>connecting</c> variant of <see cref="RemoteControlStatus"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class RemoteControlStatusConnecting : RemoteControlStatus
 {
     /// <inheritdoc />
@@ -5208,7 +5744,7 @@ public partial class RemoteControlStatusConnecting : RemoteControlStatus
 
 /// <summary>Remote control is connected to a local session.</summary>
 /// <remarks>The <c>active</c> variant of <see cref="RemoteControlStatus"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class RemoteControlStatusActive : RemoteControlStatus
 {
     /// <inheritdoc />
@@ -5237,7 +5773,7 @@ public partial class RemoteControlStatusActive : RemoteControlStatus
 
 /// <summary>The last setup attempt failed. The singleton is otherwise off.</summary>
 /// <remarks>The <c>error</c> variant of <see cref="RemoteControlStatus"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class RemoteControlStatusError : RemoteControlStatus
 {
     /// <inheritdoc />
@@ -5255,7 +5791,7 @@ public partial class RemoteControlStatusError : RemoteControlStatus
 }
 
 /// <summary>Wrapper for the singleton's current status.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteControlStatusResult
 {
     /// <summary>State of the runtime-managed remote-control singleton.</summary>
@@ -5264,7 +5800,7 @@ public sealed class RemoteControlStatusResult
 }
 
 /// <summary>Reattach to an existing MC session without creating a new one.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteControlConfigExistingMcSession
 {
     /// <summary>Existing MC session ID to reattach to.</summary>
@@ -5277,7 +5813,7 @@ public sealed class RemoteControlConfigExistingMcSession
 }
 
 /// <summary>Configuration for the runtime-managed remote-control singleton.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteControlConfig
 {
     /// <summary>Reattach to an existing MC session without creating a new one.</summary>
@@ -5306,7 +5842,7 @@ public sealed class RemoteControlConfig
 }
 
 /// <summary>Parameters for attaching the remote-control singleton to a session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsStartRemoteControlRequest
 {
     /// <summary>Configuration for the runtime-managed remote-control singleton.</summary>
@@ -5319,7 +5855,7 @@ internal sealed class SessionsStartRemoteControlRequest
 }
 
 /// <summary>Outcome of a transferRemoteControl call.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteControlTransferResult
 {
     /// <summary>State of the runtime-managed remote-control singleton.</summary>
@@ -5332,7 +5868,7 @@ public sealed class RemoteControlTransferResult
 }
 
 /// <summary>Parameters for atomically rebinding the remote-control singleton.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsTransferRemoteControlRequest
 {
     /// <summary>When provided, the transfer is rejected unless the singleton currently points at this session id (compare-and-swap semantics to avoid clobbering newer state).</summary>
@@ -5345,7 +5881,7 @@ internal sealed class SessionsTransferRemoteControlRequest
 }
 
 /// <summary>Patch for the singleton's steering state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsSetRemoteControlSteeringRequest
 {
     /// <summary>Target steering state. Today only `true` is actionable on the underlying exporter; `false` is reserved for future use.</summary>
@@ -5354,7 +5890,7 @@ internal sealed class SessionsSetRemoteControlSteeringRequest
 }
 
 /// <summary>Outcome of a stopRemoteControl call.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteControlStopResult
 {
     /// <summary>State of the runtime-managed remote-control singleton.</summary>
@@ -5367,7 +5903,7 @@ public sealed class RemoteControlStopResult
 }
 
 /// <summary>RPC data type for SessionsStopRemoteControl operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionsStopRemoteControlRequest
 {
     /// <summary>When provided, the stop is rejected unless the singleton currently points at this session id (compare-and-swap semantics).</summary>
@@ -5380,7 +5916,7 @@ internal sealed class SessionsStopRemoteControlRequest
 }
 
 /// <summary>Params to attach or detach an in-process ExtensionController delegate.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ConfigureSessionExtensionsParams
 {
     /// <summary>Session to attach the extension controller delegate to.</summary>
@@ -5390,7 +5926,7 @@ internal sealed class ConfigureSessionExtensionsParams
 
 /// <summary>Outcome of an agentRegistry.spawn call.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -5407,7 +5943,7 @@ public partial class AgentRegistrySpawnResult
 
 
 /// <summary>Full registry entry for the spawned child. Lets the controller call `handleLiveTargetSelected(entry)` directly without re-reading the registry (avoids a TOCTOU window).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentRegistryLiveTargetEntry
 {
     /// <summary>Kind of attention required when status === "attention". Meaningful only when status === "attention".</summary>
@@ -5484,30 +6020,30 @@ public sealed class AgentRegistryLiveTargetEntry
     internal string? Token { get; set; }
 }
 
-/// <summary>Per-spawn log-capture outcome; populated from spawnLiveTarget.</summary>
-[Experimental(Diagnostics.Experimental)]
+/// <summary>Canonical process-log discovery outcome; populated from spawnLiveTarget.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentRegistryLogCapture
 {
-    /// <summary>Whether per-spawn log capture is on (false when env-disabled or open failed).</summary>
+    /// <summary>Whether a canonical process log was discovered for this managed spawn.</summary>
     [JsonPropertyName("enabled")]
     public bool Enabled { get; set; }
 
-    /// <summary>Human-readable open failure message (only set when enabled === false AND the env-disable opt-out was NOT used).</summary>
+    /// <summary>Why no canonical process log could be opened for this managed spawn (set only when enabled is false).</summary>
     [JsonPropertyName("openError")]
     public string? OpenError { get; set; }
 
-    /// <summary>Categorized reason for log-open failure.</summary>
+    /// <summary>Categorized reason no canonical process log could be opened (set only when enabled is false).</summary>
     [JsonPropertyName("openErrorReason")]
     public AgentRegistryLogCaptureOpenErrorReason? OpenErrorReason { get; set; }
 
-    /// <summary>Absolute path to the per-spawn log file (only set when enabled).</summary>
+    /// <summary>Absolute path to the managed spawn's process-&lt;timestamp&gt;-&lt;pid&gt;.log file (only set when enabled).</summary>
     [JsonPropertyName("path")]
     public string? Path { get; set; }
 }
 
 /// <summary>Managed-server child was spawned and registered successfully.</summary>
 /// <remarks>The <c>spawned</c> variant of <see cref="AgentRegistrySpawnResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AgentRegistrySpawnResultSpawned : AgentRegistrySpawnResult
 {
     /// <inheritdoc />
@@ -5536,7 +6072,7 @@ public partial class AgentRegistrySpawnResultSpawned : AgentRegistrySpawnResult
 
 /// <summary>`child_process.spawn` itself failed before the child entered the registry.</summary>
 /// <remarks>The <c>spawn-error</c> variant of <see cref="AgentRegistrySpawnResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AgentRegistrySpawnResultSpawnError : AgentRegistrySpawnResult
 {
     /// <inheritdoc />
@@ -5555,7 +6091,7 @@ public partial class AgentRegistrySpawnResultSpawnError : AgentRegistrySpawnResu
 
 /// <summary>Spawn succeeded but the child did not publish a matching managed-server entry within the timeout.</summary>
 /// <remarks>The <c>registry-timeout</c> variant of <see cref="AgentRegistrySpawnResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AgentRegistrySpawnResultRegistryTimeout : AgentRegistrySpawnResult
 {
     /// <inheritdoc />
@@ -5574,7 +6110,7 @@ public partial class AgentRegistrySpawnResultRegistryTimeout : AgentRegistrySpaw
 
 /// <summary>Synchronous pre-validation rejected the spawn request.</summary>
 /// <remarks>The <c>validation-error</c> variant of <see cref="AgentRegistrySpawnResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class AgentRegistrySpawnResultValidationError : AgentRegistrySpawnResult
 {
     /// <inheritdoc />
@@ -5596,7 +6132,7 @@ public partial class AgentRegistrySpawnResultValidationError : AgentRegistrySpaw
 }
 
 /// <summary>Inputs to spawn a managed-server child via the controller's spawn delegate.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class AgentRegistrySpawnRequest
 {
     /// <summary>Custom or built-in agent name (e.g. 'explore'). When omitted, the child uses its own default.</summary>
@@ -5625,7 +6161,7 @@ internal sealed class AgentRegistrySpawnRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSuspendRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -5634,7 +6170,7 @@ internal sealed class SessionSuspendRequest
 }
 
 /// <summary>Result of sending a user message.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SendResult
 {
     /// <summary>Unique identifier assigned to the message.</summary>
@@ -5644,7 +6180,7 @@ public sealed class SendResult
 
 /// <summary>Provider-native structured output format. JSON Schema is forwarded without rewriting or validating the schema or the generated output.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -5658,7 +6194,7 @@ public partial class ResponseFormat
 
 
 /// <summary>A JSON Schema output contract. OpenAI receives the name, description, schema and strict setting; Anthropic receives the schema in output_config.format and always uses its native strict enforcement.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class JsonSchemaResponseFormat
 {
     /// <summary>Optional description passed to OpenAI providers.</summary>
@@ -5679,7 +6215,7 @@ public sealed class JsonSchemaResponseFormat
 }
 
 /// <summary>The <c>json_schema</c> variant of <see cref="ResponseFormat"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ResponseFormatJsonSchema : ResponseFormat
 {
     /// <inheritdoc />
@@ -5692,7 +6228,7 @@ public partial class ResponseFormatJsonSchema : ResponseFormat
 }
 
 /// <summary>Parameters for sending a user message to the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SendRequest
 {
     /// <summary>The UI mode the agent was in when this message was sent. Defaults to the session's current mode.</summary>
@@ -5759,7 +6295,7 @@ internal sealed class SendRequest
 }
 
 /// <summary>Result of sending zero or more user messages.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SendMessagesResult
 {
     /// <summary>Unique identifiers assigned to the messages, one per provided message in order. For a batch that starts a run, assistant messages use the final ID as originatingMessageId throughout that run, including tool iterations and stop-hook corrections. Immediate steering does not replace the active run's origin. Empty when no messages were provided; that run has no originatingMessageId.</summary>
@@ -5768,7 +6304,7 @@ public sealed class SendMessagesResult
 }
 
 /// <summary>A single user message to append to the session as part of a `session.sendMessages` turn.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SendMessageItem
 {
     /// <summary>Optional attachments (files, directories, selections, blobs, GitHub references) to include with this message.</summary>
@@ -5800,7 +6336,7 @@ public sealed class SendMessageItem
 }
 
 /// <summary>Parameters for sending zero or more user messages to the session in a single turn. Remote-backed (Mission Control) sessions do not support this method and will return an error.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SendMessagesRequest
 {
     /// <summary>The UI mode the agent was in when these messages were sent. Defaults to the session's current mode.</summary>
@@ -5845,7 +6381,7 @@ internal sealed class SendMessagesRequest
 }
 
 /// <summary>Internal request for sending a system notification.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SendSystemNotificationRequest
 {
     /// <summary>Optional structured notification kind.</summary>
@@ -5866,7 +6402,7 @@ internal sealed class SendSystemNotificationRequest
 }
 
 /// <summary>Result of aborting the current turn.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AbortResult
 {
     /// <summary>Error message if the abort failed.</summary>
@@ -5879,7 +6415,7 @@ public sealed class AbortResult
 }
 
 /// <summary>Parameters for aborting the current turn.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class AbortRequest
 {
     /// <summary>Finite reason code describing why the current turn was aborted.</summary>
@@ -5892,7 +6428,7 @@ internal sealed class AbortRequest
 }
 
 /// <summary>Result of interrupting the main agent turn.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class InterruptMainTurnResult
 {
     /// <summary>Whether an in-flight main agent turn was interrupted. False when the main loop was not processing.</summary>
@@ -5901,7 +6437,7 @@ public sealed class InterruptMainTurnResult
 }
 
 /// <summary>Parameters for interrupting the main agent turn.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class InterruptMainTurnRequest
 {
     /// <summary>When true, the user's queued prompts are preserved and run as the next turn once the interrupted turn unwinds; when false (the default), the queue is cleared like a plain abort.</summary>
@@ -5914,7 +6450,7 @@ internal sealed class InterruptMainTurnRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionCancelAllBackgroundAgentsRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -5923,7 +6459,7 @@ internal sealed class SessionCancelAllBackgroundAgentsRequest
 }
 
 /// <summary>Parameters for shutting down the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ShutdownRequest
 {
     /// <summary>Dispatch deferred sessionEnd hooks in the background with their full per-hook timeoutSec instead of awaiting them under the short shared shutdown budget. Set this when the host process keeps running after the session closes (for example the CLI's /clear), so a slow hook neither blocks the close nor is aborted. Hooks still detached when the process later exits are terminated with it. Defaults to false.</summary>
@@ -5944,7 +6480,7 @@ internal sealed class ShutdownRequest
 }
 
 /// <summary>Identifier of the session event that was emitted for the log message.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LogResult
 {
     /// <summary>The unique identifier of the emitted session event.</summary>
@@ -5953,7 +6489,7 @@ public sealed class LogResult
 }
 
 /// <summary>Message text, optional severity level, persistence flag, optional follow-up URL, and optional tip.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class LogRequest
 {
     /// <summary>When true, the message is transient and not persisted to the session event log on disk.</summary>
@@ -5988,7 +6524,7 @@ internal sealed class LogRequest
 }
 
 /// <summary>Managed sandbox enforcement state for a session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxEnforcementStatus
 {
     /// <summary>Whether an enforcement failure has permanently blocked the session.</summary>
@@ -6005,7 +6541,7 @@ public sealed class SandboxEnforcementStatus
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSandboxGetEnforcementStatusRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -6014,7 +6550,7 @@ internal sealed class SessionSandboxGetEnforcementStatusRequest
 }
 
 /// <summary>Result of attempting to disable sandboxing for the current session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxDisableForSessionResult
 {
     /// <summary>The authoritative sandbox enabled state after the operation.</summary>
@@ -6027,7 +6563,7 @@ public sealed class SandboxDisableForSessionResult
 }
 
 /// <summary>Optional informational context describing how and where the permission decision was made. This does not affect permission behavior.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionDecisionContext
 {
     /// <summary>Disposition of the permission request as observed by the responding client.</summary>
@@ -6048,7 +6584,7 @@ public sealed class PermissionDecisionContext
 }
 
 /// <summary>Request to disable sandboxing for the current session while resolving an active sandbox-bypass permission prompt.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SandboxDisableForSessionRequest
 {
     /// <summary>Optional attribution for the permission decision.</summary>
@@ -6065,7 +6601,7 @@ internal sealed class SandboxDisableForSessionRequest
 }
 
 /// <summary>Authentication status and account metadata for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionAuthStatus
 {
     /// <summary>Authentication type.</summary>
@@ -6096,7 +6632,7 @@ public sealed class SessionAuthStatus
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionGitHubAuthGetStatusRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -6105,7 +6641,7 @@ internal sealed class SessionGitHubAuthGetStatusRequest
 }
 
 /// <summary>Indicates whether the credential update succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionSetCredentialsResult
 {
     /// <summary>Whether the session ended up with a populated `copilotUser` for the installed credentials. `true` when the supplied credential already carried `copilotUser` or it was successfully re-resolved server-side. `false` when the credential is installed without `copilotUser` — either re-resolution failed, or the variant cannot be re-resolved from the credential alone (only the raw-token variants `token`, `env`, and `gh-cli` can). In both `false` cases the token swap still applied, but plan/quota/billing metadata is degraded. Present whenever a credential was supplied; omitted only when no credential was supplied (no-op call).</summary>
@@ -6119,7 +6655,7 @@ public sealed class SessionSetCredentialsResult
 
 /// <summary>Authentication credentials accepted by session.gitHubAuth.setCredentials. Session-owned token-provider identities cannot be installed through this method.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -6140,7 +6676,7 @@ public partial class SettableAuthInfo
 
 /// <summary>Authentication-info input variant for GitHub-internal HMAC auth, carrying the public GitHub host and HMAC secret.</summary>
 /// <remarks>The <c>hmac</c> variant of <see cref="SettableAuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SettableAuthInfoHmac : SettableAuthInfo
 {
     /// <inheritdoc />
@@ -6163,7 +6699,7 @@ public partial class SettableAuthInfoHmac : SettableAuthInfo
 
 /// <summary>Authentication-info input variant for a token sourced from an environment variable, with host, optional login, token, and env var name.</summary>
 /// <remarks>The <c>env</c> variant of <see cref="SettableAuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SettableAuthInfoEnv : SettableAuthInfo
 {
     /// <inheritdoc />
@@ -6195,7 +6731,7 @@ public partial class SettableAuthInfoEnv : SettableAuthInfo
 
 /// <summary>Token authentication accepted by session.gitHubAuth.setCredentials.</summary>
 /// <remarks>The <c>token</c> variant of <see cref="SettableAuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SettableAuthInfoToken : SettableAuthInfo
 {
     /// <inheritdoc />
@@ -6218,7 +6754,7 @@ public partial class SettableAuthInfoToken : SettableAuthInfo
 
 /// <summary>Authentication-info variant for direct Copilot API token auth sourced from environment variables, with public GitHub host.</summary>
 /// <remarks>The <c>copilot-api-token</c> variant of <see cref="SettableAuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SettableAuthInfoCopilotApiToken : SettableAuthInfo
 {
     /// <inheritdoc />
@@ -6237,7 +6773,7 @@ public partial class SettableAuthInfoCopilotApiToken : SettableAuthInfo
 
 /// <summary>Authentication-info variant for OAuth user auth, with host and login; the token remains in the runtime secret store.</summary>
 /// <remarks>The <c>user</c> variant of <see cref="SettableAuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SettableAuthInfoUser : SettableAuthInfo
 {
     /// <inheritdoc />
@@ -6260,7 +6796,7 @@ public partial class SettableAuthInfoUser : SettableAuthInfo
 
 /// <summary>Authentication-info input variant for GitHub CLI credentials, carrying host, login, and the `gh auth token` value.</summary>
 /// <remarks>The <c>gh-cli</c> variant of <see cref="SettableAuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SettableAuthInfoGhCli : SettableAuthInfo
 {
     /// <inheritdoc />
@@ -6287,7 +6823,7 @@ public partial class SettableAuthInfoGhCli : SettableAuthInfo
 
 /// <summary>Authentication-info input variant for API-key authentication to a non-GitHub LLM provider, carrying the secret `apiKey` and host.</summary>
 /// <remarks>The <c>api-key</c> variant of <see cref="SettableAuthInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SettableAuthInfoApiKey : SettableAuthInfo
 {
     /// <inheritdoc />
@@ -6309,7 +6845,7 @@ public partial class SettableAuthInfoApiKey : SettableAuthInfo
 }
 
 /// <summary>New auth credentials to install on the session. Omit to leave credentials unchanged.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSetCredentialsParams
 {
     /// <summary>The new auth credentials to install on the session. When omitted or `undefined`, the call is a no-op and the session's existing credentials are preserved. The runtime installs the supplied value immediately for outbound model/API requests. When the credential carries a raw token (`token`, `env`, or `gh-cli`) but no `copilotUser`, the runtime additionally re-resolves `copilotUser` server-side (best-effort, asynchronously, after the synchronous install) so plan/quota/billing metadata regains fidelity; on resolution failure the verbatim credential remains installed. It does NOT otherwise validate the credential. Several variants carry secret material; treat this method's params as containing secrets at rest and in transit.</summary>
@@ -6322,7 +6858,7 @@ internal sealed class SessionSetCredentialsParams
 }
 
 /// <summary>Credential-free authentication identity safe to expose to hosts and user interfaces.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AuthIdentity
 {
     /// <summary>Snapshot of the authenticated user's Copilot subscription info, if known.</summary>
@@ -6351,7 +6887,7 @@ public sealed class AuthIdentity
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionGitHubAuthGetCurrentAuthInfoRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -6360,7 +6896,7 @@ internal sealed class SessionGitHubAuthGetCurrentAuthInfoRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionGitHubAuthGetAllAuthAvailableRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -6369,7 +6905,7 @@ internal sealed class SessionGitHubAuthGetAllAuthAvailableRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionGitHubAuthRefreshCopilotUserRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -6378,7 +6914,7 @@ internal sealed class SessionGitHubAuthRefreshCopilotUserRequest
 }
 
 /// <summary>Internal GitHub login parameters.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionAuthLoginRequest
 {
     /// <summary>GitHub host URL.</summary>
@@ -6403,7 +6939,7 @@ internal sealed class SessionAuthLoginRequest
 }
 
 /// <summary>Parameters for switching the session's active authentication.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionAuthSwitchRequest
 {
     /// <summary>Authentication information to activate.</summary>
@@ -6420,7 +6956,7 @@ internal sealed class SessionAuthSwitchRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionGitHubAuthLogoutRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -6429,7 +6965,7 @@ internal sealed class SessionGitHubAuthLogoutRequest
 }
 
 /// <summary>Parameters identifying a GitHub authentication to log out.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionAuthLogoutUserRequest
 {
     /// <summary>Authentication information to log out.</summary>
@@ -6442,7 +6978,7 @@ internal sealed class SessionAuthLogoutUserRequest
 }
 
 /// <summary>Validation error from an authentication attempt.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AuthValidationError
 {
     /// <summary>Optional message returned by GitHub.</summary>
@@ -6455,7 +6991,7 @@ public sealed class AuthValidationError
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionGitHubAuthLastAuthErrorsRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -6464,7 +7000,7 @@ internal sealed class SessionGitHubAuthLastAuthErrorsRequest
 }
 
 /// <summary>A file included in the session debug bundle.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DebugCollectLogsCollectedEntry
 {
     /// <summary>Relative path of the file in the staged bundle/archive.</summary>
@@ -6481,7 +7017,7 @@ public sealed class DebugCollectLogsCollectedEntry
 }
 
 /// <summary>An optional debug bundle entry that could not be included.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DebugCollectLogsSkippedEntry
 {
     /// <summary>Relative path requested for this bundle entry.</summary>
@@ -6498,7 +7034,7 @@ public sealed class DebugCollectLogsSkippedEntry
 }
 
 /// <summary>Result of collecting a session debug bundle.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DebugCollectLogsResult
 {
     /// <summary>Files included in the bundle.</summary>
@@ -6519,7 +7055,7 @@ public sealed class DebugCollectLogsResult
 }
 
 /// <summary>A caller-provided server-local file or directory to include in the debug bundle.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DebugCollectLogsEntry
 {
     /// <summary>Relative path to use inside the staged bundle/archive.</summary>
@@ -6545,7 +7081,7 @@ public sealed class DebugCollectLogsEntry
 
 /// <summary>Destination for the session debug bundle.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -6560,7 +7096,7 @@ public partial class DebugCollectLogsDestination
 
 
 /// <summary>The <c>archive</c> variant of <see cref="DebugCollectLogsDestination"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class DebugCollectLogsDestinationArchive : DebugCollectLogsDestination
 {
     /// <inheritdoc />
@@ -6578,7 +7114,7 @@ public partial class DebugCollectLogsDestinationArchive : DebugCollectLogsDestin
 }
 
 /// <summary>The <c>directory</c> variant of <see cref="DebugCollectLogsDestination"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class DebugCollectLogsDestinationDirectory : DebugCollectLogsDestination
 {
     /// <inheritdoc />
@@ -6591,7 +7127,7 @@ public partial class DebugCollectLogsDestinationDirectory : DebugCollectLogsDest
 }
 
 /// <summary>Built-in session diagnostics to include in the bundle. Omitted fields default to true.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DebugCollectLogsInclude
 {
     /// <summary>Server-local path to the current process log. When set, it is included as `process.log` and its directory is searched for prior logs from the same session.</summary>
@@ -6624,7 +7160,7 @@ public sealed class DebugCollectLogsInclude
 }
 
 /// <summary>Options for collecting a session debug bundle with configurable redaction.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class DebugCollectLogsRequest
 {
     /// <summary>Caller-provided server-local files or directories to include in addition to the runtime's built-in session diagnostics. This lets host applications add their own diagnostics without changing the API shape.</summary>
@@ -6645,7 +7181,7 @@ internal sealed class DebugCollectLogsRequest
 }
 
 /// <summary>Canvas action that the agent or host can invoke. To discover the input schema for a particular action, call the list_canvas_capabilities tool.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasAction
 {
     /// <summary>Description of the action.</summary>
@@ -6662,7 +7198,7 @@ public sealed class CanvasAction
 }
 
 /// <summary>Canvas available in the current session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DiscoveredCanvas
 {
     /// <summary>Actions the agent or host may invoke on an open instance.</summary>
@@ -6701,7 +7237,7 @@ public sealed class DiscoveredCanvas
 }
 
 /// <summary>Declared canvases available in this session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasList
 {
     /// <summary>Declared canvases available in this session.</summary>
@@ -6710,7 +7246,7 @@ public sealed class CanvasList
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionCanvasListRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -6719,7 +7255,7 @@ internal sealed class SessionCanvasListRequest
 }
 
 /// <summary>Open canvas instance snapshot.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class OpenCanvasInstance
 {
     /// <summary>Provider-local canvas identifier.</summary>
@@ -6760,7 +7296,7 @@ public sealed class OpenCanvasInstance
 }
 
 /// <summary>Live open-canvas snapshot.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasListOpenResult
 {
     /// <summary>Currently open canvas instances.</summary>
@@ -6769,7 +7305,7 @@ public sealed class CanvasListOpenResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionCanvasListOpenRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -6778,7 +7314,7 @@ internal sealed class SessionCanvasListOpenRequest
 }
 
 /// <summary>Canvas open parameters.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CanvasOpenRequest
 {
     /// <summary>Provider-local canvas identifier.</summary>
@@ -6803,7 +7339,7 @@ internal sealed class CanvasOpenRequest
 }
 
 /// <summary>Canvas close parameters.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CanvasCloseRequest
 {
     /// <summary>Open canvas instance identifier.</summary>
@@ -6816,7 +7352,7 @@ internal sealed class CanvasCloseRequest
 }
 
 /// <summary>Canvas action invocation result.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasActionInvokeResult
 {
     /// <summary>Provider-supplied action result.</summary>
@@ -6825,7 +7361,7 @@ public sealed class CanvasActionInvokeResult
 }
 
 /// <summary>Canvas action invocation parameters.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CanvasActionInvokeRequest
 {
     /// <summary>Action name to invoke.</summary>
@@ -6846,7 +7382,7 @@ internal sealed class CanvasActionInvokeRequest
 }
 
 /// <summary>Internal canvas provider registration parameters.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CanvasProviderRegisterRequest
 {
     /// <summary>Canvas contributions supplied by the provider.</summary>
@@ -6867,7 +7403,7 @@ internal sealed class CanvasProviderRegisterRequest
 }
 
 /// <summary>Internal canvas provider unregistration parameters.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CanvasProviderUnregisterRequest
 {
     /// <summary>Connection identifier to unregister.</summary>
@@ -6881,7 +7417,7 @@ internal sealed class CanvasProviderUnregisterRequest
 
 /// <summary>Machine-readable factory run failure.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -6899,7 +7435,7 @@ public partial class FactoryRunFailure
 
 
 /// <summary>The <c>factory_limit_reached</c> variant of <see cref="FactoryRunFailure"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class FactoryRunFailureFactoryLimitReached : FactoryRunFailure
 {
     /// <inheritdoc />
@@ -6925,7 +7461,7 @@ public partial class FactoryRunFailureFactoryLimitReached : FactoryRunFailure
 }
 
 /// <summary>The <c>factory_resume_declined</c> variant of <see cref="FactoryRunFailure"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class FactoryRunFailureFactoryResumeDeclined : FactoryRunFailure
 {
     /// <inheritdoc />
@@ -6942,7 +7478,7 @@ public partial class FactoryRunFailureFactoryResumeDeclined : FactoryRunFailure
 }
 
 /// <summary>The <c>factory_durable_failure</c> variant of <see cref="FactoryRunFailure"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class FactoryRunFailureFactoryDurableFailure : FactoryRunFailure
 {
     /// <inheritdoc />
@@ -6964,7 +7500,7 @@ public partial class FactoryRunFailureFactoryDurableFailure : FactoryRunFailure
 
 /// <summary>The run stopped because its usage accounting could not be completed.</summary>
 /// <remarks>The <c>factory_accounting_incomplete</c> variant of <see cref="FactoryRunFailure"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class FactoryRunFailureFactoryAccountingIncomplete : FactoryRunFailure
 {
     /// <inheritdoc />
@@ -6982,7 +7518,7 @@ public partial class FactoryRunFailureFactoryAccountingIncomplete : FactoryRunFa
 
 /// <summary>The extension that owns the factory disconnected while the run was executing, so the host halted it. The run's journaled subagent results are preserved so a resume can reuse them.</summary>
 /// <remarks>The <c>factory_provider_disconnected</c> variant of <see cref="FactoryRunFailure"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class FactoryRunFailureFactoryProviderDisconnected : FactoryRunFailure
 {
     /// <inheritdoc />
@@ -6996,7 +7532,7 @@ public partial class FactoryRunFailureFactoryProviderDisconnected : FactoryRunFa
 
 /// <summary>Durable metadata describing who initiated a factory pause.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -7011,7 +7547,7 @@ public partial class FactoryPauseInfo
 
 
 /// <summary>The <c>user</c> variant of <see cref="FactoryPauseInfo"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class FactoryPauseInfoUser : FactoryPauseInfo
 {
     /// <inheritdoc />
@@ -7020,7 +7556,7 @@ public partial class FactoryPauseInfoUser : FactoryPauseInfo
 }
 
 /// <summary>The <c>checkpoint</c> variant of <see cref="FactoryPauseInfo"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class FactoryPauseInfoCheckpoint : FactoryPauseInfo
 {
     /// <inheritdoc />
@@ -7033,7 +7569,7 @@ public partial class FactoryPauseInfoCheckpoint : FactoryPauseInfo
 }
 
 /// <summary>Complete current or terminal factory run envelope.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryRunResult
 {
     /// <summary>One-based execution attempt represented by this envelope. Absent before the first attempt starts or when returned by an older runtime.</summary>
@@ -7074,7 +7610,7 @@ public sealed class FactoryRunResult
 }
 
 /// <summary>Wire-only per-invocation factory resource ceiling overrides.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryRunLimits
 {
     /// <summary>Maximum AI credits consumed by factory subagents and their descendants. The post-paid ceiling is soft: parallel turns can settle beyond it before the run stops.</summary>
@@ -7095,7 +7631,7 @@ public sealed class FactoryRunLimits
 }
 
 /// <summary>Options controlling factory invocation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RunOptions
 {
     /// <summary>Per-invocation resource ceiling overrides.</summary>
@@ -7116,7 +7652,7 @@ public sealed class RunOptions
 }
 
 /// <summary>Parameters for invoking a registered factory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryRunRequest
 {
     /// <summary>Factory input value.</summary>
@@ -7137,7 +7673,7 @@ internal sealed class FactoryRunRequest
 }
 
 /// <summary>Resolved persisted factory identity and resumed run envelope.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryResumeResult
 {
     /// <summary>Persisted factory name resolved for the resumed run.</summary>
@@ -7150,7 +7686,7 @@ public sealed class FactoryResumeResult
 }
 
 /// <summary>Parameters for resuming a factory run from its persisted identity.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryResumeRequest
 {
     /// <summary>Optional per-invocation resource ceiling overrides.</summary>
@@ -7175,7 +7711,7 @@ internal sealed class FactoryResumeRequest
 }
 
 /// <summary>Options for an internal tool-originated factory invocation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryToolRunOptions
 {
     /// <summary>Per-invocation resource ceiling overrides.</summary>
@@ -7188,7 +7724,7 @@ internal sealed class FactoryToolRunOptions
 }
 
 /// <summary>Internal parameters for invoking a registered factory from a tool.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryToolRunRequest
 {
     /// <summary>Factory input value.</summary>
@@ -7213,7 +7749,7 @@ internal sealed class FactoryToolRunRequest
 }
 
 /// <summary>Internal parameters for resuming a factory run from a tool.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryToolResumeRequest
 {
     /// <summary>Optional per-invocation resource ceiling overrides.</summary>
@@ -7234,7 +7770,7 @@ internal sealed class FactoryToolResumeRequest
 }
 
 /// <summary>Parameters for retrieving a factory run.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryGetRunRequest
 {
     /// <summary>Factory run identifier.</summary>
@@ -7247,7 +7783,7 @@ internal sealed class FactoryGetRunRequest
 }
 
 /// <summary>Declared or approved factory resource ceilings.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryDeclaredLimits
 {
     /// <summary>Maximum AI credits consumed by subagents and descendants.</summary>
@@ -7268,7 +7804,7 @@ public sealed class FactoryDeclaredLimits
 }
 
 /// <summary>Durable factory resource consumption.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryRunConsumed
 {
     /// <summary>Accumulated active execution time in milliseconds.</summary>
@@ -7285,7 +7821,7 @@ public sealed class FactoryRunConsumed
 }
 
 /// <summary>Current factory phase identity.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryCurrentPhase
 {
     /// <summary>Current phase identifier.</summary>
@@ -7298,7 +7834,7 @@ public sealed class FactoryCurrentPhase
 }
 
 /// <summary>Prompt-safe terminal factory outcome.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryRunTerminal
 {
     /// <summary>Human-readable terminal error.</summary>
@@ -7323,7 +7859,7 @@ public sealed class FactoryRunTerminal
 }
 
 /// <summary>Durable factory run summary with read-time live overlays.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryRunSummary
 {
     /// <summary>Epoch milliseconds when the current active segment started, or null while inactive.</summary>
@@ -7408,7 +7944,7 @@ public sealed class FactoryRunSummary
 }
 
 /// <summary>A page of factory runs in durable creation order.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryListRunsResult
 {
     /// <summary>Whether terminal runs newer than this page exist.</summary>
@@ -7433,7 +7969,7 @@ public sealed class FactoryListRunsResult
 }
 
 /// <summary>Parameters for paging factory runs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryListRunsRequest
 {
     /// <summary>Exclusive forward cursor.</summary>
@@ -7454,7 +7990,7 @@ internal sealed class FactoryListRunsRequest
 }
 
 /// <summary>Prompt-safe durable identity and live status for a direct factory agent.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryAgentSummary
 {
     /// <summary>Accumulated active agent time in milliseconds.</summary>
@@ -7515,7 +8051,7 @@ public sealed class FactoryAgentSummary
 }
 
 /// <summary>Durable lifecycle and timing for one factory phase.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryPhaseObservation
 {
     /// <summary>Completed active time accumulated by this phase in milliseconds.</summary>
@@ -7572,7 +8108,7 @@ public sealed class FactoryPhaseObservation
 }
 
 /// <summary>One durable factory progress record.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryProgressLine
 {
     /// <summary>Resume attempt that emitted this record.</summary>
@@ -7601,7 +8137,7 @@ public sealed class FactoryProgressLine
 }
 
 /// <summary>A bidirectional page of factory progress.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryProgressPage
 {
     /// <summary>Whether progress records newer than this page exist.</summary>
@@ -7630,7 +8166,7 @@ public sealed class FactoryProgressPage
 }
 
 /// <summary>Full factory run observability detail.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryRunDetail
 {
     /// <summary>Epoch milliseconds when the current active segment started, or null while inactive.</summary>
@@ -7727,7 +8263,7 @@ public sealed class FactoryRunDetail
 }
 
 /// <summary>Parameters for paging factory progress.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryGetRunProgressRequest
 {
     /// <summary>Exclusive forward cursor.</summary>
@@ -7756,7 +8292,7 @@ internal sealed class FactoryGetRunProgressRequest
 }
 
 /// <summary>Parameters for cancelling a factory run.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryCancelRequest
 {
     /// <summary>Factory run identifier.</summary>
@@ -7769,7 +8305,7 @@ internal sealed class FactoryCancelRequest
 }
 
 /// <summary>Parameters for pausing a running factory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryPauseRequest
 {
     /// <summary>Factory run identifier.</summary>
@@ -7782,7 +8318,7 @@ internal sealed class FactoryPauseRequest
 }
 
 /// <summary>RPC data type for SessionFactoryPauseAtCheckpoint operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionFactoryPauseAtCheckpointResult
 {
     /// <summary>Whether this execution attempt must pause or may continue.</summary>
@@ -7791,7 +8327,7 @@ internal sealed class SessionFactoryPauseAtCheckpointResult
 }
 
 /// <summary>Parameters for an owned durable pause checkpoint.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryPauseCheckpointRequest
 {
     /// <summary>Opaque token identifying the execution attempt that reached the checkpoint.</summary>
@@ -7812,13 +8348,13 @@ internal sealed class FactoryPauseCheckpointRequest
 }
 
 /// <summary>Acknowledgement that a factory request was accepted.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryAckResult
 {
 }
 
 /// <summary>One ordered factory progress line.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryLogLine
 {
     /// <summary>Progress line kind.</summary>
@@ -7835,7 +8371,7 @@ public sealed class FactoryLogLine
 }
 
 /// <summary>Parameters for recording factory progress.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryLogRequest
 {
     /// <summary>Opaque token identifying the current factory execution attempt.</summary>
@@ -7856,7 +8392,7 @@ internal sealed class FactoryLogRequest
 }
 
 /// <summary>Result of one factory-scoped subagent call.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryAgentResult
 {
     /// <summary>Agent result, omitted when the agent produced no result.</summary>
@@ -7865,7 +8401,7 @@ public sealed class FactoryAgentResult
 }
 
 /// <summary>Options for one factory-scoped subagent call.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryAgentOptions
 {
     /// <summary>Optional built-in or custom agent name whose definition configures the subagent.</summary>
@@ -7894,7 +8430,7 @@ public sealed class FactoryAgentOptions
 }
 
 /// <summary>Parameters for one factory-scoped subagent call.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryAgentRequest
 {
     /// <summary>Opaque token identifying the current factory execution attempt.</summary>
@@ -7919,7 +8455,7 @@ internal sealed class FactoryAgentRequest
 }
 
 /// <summary>Result of reading a factory journal entry.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryJournalGetResult
 {
     /// <summary>Whether the journal contained the requested key.</summary>
@@ -7932,7 +8468,7 @@ public sealed class FactoryJournalGetResult
 }
 
 /// <summary>Parameters for reading a factory journal entry.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryJournalGetRequest
 {
     /// <summary>Opaque token identifying the current factory execution attempt.</summary>
@@ -7953,7 +8489,7 @@ internal sealed class FactoryJournalGetRequest
 }
 
 /// <summary>Parameters for storing a factory journal entry.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FactoryJournalPutRequest
 {
     /// <summary>Opaque token identifying the current factory execution attempt.</summary>
@@ -7977,8 +8513,1106 @@ internal sealed class FactoryJournalPutRequest
     public string SessionId { get; set; } = string.Empty;
 }
 
+/// <summary>Machine-readable workflow run failure.</summary>
+/// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonPolymorphic(
+    TypeDiscriminatorPropertyName = "type",
+    UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
+[JsonDerivedType(typeof(WorkflowRunFailureWorkflowLimitReached), "workflow_limit_reached")]
+[JsonDerivedType(typeof(WorkflowRunFailureWorkflowResumeDeclined), "workflow_resume_declined")]
+[JsonDerivedType(typeof(WorkflowRunFailureWorkflowDurableFailure), "workflow_durable_failure")]
+[JsonDerivedType(typeof(WorkflowRunFailureWorkflowAccountingIncomplete), "workflow_accounting_incomplete")]
+[JsonDerivedType(typeof(WorkflowRunFailureWorkflowProviderDisconnected), "workflow_provider_disconnected")]
+public partial class WorkflowRunFailure
+{
+    /// <summary>The type discriminator.</summary>
+    [JsonPropertyName("type")]
+    public virtual string Type { get; set; } = string.Empty;
+}
+
+
+/// <summary>The <c>workflow_limit_reached</c> variant of <see cref="WorkflowRunFailure"/>.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class WorkflowRunFailureWorkflowLimitReached : WorkflowRunFailure
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Type => "workflow_limit_reached";
+
+    /// <summary>Resource ceiling that stopped the run.</summary>
+    [JsonPropertyName("kind")]
+    public required WorkflowRunFailureKind Kind { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public required string RunId { get; set; }
+
+    /// <summary>Suggested larger ceiling when the runtime can derive one safely.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("suggestedValue")]
+    public double? SuggestedValue { get; set; }
+
+    /// <summary>Approved effective ceiling that was reached.</summary>
+    [JsonPropertyName("value")]
+    public required double Value { get; set; }
+}
+
+/// <summary>The <c>workflow_resume_declined</c> variant of <see cref="WorkflowRunFailure"/>.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class WorkflowRunFailureWorkflowResumeDeclined : WorkflowRunFailure
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Type => "workflow_resume_declined";
+
+    /// <summary>Human-readable reason the resume did not proceed.</summary>
+    [JsonPropertyName("reason")]
+    public required string Reason { get; set; }
+
+    /// <summary>Workflow run identifier whose changed limits were declined.</summary>
+    [JsonPropertyName("runId")]
+    public required string RunId { get; set; }
+}
+
+/// <summary>The <c>workflow_durable_failure</c> variant of <see cref="WorkflowRunFailure"/>.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class WorkflowRunFailureWorkflowDurableFailure : WorkflowRunFailure
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Type => "workflow_durable_failure";
+
+    /// <summary>Stable failure code.</summary>
+    [JsonPropertyName("code")]
+    public required string Code { get; set; }
+
+    /// <summary>Execution-critical durable operation that failed.</summary>
+    [JsonPropertyName("operation")]
+    public required WorkflowDurableOperation Operation { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public required string RunId { get; set; }
+}
+
+/// <summary>The run stopped because its usage accounting could not be completed.</summary>
+/// <remarks>The <c>workflow_accounting_incomplete</c> variant of <see cref="WorkflowRunFailure"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class WorkflowRunFailureWorkflowAccountingIncomplete : WorkflowRunFailure
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Type => "workflow_accounting_incomplete";
+
+    /// <summary>Confirmed usage in nano-AIU, representing the floor of what the run spent.</summary>
+    [JsonPropertyName("drainedNanoAiu")]
+    public required long DrainedNanoAiu { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public required string RunId { get; set; }
+}
+
+/// <summary>The extension that owns the workflow disconnected while the run was executing, so the host halted it. The run's journaled subagent results are preserved so a resume can reuse them.</summary>
+/// <remarks>The <c>workflow_provider_disconnected</c> variant of <see cref="WorkflowRunFailure"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class WorkflowRunFailureWorkflowProviderDisconnected : WorkflowRunFailure
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Type => "workflow_provider_disconnected";
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public required string RunId { get; set; }
+}
+
+/// <summary>Durable metadata describing who initiated a workflow pause.</summary>
+/// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonPolymorphic(
+    TypeDiscriminatorPropertyName = "type",
+    UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
+[JsonDerivedType(typeof(WorkflowPauseInfoUser), "user")]
+[JsonDerivedType(typeof(WorkflowPauseInfoCheckpoint), "checkpoint")]
+public partial class WorkflowPauseInfo
+{
+    /// <summary>The type discriminator.</summary>
+    [JsonPropertyName("type")]
+    public virtual string Type { get; set; } = string.Empty;
+}
+
+
+/// <summary>The <c>user</c> variant of <see cref="WorkflowPauseInfo"/>.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class WorkflowPauseInfoUser : WorkflowPauseInfo
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Type => "user";
+}
+
+/// <summary>The <c>checkpoint</c> variant of <see cref="WorkflowPauseInfo"/>.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class WorkflowPauseInfoCheckpoint : WorkflowPauseInfo
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Type => "checkpoint";
+
+    /// <summary>Stable author-defined checkpoint key that initiated the pause.</summary>
+    [JsonPropertyName("key")]
+    public required string Key { get; set; }
+}
+
+/// <summary>Complete current or terminal workflow run envelope.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowRunResult
+{
+    /// <summary>One-based execution attempt represented by this envelope. Absent before the first attempt starts or when returned by an older runtime.</summary>
+    [JsonPropertyName("attempt")]
+    public long? Attempt { get; set; }
+
+    /// <summary>Error message for an errored run.</summary>
+    [JsonPropertyName("error")]
+    public string? Error { get; set; }
+
+    /// <summary>Machine-readable failure details for a halted or errored run.</summary>
+    [JsonPropertyName("failure")]
+    public WorkflowRunFailure? Failure { get; set; }
+
+    /// <summary>Structured pause initiator metadata for a paused attempt.</summary>
+    [JsonPropertyName("pauseInfo")]
+    public WorkflowPauseInfo? PauseInfo { get; set; }
+
+    /// <summary>Reason for a halted or cancelled run.</summary>
+    [JsonPropertyName("reason")]
+    public string? Reason { get; set; }
+
+    /// <summary>Completed workflow result.</summary>
+    [JsonPropertyName("result")]
+    public JsonElement? Result { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Partial journal and progress snapshot for a halted, cancelled, or errored run.</summary>
+    [JsonPropertyName("snapshot")]
+    public JsonElement? Snapshot { get; set; }
+
+    /// <summary>Current or terminal workflow run status.</summary>
+    [JsonPropertyName("status")]
+    public WorkflowRunStatus Status { get; set; }
+}
+
+/// <summary>Wire-only per-invocation workflow resource ceiling overrides.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowRunLimits
+{
+    /// <summary>Maximum AI credits consumed by workflow subagents and their descendants. The post-paid ceiling is soft: parallel turns can settle beyond it before the run stops.</summary>
+    [JsonPropertyName("maxAiCredits")]
+    public double? MaxAiCredits { get; set; }
+
+    /// <summary>Maximum number of workflow subagents that may run concurrently.</summary>
+    [JsonPropertyName("maxConcurrentSubagents")]
+    public long? MaxConcurrentSubagents { get; set; }
+
+    /// <summary>Maximum total number of workflow subagents that may be admitted.</summary>
+    [JsonPropertyName("maxTotalSubagents")]
+    public long? MaxTotalSubagents { get; set; }
+
+    /// <summary>Maximum accumulated active-execution time in seconds. Active execution includes the entire extension body, subprocess waits, queued-agent waits, and sleeps; time between resumed attempts is not counted.</summary>
+    [JsonPropertyName("timeoutSeconds")]
+    public double? TimeoutSeconds { get; set; }
+}
+
+/// <summary>Options controlling workflow invocation.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowRunOptions
+{
+    /// <summary>Per-invocation resource ceiling overrides.</summary>
+    [JsonPropertyName("limits")]
+    public WorkflowRunLimits? Limits { get; set; }
+
+    /// <summary>Whether to emit workflow phase names to the session transcript.</summary>
+    [JsonPropertyName("logPhaseNames")]
+    public bool? LogPhaseNames { get; set; }
+
+    /// <summary>Whether to notify the originating session when the workflow completes.</summary>
+    [JsonPropertyName("notifyOnComplete")]
+    public bool? NotifyOnComplete { get; set; }
+
+    /// <summary>Run identifier whose journal and progress should seed this resumed run.</summary>
+    [JsonPropertyName("resumeFromRunId")]
+    public string? ResumeFromRunId { get; set; }
+}
+
+/// <summary>Parameters for invoking a registered workflow.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowRunRequest
+{
+    /// <summary>Workflow input value.</summary>
+    [JsonPropertyName("args")]
+    public JsonElement Args { get; set; }
+
+    /// <summary>Registered workflow name.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Workflow invocation options.</summary>
+    [JsonPropertyName("options")]
+    public WorkflowRunOptions? Options { get; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Resolved persisted workflow identity and resumed run envelope.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowResumeResult
+{
+    /// <summary>Terminal resumed run envelope.</summary>
+    [JsonPropertyName("run")]
+    public WorkflowRunResult Run { get => field ??= new(); set; }
+
+    /// <summary>Persisted workflow name resolved for the resumed run.</summary>
+    [JsonPropertyName("workflowName")]
+    public string WorkflowName { get; set; } = string.Empty;
+}
+
+/// <summary>Parameters for resuming a workflow run from its persisted identity.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowResumeRequest
+{
+    /// <summary>Optional per-invocation resource ceiling overrides.</summary>
+    [JsonPropertyName("limits")]
+    public WorkflowRunLimits? Limits { get; set; }
+
+    /// <summary>Whether to emit workflow phase names to the session transcript.</summary>
+    [JsonPropertyName("logPhaseNames")]
+    public bool? LogPhaseNames { get; set; }
+
+    /// <summary>Whether to notify the originating session when the workflow completes.</summary>
+    [JsonPropertyName("notifyOnComplete")]
+    public bool? NotifyOnComplete { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Options for an internal tool-originated workflow invocation.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowToolRunOptions
+{
+    /// <summary>Per-invocation resource ceiling overrides.</summary>
+    [JsonPropertyName("limits")]
+    public WorkflowRunLimits? Limits { get; set; }
+
+    /// <summary>Run identifier whose journal and progress should seed this resumed run.</summary>
+    [JsonPropertyName("resumeFromRunId")]
+    public string? ResumeFromRunId { get; set; }
+}
+
+/// <summary>Internal parameters for invoking a registered workflow from a tool.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowToolRunRequest
+{
+    /// <summary>Workflow input value.</summary>
+    [JsonPropertyName("args")]
+    public JsonElement Args { get; set; }
+
+    /// <summary>Registered workflow name.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Tool-originated workflow invocation options.</summary>
+    [JsonPropertyName("options")]
+    public WorkflowToolRunOptions? Options { get; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+
+    /// <summary>Opaque identifier of the originating tool call.</summary>
+    [JsonPropertyName("toolCallId")]
+    public string? ToolCallId { get; set; }
+}
+
+/// <summary>Internal parameters for resuming a workflow run from a tool.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowToolResumeRequest
+{
+    /// <summary>Optional per-invocation resource ceiling overrides.</summary>
+    [JsonPropertyName("limits")]
+    public WorkflowRunLimits? Limits { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+
+    /// <summary>Opaque identifier of the originating tool call.</summary>
+    [JsonPropertyName("toolCallId")]
+    public string? ToolCallId { get; set; }
+}
+
+/// <summary>Parameters for retrieving a workflow run.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowGetRunRequest
+{
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Declared or approved workflow resource ceilings.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowDeclaredLimits
+{
+    /// <summary>Maximum AI credits consumed by subagents and descendants.</summary>
+    [JsonPropertyName("maxAiCredits")]
+    public double? MaxAiCredits { get; set; }
+
+    /// <summary>Maximum concurrently active subagents.</summary>
+    [JsonPropertyName("maxConcurrentSubagents")]
+    public long? MaxConcurrentSubagents { get; set; }
+
+    /// <summary>Maximum total subagents spawned by the run.</summary>
+    [JsonPropertyName("maxTotalSubagents")]
+    public long? MaxTotalSubagents { get; set; }
+
+    /// <summary>Maximum accumulated active execution time in seconds.</summary>
+    [JsonPropertyName("timeoutSeconds")]
+    public double? TimeoutSeconds { get; set; }
+}
+
+/// <summary>Durable workflow resource consumption.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowRunConsumed
+{
+    /// <summary>Accumulated active execution time in milliseconds.</summary>
+    [JsonPropertyName("activeMs")]
+    public long ActiveMs { get; set; }
+
+    /// <summary>AI usage consumed by the run in nano-AIU.</summary>
+    [JsonPropertyName("nanoAiu")]
+    public long NanoAiu { get; set; }
+
+    /// <summary>Total subagents spawned by the run.</summary>
+    [JsonPropertyName("subagents")]
+    public long Subagents { get; set; }
+}
+
+/// <summary>Current workflow phase identity.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowCurrentPhase
+{
+    /// <summary>Current phase identifier.</summary>
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+
+    /// <summary>Zero-based declared phase ordinal, or null for an undeclared phase.</summary>
+    [JsonPropertyName("ordinal")]
+    public long? Ordinal { get; set; }
+}
+
+/// <summary>Prompt-safe terminal workflow outcome.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowRunTerminal
+{
+    /// <summary>Human-readable terminal error.</summary>
+    [JsonPropertyName("error")]
+    public string? Error { get; set; }
+
+    /// <summary>Machine-readable terminal failure.</summary>
+    [JsonPropertyName("failure")]
+    public WorkflowRunFailure? Failure { get; set; }
+
+    /// <summary>Pause initiator metadata, or null when the run did not pause.</summary>
+    [JsonPropertyName("pauseInfo")]
+    public WorkflowPauseInfo? PauseInfo { get; set; }
+
+    /// <summary>Human-readable terminal reason.</summary>
+    [JsonPropertyName("reason")]
+    public string? Reason { get; set; }
+
+    /// <summary>Prompt-safe preview of the completed result.</summary>
+    [JsonPropertyName("resultPreview")]
+    public string? ResultPreview { get; set; }
+}
+
+/// <summary>Durable workflow run summary with read-time live overlays.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowRunSummary
+{
+    /// <summary>Epoch milliseconds when the current active segment started, or null while inactive.</summary>
+    [JsonPropertyName("activeSegmentStartedAt")]
+    public long? ActiveSegmentStartedAt { get; set; }
+
+    /// <summary>Approved effective resource ceilings, or null until approved.</summary>
+    [JsonPropertyName("approved")]
+    public WorkflowDeclaredLimits? Approved { get; set; }
+
+    /// <summary>Whether the durable run state currently passes runtime resume eligibility checks.</summary>
+    [JsonPropertyName("canResume")]
+    public bool CanResume { get; set; }
+
+    /// <summary>Epoch milliseconds when the run completed, or null while nonterminal.</summary>
+    [JsonPropertyName("completedAt")]
+    public long? CompletedAt { get; set; }
+
+    /// <summary>Durable resource consumption.</summary>
+    [JsonPropertyName("consumed")]
+    public WorkflowRunConsumed Consumed { get => field ??= new(); set; }
+
+    /// <summary>Epoch milliseconds when the run was created.</summary>
+    [JsonPropertyName("createdAt")]
+    public long CreatedAt { get; set; }
+
+    /// <summary>Current phase identity, or null before any phase is entered.</summary>
+    [JsonPropertyName("currentPhase")]
+    public WorkflowCurrentPhase? CurrentPhase { get; set; }
+
+    /// <summary>Resource ceilings declared by the workflow.</summary>
+    [JsonPropertyName("declaredLimits")]
+    public WorkflowDeclaredLimits DeclaredLimits { get => field ??= new(); set; }
+
+    /// <summary>Number of phases declared by the workflow.</summary>
+    [JsonPropertyName("declaredPhaseCount")]
+    public long DeclaredPhaseCount { get; set; }
+
+    /// <summary>Human-readable workflow description.</summary>
+    [JsonPropertyName("description")]
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>Number of direct workflow agents currently live.</summary>
+    [JsonPropertyName("liveAgentCount")]
+    public long LiveAgentCount { get; set; }
+
+    /// <summary>Epoch milliseconds when this live-overlay snapshot was observed.</summary>
+    [JsonPropertyName("observedAt")]
+    public long ObservedAt { get; set; }
+
+    /// <summary>Monotonic durable run revision.</summary>
+    [JsonPropertyName("revision")]
+    public long Revision { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Epoch milliseconds when execution first started, or null before start.</summary>
+    [JsonPropertyName("startedAt")]
+    public long? StartedAt { get; set; }
+
+    /// <summary>Current workflow run status.</summary>
+    [JsonPropertyName("status")]
+    public WorkflowRunStatus Status { get; set; }
+
+    /// <summary>Terminal run outcome, or null while nonterminal.</summary>
+    [JsonPropertyName("terminal")]
+    public WorkflowRunTerminal? Terminal { get; set; }
+
+    /// <summary>Total direct workflow agents spawned across all attempts.</summary>
+    [JsonPropertyName("totalSpawnedAgentCount")]
+    public long TotalSpawnedAgentCount { get; set; }
+
+    /// <summary>Epoch milliseconds when the durable run was last updated.</summary>
+    [JsonPropertyName("updatedAt")]
+    public long UpdatedAt { get; set; }
+
+    /// <summary>Registered workflow name.</summary>
+    [JsonPropertyName("workflowName")]
+    public string WorkflowName { get; set; } = string.Empty;
+}
+
+/// <summary>A page of workflow runs in durable creation order.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowListRunsResult
+{
+    /// <summary>Whether terminal runs newer than this page exist.</summary>
+    [JsonPropertyName("hasMoreNewer")]
+    public bool? HasMoreNewer { get; set; }
+
+    /// <summary>Newest terminal-run cursor in this page, or null when the terminal window is empty.</summary>
+    [JsonPropertyName("newestSeq")]
+    public long? NewestSeq { get; set; }
+
+    /// <summary>Oldest terminal-run cursor in this page, or null when the terminal window is empty.</summary>
+    [JsonPropertyName("oldestSeq")]
+    public long? OldestSeq { get; set; }
+
+    /// <summary>Number of terminal runs older than this page.</summary>
+    [JsonPropertyName("omittedOlder")]
+    public long? OmittedOlder { get; set; }
+
+    /// <summary>Workflow run summaries in durable creation order.</summary>
+    [JsonPropertyName("runs")]
+    public IList<WorkflowRunSummary> Runs { get => field ??= []; set; }
+}
+
+/// <summary>Parameters for paging workflow runs.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowListRunsRequest
+{
+    /// <summary>Exclusive forward cursor.</summary>
+    [JsonPropertyName("afterSeq")]
+    public long? AfterSeq { get; set; }
+
+    /// <summary>Exclusive backward cursor.</summary>
+    [JsonPropertyName("beforeSeq")]
+    public long? BeforeSeq { get; set; }
+
+    /// <summary>Maximum terminal runs to return. Defaults to 200 and is capped at 500.</summary>
+    [JsonPropertyName("limit")]
+    public int? Limit { get; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Prompt-safe durable identity and live status for a direct workflow agent.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowAgentSummary
+{
+    /// <summary>Accumulated active agent time in milliseconds.</summary>
+    [JsonPropertyName("activeMs")]
+    public long ActiveMs { get; set; }
+
+    /// <summary>Prompt-safe live activity text.</summary>
+    [JsonPropertyName("activity")]
+    public string? Activity { get; set; }
+
+    /// <summary>Stable direct-agent identifier.</summary>
+    [JsonPropertyName("agentId")]
+    public string AgentId { get; set; } = string.Empty;
+
+    /// <summary>Registered agent type.</summary>
+    [JsonPropertyName("agentType")]
+    public string AgentType { get; set; } = string.Empty;
+
+    /// <summary>Epoch milliseconds when the agent completed.</summary>
+    [JsonPropertyName("completedAt")]
+    public long? CompletedAt { get; set; }
+
+    /// <summary>Friendly, non-unique name intended for display.</summary>
+    [JsonPropertyName("displayName")]
+    public string? DisplayName { get; set; }
+
+    /// <summary>Friendly, non-unique name intended for display.</summary>
+    [JsonPropertyName("label")]
+    public string Label { get; set; } = string.Empty;
+
+    /// <summary>Phase identifier active when the agent was launched, or null.</summary>
+    [JsonPropertyName("phaseId")]
+    public string? PhaseId { get; set; }
+
+    /// <summary>Model requested when the agent was launched.</summary>
+    [JsonPropertyName("requestedModel")]
+    public string? RequestedModel { get; set; }
+
+    /// <summary>Concrete model resolved for the agent.</summary>
+    [JsonPropertyName("resolvedModel")]
+    public string? ResolvedModel { get; set; }
+
+    /// <summary>Owning workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Epoch milliseconds when the agent started.</summary>
+    [JsonPropertyName("startedAt")]
+    public long? StartedAt { get; set; }
+
+    /// <summary>Current durable or live agent status.</summary>
+    [JsonPropertyName("status")]
+    public string Status { get; set; } = string.Empty;
+
+    /// <summary>Tool-call identifier that launched the agent.</summary>
+    [JsonPropertyName("toolCallId")]
+    public string ToolCallId { get; set; } = string.Empty;
+}
+
+/// <summary>Durable lifecycle and timing for one workflow phase.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowPhaseObservation
+{
+    /// <summary>Completed active time accumulated by this phase in milliseconds.</summary>
+    [JsonPropertyName("accumulatedActiveMs")]
+    public long AccumulatedActiveMs { get; set; }
+
+    /// <summary>Epoch milliseconds when this phase completed; for a skipped phase, the synthetic skip timestamp (equal to `startedAt`).</summary>
+    [JsonPropertyName("completedAt")]
+    public long? CompletedAt { get; set; }
+
+    /// <summary>Current live active time for this phase in milliseconds.</summary>
+    [JsonPropertyName("currentActiveMs")]
+    public long CurrentActiveMs { get; set; }
+
+    /// <summary>Optional human-readable phase detail.</summary>
+    [JsonPropertyName("detail")]
+    public string? Detail { get; set; }
+
+    /// <summary>Number of times execution entered this phase.</summary>
+    [JsonPropertyName("entryCount")]
+    public long EntryCount { get; set; }
+
+    /// <summary>Phase identifier.</summary>
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+
+    /// <summary>Most recent run attempt that entered this phase, or `0` if the phase has never been entered.</summary>
+    [JsonPropertyName("lastEnteredRunAttempt")]
+    public long LastEnteredRunAttempt { get; set; }
+
+    /// <summary>Direct agents in this phase that are currently live.</summary>
+    [JsonPropertyName("liveAgentCount")]
+    public long LiveAgentCount { get; set; }
+
+    /// <summary>Zero-based declared phase ordinal, or null for an undeclared phase.</summary>
+    [JsonPropertyName("ordinal")]
+    public long? Ordinal { get; set; }
+
+    /// <summary>Epoch milliseconds when this phase first started; for a skipped phase, the synthetic skip timestamp (equal to `completedAt`).</summary>
+    [JsonPropertyName("startedAt")]
+    public long? StartedAt { get; set; }
+
+    /// <summary>Derived lifecycle state of the phase.</summary>
+    [JsonPropertyName("status")]
+    public WorkflowPhaseStatus Status { get; set; }
+
+    /// <summary>Human-readable phase title.</summary>
+    [JsonPropertyName("title")]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>Total direct agents associated with this phase.</summary>
+    [JsonPropertyName("totalAgentCount")]
+    public long TotalAgentCount { get; set; }
+}
+
+/// <summary>One durable workflow progress record.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowProgressLine
+{
+    /// <summary>Resume attempt that emitted this record.</summary>
+    [JsonPropertyName("attempt")]
+    public long Attempt { get; set; }
+
+    /// <summary>Progress record kind.</summary>
+    [JsonPropertyName("kind")]
+    public WorkflowLogLineKind Kind { get; set; }
+
+    /// <summary>Phase active when the record was emitted, or null before any phase.</summary>
+    [JsonPropertyName("phaseId")]
+    public string? PhaseId { get; set; }
+
+    /// <summary>Epoch milliseconds when the record was persisted.</summary>
+    [JsonPropertyName("recordedAt")]
+    public long RecordedAt { get; set; }
+
+    /// <summary>Global monotonic sequence number within the run.</summary>
+    [JsonPropertyName("seq")]
+    public long Seq { get; set; }
+
+    /// <summary>Prompt-safe progress text.</summary>
+    [JsonPropertyName("text")]
+    public string Text { get; set; } = string.Empty;
+}
+
+/// <summary>A bidirectional page of workflow progress.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowProgressPage
+{
+    /// <summary>Whether progress records newer than this page exist.</summary>
+    [JsonPropertyName("hasMoreNewer")]
+    public bool HasMoreNewer { get; set; }
+
+    /// <summary>Whether progress records older than this page exist.</summary>
+    [JsonPropertyName("hasMoreOlder")]
+    public bool HasMoreOlder { get; set; }
+
+    /// <summary>Newest sequence number in this page, or null when empty.</summary>
+    [JsonPropertyName("newestSeq")]
+    public long? NewestSeq { get; set; }
+
+    /// <summary>Oldest sequence number in this page, or null when empty.</summary>
+    [JsonPropertyName("oldestSeq")]
+    public long? OldestSeq { get; set; }
+
+    /// <summary>Progress records in sequence order.</summary>
+    [JsonPropertyName("records")]
+    public IList<WorkflowProgressLine> Records { get => field ??= []; set; }
+
+    /// <summary>Run revision reflected by this page.</summary>
+    [JsonPropertyName("revision")]
+    public long Revision { get; set; }
+}
+
+/// <summary>Full workflow run observability detail.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowRunDetail
+{
+    /// <summary>Epoch milliseconds when the current active segment started, or null while inactive.</summary>
+    [JsonPropertyName("activeSegmentStartedAt")]
+    public long? ActiveSegmentStartedAt { get; set; }
+
+    /// <summary>Durable identities and live statuses for direct workflow agents.</summary>
+    [JsonPropertyName("agents")]
+    public IList<WorkflowAgentSummary> Agents { get => field ??= []; set; }
+
+    /// <summary>Approved effective resource ceilings, or null until approved.</summary>
+    [JsonPropertyName("approved")]
+    public WorkflowDeclaredLimits? Approved { get; set; }
+
+    /// <summary>Whether the durable run state currently passes runtime resume eligibility checks.</summary>
+    [JsonPropertyName("canResume")]
+    public bool CanResume { get; set; }
+
+    /// <summary>Epoch milliseconds when the run completed, or null while nonterminal.</summary>
+    [JsonPropertyName("completedAt")]
+    public long? CompletedAt { get; set; }
+
+    /// <summary>Durable resource consumption.</summary>
+    [JsonPropertyName("consumed")]
+    public WorkflowRunConsumed Consumed { get => field ??= new(); set; }
+
+    /// <summary>Epoch milliseconds when the run was created.</summary>
+    [JsonPropertyName("createdAt")]
+    public long CreatedAt { get; set; }
+
+    /// <summary>Current phase identity, or null before any phase is entered.</summary>
+    [JsonPropertyName("currentPhase")]
+    public WorkflowCurrentPhase? CurrentPhase { get; set; }
+
+    /// <summary>Resource ceilings declared by the workflow.</summary>
+    [JsonPropertyName("declaredLimits")]
+    public WorkflowDeclaredLimits DeclaredLimits { get => field ??= new(); set; }
+
+    /// <summary>Number of phases declared by the workflow.</summary>
+    [JsonPropertyName("declaredPhaseCount")]
+    public long DeclaredPhaseCount { get; set; }
+
+    /// <summary>Human-readable workflow description.</summary>
+    [JsonPropertyName("description")]
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>Number of direct workflow agents currently live.</summary>
+    [JsonPropertyName("liveAgentCount")]
+    public long LiveAgentCount { get; set; }
+
+    /// <summary>Epoch milliseconds when this live-overlay snapshot was observed.</summary>
+    [JsonPropertyName("observedAt")]
+    public long ObservedAt { get; set; }
+
+    /// <summary>Lifecycle and timing observations for each workflow phase.</summary>
+    [JsonPropertyName("phases")]
+    public IList<WorkflowPhaseObservation> Phases { get => field ??= []; set; }
+
+    /// <summary>Bidirectional page of durable workflow progress.</summary>
+    [JsonPropertyName("progress")]
+    public WorkflowProgressPage Progress { get => field ??= new(); set; }
+
+    /// <summary>Monotonic durable run revision.</summary>
+    [JsonPropertyName("revision")]
+    public long Revision { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Epoch milliseconds when execution first started, or null before start.</summary>
+    [JsonPropertyName("startedAt")]
+    public long? StartedAt { get; set; }
+
+    /// <summary>Current workflow run status.</summary>
+    [JsonPropertyName("status")]
+    public WorkflowRunStatus Status { get; set; }
+
+    /// <summary>Terminal run outcome, or null while nonterminal.</summary>
+    [JsonPropertyName("terminal")]
+    public WorkflowRunTerminal? Terminal { get; set; }
+
+    /// <summary>Total direct workflow agents spawned across all attempts.</summary>
+    [JsonPropertyName("totalSpawnedAgentCount")]
+    public long TotalSpawnedAgentCount { get; set; }
+
+    /// <summary>Epoch milliseconds when the durable run was last updated.</summary>
+    [JsonPropertyName("updatedAt")]
+    public long UpdatedAt { get; set; }
+
+    /// <summary>Registered workflow name.</summary>
+    [JsonPropertyName("workflowName")]
+    public string WorkflowName { get; set; } = string.Empty;
+}
+
+/// <summary>Parameters for paging workflow progress.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowGetRunProgressRequest
+{
+    /// <summary>Exclusive forward cursor.</summary>
+    [JsonPropertyName("afterSeq")]
+    public long? AfterSeq { get; set; }
+
+    /// <summary>Exclusive backward cursor.</summary>
+    [JsonPropertyName("beforeSeq")]
+    public long? BeforeSeq { get; set; }
+
+    /// <summary>Maximum records to return. Defaults to 200 and is capped at 500.</summary>
+    [JsonPropertyName("limit")]
+    public int? Limit { get; set; }
+
+    /// <summary>Optional phase identifier used to scope records and cursors.</summary>
+    [JsonPropertyName("phaseId")]
+    public string? PhaseId { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Parameters for cancelling a workflow run.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowCancelRequest
+{
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Parameters for pausing a running workflow.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowPauseRequest
+{
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>RPC data type for SessionWorkflowPauseAtCheckpoint operations.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionWorkflowPauseAtCheckpointResult
+{
+    /// <summary>Whether this execution attempt must pause or may continue.</summary>
+    [JsonPropertyName("action")]
+    public WorkflowPauseCheckpointAction Action { get; set; }
+}
+
+/// <summary>Parameters for an owned durable pause checkpoint.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowPauseCheckpointRequest
+{
+    /// <summary>Opaque token identifying the execution attempt that reached the checkpoint.</summary>
+    [JsonPropertyName("executionToken")]
+    public string ExecutionToken { get; set; } = string.Empty;
+
+    /// <summary>Stable author-defined checkpoint key.</summary>
+    [JsonPropertyName("key")]
+    public string Key { get; set; } = string.Empty;
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Acknowledgement that a workflow request was accepted.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowAckResult
+{
+}
+
+/// <summary>One ordered workflow progress line.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowLogLine
+{
+    /// <summary>Progress line kind.</summary>
+    [JsonPropertyName("kind")]
+    public WorkflowLogLineKind Kind { get; set; }
+
+    /// <summary>Monotonic sequence number within the workflow run.</summary>
+    [JsonPropertyName("seq")]
+    public long Seq { get; set; }
+
+    /// <summary>Progress text.</summary>
+    [JsonPropertyName("text")]
+    public string Text { get; set; } = string.Empty;
+}
+
+/// <summary>Parameters for recording workflow progress.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowLogRequest
+{
+    /// <summary>Opaque token identifying the current workflow execution attempt.</summary>
+    [JsonPropertyName("executionToken")]
+    public string ExecutionToken { get; set; } = string.Empty;
+
+    /// <summary>Ordered progress lines to append.</summary>
+    [JsonPropertyName("lines")]
+    public IList<WorkflowLogLine> Lines { get => field ??= []; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Result of one workflow-scoped subagent call.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowAgentResult
+{
+    /// <summary>Agent result, omitted when the agent produced no result.</summary>
+    [JsonPropertyName("result")]
+    public JsonElement? Result { get; set; }
+}
+
+/// <summary>Options for one workflow-scoped subagent call.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowAgentOptions
+{
+    /// <summary>Optional built-in or custom agent name whose definition configures the subagent.</summary>
+    [JsonPropertyName("agent")]
+    public string? Agent { get; set; }
+
+    /// <summary>Optional context tier override for the subagent.</summary>
+    [JsonPropertyName("contextTier")]
+    public ContextTier? ContextTier { get; set; }
+
+    /// <summary>Optional label distinguishing otherwise identical memoized agent calls.</summary>
+    [JsonPropertyName("label")]
+    public string? Label { get; set; }
+
+    /// <summary>Optional model identifier for the subagent.</summary>
+    [JsonPropertyName("model")]
+    public string? Model { get; set; }
+
+    /// <summary>Optional reasoning effort override for the subagent.</summary>
+    [JsonPropertyName("reasoningEffort")]
+    public string? ReasoningEffort { get; set; }
+
+    /// <summary>Optional JSON Schema for structured agent output.</summary>
+    [JsonPropertyName("schema")]
+    public JsonElement? Schema { get; set; }
+}
+
+/// <summary>Parameters for one workflow-scoped subagent call.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowAgentRequest
+{
+    /// <summary>Opaque token identifying the current workflow execution attempt.</summary>
+    [JsonPropertyName("executionToken")]
+    public string ExecutionToken { get; set; } = string.Empty;
+
+    /// <summary>Subagent execution options.</summary>
+    [JsonPropertyName("opts")]
+    public WorkflowAgentOptions Opts { get => field ??= new(); set; }
+
+    /// <summary>Prompt to send to the subagent.</summary>
+    [JsonPropertyName("prompt")]
+    public string Prompt { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+
+    /// <summary>Workflow run identifier that owns the subagent.</summary>
+    [JsonPropertyName("workflowRunId")]
+    public string WorkflowRunId { get; set; } = string.Empty;
+}
+
+/// <summary>Result of reading a workflow journal entry.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowJournalGetResult
+{
+    /// <summary>Whether the journal contained the requested key.</summary>
+    [JsonPropertyName("hit")]
+    public bool Hit { get; set; }
+
+    /// <summary>Cached JSON result. The hit field distinguishes a cached JSON null from a miss.</summary>
+    [JsonPropertyName("resultJson")]
+    public JsonElement? ResultJson { get; set; }
+}
+
+/// <summary>Parameters for reading a workflow journal entry.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowJournalGetRequest
+{
+    /// <summary>Opaque token identifying the current workflow execution attempt.</summary>
+    [JsonPropertyName("executionToken")]
+    public string ExecutionToken { get; set; } = string.Empty;
+
+    /// <summary>Namespaced journal key.</summary>
+    [JsonPropertyName("key")]
+    public string Key { get; set; } = string.Empty;
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Parameters for storing a workflow journal entry.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class WorkflowJournalPutRequest
+{
+    /// <summary>Opaque token identifying the current workflow execution attempt.</summary>
+    [JsonPropertyName("executionToken")]
+    public string ExecutionToken { get; set; } = string.Empty;
+
+    /// <summary>Namespaced journal key.</summary>
+    [JsonPropertyName("key")]
+    public string Key { get; set; } = string.Empty;
+
+    /// <summary>JSON result to memoize.</summary>
+    [JsonPropertyName("resultJson")]
+    public JsonElement ResultJson { get; set; }
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
 /// <summary>The session's authoritative model snapshot. Auto preference fields are configuration for the virtual `auto` model and do not change the selected model identifier. The context tier reflects `Session.getContextTier()`, restored from the session journal on resume.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CurrentModel
 {
     /// <summary>Auto preference currently claimed by an in-progress activation. Null means the activation is returning to provider-default routing.</summary>
@@ -8007,7 +9641,7 @@ public sealed class CurrentModel
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionModelGetCurrentRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8016,7 +9650,7 @@ internal sealed class SessionModelGetCurrentRequest
 }
 
 /// <summary>RPC data type for ModelSwitchConfirmation operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelSwitchConfirmation
 {
     /// <summary>Current conversation token count before switching models.</summary>
@@ -8033,7 +9667,7 @@ public sealed class ModelSwitchConfirmation
 }
 
 /// <summary>The model identifier active on the session after the switch.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelSwitchToResult
 {
     /// <summary>Compaction confirmation projection when status is confirmation_required.</summary>
@@ -8064,6 +9698,10 @@ public sealed class ModelSwitchToResult
     [JsonPropertyName("persistenceError")]
     public string? PersistenceError { get; set; }
 
+    /// <summary>Stable queue item identifier when this request was enqueued. Remains present if the item drains before the response is returned.</summary>
+    [JsonPropertyName("queueId")]
+    public string? QueueId { get; set; }
+
     /// <summary>Lifecycle result for the requested switch.</summary>
     [JsonPropertyName("status")]
     public string? Status { get; set; }
@@ -8074,7 +9712,7 @@ public sealed class ModelSwitchToResult
 }
 
 /// <summary>Vision-specific limits.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelCapabilitiesOverrideLimitsVision
 {
     /// <summary>Maximum image size in bytes.</summary>
@@ -8091,7 +9729,7 @@ public sealed class ModelCapabilitiesOverrideLimitsVision
 }
 
 /// <summary>Token limits for prompts, outputs, and context window.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelCapabilitiesOverrideLimits
 {
     /// <summary>Maximum total context window size in tokens.</summary>
@@ -8112,7 +9750,7 @@ public sealed class ModelCapabilitiesOverrideLimits
 }
 
 /// <summary>Feature flags indicating what the model supports.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelCapabilitiesOverrideSupports
 {
     /// <summary>Resolved Anthropic adaptive-thinking capability — unsupported / optional / required / adaptive_only. 'required' models reject thinking.type='enabled' with HTTP 400 but still accept 'disabled' (e.g. opus-4.7/4.8/5, sonnet-5); 'adaptive_only' models accept nothing but 'adaptive' (e.g. fable, mythos).</summary>
@@ -8123,13 +9761,17 @@ public sealed class ModelCapabilitiesOverrideSupports
     [JsonPropertyName("reasoningEffort")]
     public bool? ReasoningEffort { get; set; }
 
+    /// <summary>Whether this model supports canonical tool calling.</summary>
+    [JsonPropertyName("toolCalls")]
+    public bool? ToolCalls { get; set; }
+
     /// <summary>Whether this model supports vision/image input.</summary>
     [JsonPropertyName("vision")]
     public bool? Vision { get; set; }
 }
 
 /// <summary>Optional capability overrides (vision, tool_calls, reasoning, etc.).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelCapabilitiesOverride
 {
     /// <summary>Token limits for prompts, outputs, and context window.</summary>
@@ -8147,7 +9789,7 @@ public sealed class ModelPickerSettingsContextEnvironment
 }
 
 /// <summary>Filesystem and environment context used to resolve model-picker settings.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelPickerSettingsContext
 {
     /// <summary>Optional Copilot configuration directory containing persisted settings.</summary>
@@ -8164,7 +9806,7 @@ public sealed class ModelPickerSettingsContext
 }
 
 /// <summary>RPC data type for ModelPickerPersistence operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelPickerPersistenceRequest
 {
     /// <summary>Whether context tier was explicitly selected and should be persisted.</summary>
@@ -8181,7 +9823,7 @@ public sealed class ModelPickerPersistenceRequest
 }
 
 /// <summary>Target model identifier and optional reasoning effort, summary, capability overrides, and context tier.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ModelSwitchToRequest
 {
     /// <summary>Optional Auto routing preference to stage atomically with selecting `auto`. Pass null to return to provider-default Auto routing. This field is rejected when `modelId` is not `auto`.</summary>
@@ -8216,7 +9858,7 @@ internal sealed class ModelSwitchToRequest
     [JsonPropertyName("pickerPersistence")]
     public ModelPickerPersistenceRequest? PickerPersistence { get; set; }
 
-    /// <summary>Reasoning effort level to use for the model. CAPI values are model-defined and validated against the selected model; BYOK providers may define additional values. "none" disables reasoning. When omitted, no effort override is applied.</summary>
+    /// <summary>Reasoning effort level to use for the model. CAPI values are model-defined and validated against the selected model; BYOK providers may define additional values. "none" disables reasoning. Pass null to clear any session effort override and fall back to the model's default. When omitted, the session's current effort is kept.</summary>
     [JsonPropertyName("reasoningEffort")]
     public string? ReasoningEffort { get; set; }
 
@@ -8250,7 +9892,7 @@ internal sealed class ModelSwitchToRequest
 }
 
 /// <summary>Immediate acknowledgement and Auto preference snapshot after a switch request. This result never implies that a pending preference committed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelSwitchAutoTierResult
 {
     /// <summary>Auto preference currently claimed by an in-progress activation. Null means the activation is returning to provider-default routing.</summary>
@@ -8275,7 +9917,7 @@ public sealed class ModelSwitchAutoTierResult
 }
 
 /// <summary>An Auto preference request for the session. This updates Auto configuration only; it does not change the selected model to `auto`.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ModelSwitchAutoTierRequest
 {
     /// <summary>Auto preference to activate when a future user turn using the `auto` model safely mints a replacement model and token pair. Pass null to return to provider-default Auto routing.</summary>
@@ -8293,9 +9935,13 @@ internal sealed class ModelSwitchAutoTierRequest
 }
 
 /// <summary>Managed, repository, and CLI model overrides to overlay onto the session at startup.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ModelApplyStartupOverlayRequest
 {
+    /// <summary>Effective default Auto routing preference from user and managed settings. Applies only to fresh sessions and never replaces a per-session selection.</summary>
+    [JsonPropertyName("autoTier")]
+    public AutoTier? AutoTier { get; set; }
+
     /// <summary>Model explicitly selected by the CLI, when provided.</summary>
     [JsonPropertyName("cliModel")]
     public string? CliModel { get; set; }
@@ -8338,7 +9984,7 @@ internal sealed class ModelApplyStartupOverlayRequest
 }
 
 /// <summary>The applied host allowlist and effective session model policy after intersection.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelSetAllowedModelsResult
 {
     /// <summary>Normalized host allowlist. Omitted when the host restriction was cleared, or when a relay client does not return the host policy.</summary>
@@ -8359,7 +10005,7 @@ public sealed class ModelSetAllowedModelsResult
 }
 
 /// <summary>Host-supplied exact model selection IDs to allow for this running session. CAPI IDs are intersected with repository `.github/allowed_models.txt` policy; provider-qualified IDs remain exempt from repository-only policy but are restricted by this host list. Omit or pass null to clear the host restriction; an explicit empty or disjoint list is rejected. Validation and pre-selection fallback failures preserve the previous restriction. Failures after a fallback selection commits retain the new restriction and selected model; callers should inspect current session state after such an error.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ModelSetAllowedModelsRequest
 {
     /// <summary>Exact model IDs to permit, or null to clear the host restriction.</summary>
@@ -8372,7 +10018,7 @@ internal sealed class ModelSetAllowedModelsRequest
 }
 
 /// <summary>Update the session's reasoning effort without changing the selected model. Use `switchTo` instead when you also need to change the model. The runtime stores the effort on the session and applies it to subsequent turns.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelSetReasoningEffortResult
 {
     /// <summary>Reasoning effort level recorded on the session after the update.</summary>
@@ -8381,7 +10027,7 @@ public sealed class ModelSetReasoningEffortResult
 }
 
 /// <summary>Reasoning effort level to apply to the currently selected model.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ModelSetReasoningEffortRequest
 {
     /// <summary>Reasoning effort level to apply to the currently selected model. The host is responsible for validating the value against the model's supported levels before calling.</summary>
@@ -8394,7 +10040,7 @@ internal sealed class ModelSetReasoningEffortRequest
 }
 
 /// <summary>Cost-category metadata for a CAPI model.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionModelPriceCategory
 {
     /// <summary>CAPI model identifier.</summary>
@@ -8407,7 +10053,7 @@ public sealed class SessionModelPriceCategory
 }
 
 /// <summary>The list of models available to this session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionModelList
 {
     /// <summary>Available models, ordered with the most preferred default first. Includes both Copilot (CAPI) models and any registry BYOK models; a BYOK model appears under its provider-qualified selection id (`provider/id`).</summary>
@@ -8424,7 +10070,7 @@ public sealed class SessionModelList
 }
 
 /// <summary>RPC data type for SessionModelList operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionModelListRequest
 {
     /// <summary>If true, bypasses the per-session model list cache and re-fetches from CAPI.</summary>
@@ -8433,7 +10079,7 @@ public sealed class SessionModelListRequest
 }
 
 /// <summary>RPC data type for SessionModelListRequestWithSession operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionModelListRequestWithSession
 {
     /// <summary>Target session identifier.</summary>
@@ -8446,7 +10092,7 @@ internal sealed class SessionModelListRequestWithSession
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionModeGetRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8455,7 +10101,7 @@ internal sealed class SessionModeGetRequest
 }
 
 /// <summary>Outcome of a session mode change, including any model switch it triggered and follow-up the host must perform.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModeSetResult
 {
     /// <summary>Whether the host should arm an interactive continuation after the mode change.</summary>
@@ -8496,7 +10142,7 @@ public sealed class ModeSetResult
 }
 
 /// <summary>Agent interaction mode to apply to the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ModeSetRequest
 {
     /// <summary>Explicit response to a model-switch compaction preflight.</summary>
@@ -8553,7 +10199,7 @@ internal sealed class ModeSetRequest
 }
 
 /// <summary>The session's friendly name, or null when not yet set.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class NameGetResult
 {
     /// <summary>The session name (user-set or auto-generated), or null if not yet set.</summary>
@@ -8562,7 +10208,7 @@ public sealed class NameGetResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionNameGetRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8571,7 +10217,7 @@ internal sealed class SessionNameGetRequest
 }
 
 /// <summary>New friendly name to apply to the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class NameSetRequest
 {
     /// <summary>New session name (1–100 characters, trimmed of leading/trailing whitespace).</summary>
@@ -8587,7 +10233,7 @@ internal sealed class NameSetRequest
 }
 
 /// <summary>Indicates whether the auto-generated summary was applied as the session's name.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class NameSetAutoResult
 {
     /// <summary>Whether the auto-generated summary was persisted. False if the session already has a user-set name, the summary normalized to empty, or the session does not have a workspace.</summary>
@@ -8596,7 +10242,7 @@ public sealed class NameSetAutoResult
 }
 
 /// <summary>Auto-generated session summary to apply as the session's name when no user-set name exists.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class NameSetAutoRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8609,7 +10255,7 @@ internal sealed class NameSetAutoRequest
 }
 
 /// <summary>Existence, contents, and resolved path of the session plan file.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PlanReadResult
 {
     /// <summary>The content of the plan file, or null if it does not exist.</summary>
@@ -8626,7 +10272,7 @@ public sealed class PlanReadResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionPlanReadRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8635,7 +10281,7 @@ internal sealed class SessionPlanReadRequest
 }
 
 /// <summary>Replacement contents to write to the session plan file.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PlanUpdateRequest
 {
     /// <summary>The new content for the plan file.</summary>
@@ -8648,7 +10294,7 @@ internal sealed class PlanUpdateRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionPlanDeleteRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8657,7 +10303,7 @@ internal sealed class SessionPlanDeleteRequest
 }
 
 /// <summary>A single todo row read from the session SQL `todos` table. All fields are optional because the SQL schema is best-effort and the agent may not have populated every column.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PlanSqlTodosRow
 {
     /// <summary>Todo creation time, as stored by the session SQL schema's `datetime('now')` default: `YYYY-MM-DD HH:MM:SS` in UTC. Lets clients attribute todos to the work item that created them (e.g. scoping a goal's progress to the todos it produced) rather than to the whole session.</summary>
@@ -8682,7 +10328,7 @@ public sealed class PlanSqlTodosRow
 }
 
 /// <summary>Todo rows read from the session SQL database. Empty when no session database is available.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PlanReadSqlTodosResult
 {
     /// <summary>Rows from the session SQL todos table, ordered by creation time with insertion order used to break ties when available and id used for WITHOUT ROWID tables.</summary>
@@ -8691,7 +10337,7 @@ public sealed class PlanReadSqlTodosResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionPlanReadSqlTodosRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8700,7 +10346,7 @@ internal sealed class SessionPlanReadSqlTodosRequest
 }
 
 /// <summary>A single dependency edge read from the session SQL `todo_deps` table, indicating that one todo must complete before another.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PlanSqlTodoDependency
 {
     /// <summary>ID of the todo it depends on.</summary>
@@ -8713,7 +10359,7 @@ public sealed class PlanSqlTodoDependency
 }
 
 /// <summary>Todo rows + dependency edges read from the session SQL database.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PlanReadSqlTodosWithDependenciesResult
 {
     /// <summary>Edges from the session SQL todo_deps table. Empty when no database, no todo_deps table, or the SELECT failed. Read independently from `rows`, so a broken todo_deps table does not affect the rows result and vice versa.</summary>
@@ -8726,7 +10372,7 @@ public sealed class PlanReadSqlTodosWithDependenciesResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionPlanReadSqlTodosWithDependenciesRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8809,7 +10455,7 @@ public sealed class WorkspacesGetWorkspaceResultWorkspace
 }
 
 /// <summary>Current workspace metadata for the session, including its absolute filesystem path when available.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesGetWorkspaceResult
 {
     /// <summary>Absolute filesystem path to the workspace directory. Omitted when the session has no workspace (e.g. remote sessions).</summary>
@@ -8822,7 +10468,7 @@ public sealed class WorkspacesGetWorkspaceResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionWorkspacesGetWorkspaceRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8831,7 +10477,7 @@ internal sealed class SessionWorkspacesGetWorkspaceRequest
 }
 
 /// <summary>Workspace metadata fields to update.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesUpdateMetadataRequest
 {
     /// <summary>Opaque workspace context supplied by the session host.</summary>
@@ -8848,7 +10494,7 @@ internal sealed class WorkspacesUpdateMetadataRequest
 }
 
 /// <summary>Optional session context used when creating a local workspace.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesEnsureRequest
 {
     /// <summary>Opaque workspace context supplied by the session host.</summary>
@@ -8861,7 +10507,7 @@ internal sealed class WorkspacesEnsureRequest
 }
 
 /// <summary>Relative paths of files stored in the session workspace files directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesListFilesResult
 {
     /// <summary>Slash-separated relative file paths in the workspace files directory.</summary>
@@ -8870,7 +10516,7 @@ public sealed class WorkspacesListFilesResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionWorkspacesListFilesRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -8879,7 +10525,7 @@ internal sealed class SessionWorkspacesListFilesRequest
 }
 
 /// <summary>Contents of the requested workspace file as a UTF-8 string.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesReadFileResult
 {
     /// <summary>File content as a UTF-8 string.</summary>
@@ -8888,7 +10534,7 @@ public sealed class WorkspacesReadFileResult
 }
 
 /// <summary>Relative path of the workspace file to read.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesReadFileRequest
 {
     /// <summary>Slash-separated relative path within the workspace files directory.</summary>
@@ -8901,7 +10547,7 @@ internal sealed class WorkspacesReadFileRequest
 }
 
 /// <summary>Relative path and UTF-8 content for the workspace file to create or overwrite.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesCreateFileRequest
 {
     /// <summary>File content to write as a UTF-8 string.</summary>
@@ -8918,7 +10564,7 @@ internal sealed class WorkspacesCreateFileRequest
 }
 
 /// <summary>Filesystem metadata for a path in the session workspace files directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesStatFileResult
 {
     /// <summary>Creation time in Unix epoch milliseconds.</summary>
@@ -8943,7 +10589,7 @@ public sealed class WorkspacesStatFileResult
 }
 
 /// <summary>Relative path of the workspace file or directory to inspect.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesStatFileRequest
 {
     /// <summary>Slash-separated relative path within the workspace files directory.</summary>
@@ -8956,7 +10602,7 @@ internal sealed class WorkspacesStatFileRequest
 }
 
 /// <summary>Directory to create within the session workspace files directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesCreateDirectoryRequest
 {
     /// <summary>Slash-separated relative path within the workspace files directory.</summary>
@@ -8973,7 +10619,7 @@ internal sealed class WorkspacesCreateDirectoryRequest
 }
 
 /// <summary>File or directory to remove from the session workspace files directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesRemovePathRequest
 {
     /// <summary>Whether a missing path should be treated as success. Defaults to false.</summary>
@@ -8994,7 +10640,7 @@ internal sealed class WorkspacesRemovePathRequest
 }
 
 /// <summary>Source and destination paths for a rename within the session workspace files directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesRenamePathRequest
 {
     /// <summary>Slash-separated destination path relative to the workspace files directory.</summary>
@@ -9011,7 +10657,7 @@ internal sealed class WorkspacesRenamePathRequest
 }
 
 /// <summary>Workspace checkpoint metadata with assigned number, human-readable title, and checkpoint filename.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesCheckpoints
 {
     /// <summary>Filename of the checkpoint within the workspace checkpoints directory.</summary>
@@ -9028,7 +10674,7 @@ public sealed class WorkspacesCheckpoints
 }
 
 /// <summary>Workspace checkpoints in chronological order; empty when the workspace is not enabled.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesListCheckpointsResult
 {
     /// <summary>Workspace checkpoints in chronological order. Empty when workspace is not enabled.</summary>
@@ -9037,7 +10683,7 @@ public sealed class WorkspacesListCheckpointsResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionWorkspacesListCheckpointsRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9046,7 +10692,7 @@ internal sealed class SessionWorkspacesListCheckpointsRequest
 }
 
 /// <summary>Checkpoint content as a UTF-8 string, or null when the checkpoint or workspace is missing.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesReadCheckpointResult
 {
     /// <summary>Checkpoint content as a UTF-8 string, or null when the checkpoint or workspace is missing.</summary>
@@ -9055,7 +10701,7 @@ public sealed class WorkspacesReadCheckpointResult
 }
 
 /// <summary>Checkpoint number to read.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesReadCheckpointRequest
 {
     /// <summary>Checkpoint number to read.</summary>
@@ -9078,7 +10724,7 @@ public sealed class WorkspacesAddSummaryResultWorkspace
 }
 
 /// <summary>Persisted summary metadata and refreshed workspace metadata.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesAddSummaryResult
 {
     /// <summary>Metadata for the persisted summary.</summary>
@@ -9091,7 +10737,7 @@ public sealed class WorkspacesAddSummaryResult
 }
 
 /// <summary>Compaction summary checkpoint to persist.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesAddSummaryRequest
 {
     /// <summary>Markdown summary content to persist.</summary>
@@ -9108,7 +10754,7 @@ internal sealed class WorkspacesAddSummaryRequest
 }
 
 /// <summary>Rollback point for local workspace summaries.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesTruncateSummariesRequest
 {
     /// <summary>Number of newest summaries to keep.</summary>
@@ -9121,7 +10767,7 @@ internal sealed class WorkspacesTruncateSummariesRequest
 }
 
 /// <summary>Autopilot objective file content, or null when missing.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesReadAutopilotObjectiveResult
 {
     /// <summary>Autopilot objective file content, or null when missing.</summary>
@@ -9130,7 +10776,7 @@ public sealed class WorkspacesReadAutopilotObjectiveResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionWorkspacesReadAutopilotObjectiveRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9139,7 +10785,7 @@ internal sealed class SessionWorkspacesReadAutopilotObjectiveRequest
 }
 
 /// <summary>Result of writing the autopilot objective file.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesWriteAutopilotObjectiveResult
 {
     /// <summary>Filesystem operation performed.</summary>
@@ -9148,7 +10794,7 @@ public sealed class WorkspacesWriteAutopilotObjectiveResult
 }
 
 /// <summary>Autopilot objective file content to persist.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesWriteAutopilotObjectiveRequest
 {
     /// <summary>Autopilot objective file content.</summary>
@@ -9161,7 +10807,7 @@ internal sealed class WorkspacesWriteAutopilotObjectiveRequest
 }
 
 /// <summary>Result of deleting the autopilot objective file.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesDeleteAutopilotObjectiveResult
 {
     /// <summary>True when a file was deleted.</summary>
@@ -9170,7 +10816,7 @@ public sealed class WorkspacesDeleteAutopilotObjectiveResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionWorkspacesDeleteAutopilotObjectiveRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9179,7 +10825,7 @@ internal sealed class SessionWorkspacesDeleteAutopilotObjectiveRequest
 }
 
 /// <summary>Whether the autopilot objective file exists.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesAutopilotObjectiveExistsResult
 {
     /// <summary>True when the objective file exists.</summary>
@@ -9188,7 +10834,7 @@ public sealed class WorkspacesAutopilotObjectiveExistsResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionWorkspacesAutopilotObjectiveExistsRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9213,7 +10859,7 @@ public sealed class WorkspacesSaveLargePasteResultSaved
 }
 
 /// <summary>Descriptor for the saved paste file, or null when the workspace is unavailable.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesSaveLargePasteResult
 {
     /// <summary>Saved-paste descriptor, or null when the workspace is unavailable (e.g. CCA runtime, non-infinite sessions, remote sessions).</summary>
@@ -9222,7 +10868,7 @@ public sealed class WorkspacesSaveLargePasteResult
 }
 
 /// <summary>Pasted content to save as a UTF-8 file in the session workspace.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesSaveLargePasteRequest
 {
     /// <summary>Pasted content to save as a UTF-8 file.</summary>
@@ -9235,7 +10881,7 @@ internal sealed class WorkspacesSaveLargePasteRequest
 }
 
 /// <summary>A single changed file and its unified diff.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspaceDiffFileChange
 {
     /// <summary>Type of change represented by this file diff.</summary>
@@ -9260,7 +10906,7 @@ public sealed class WorkspaceDiffFileChange
 }
 
 /// <summary>Workspace diff result for the requested mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspaceDiffResult
 {
     /// <summary>Default branch used for a branch diff, when branch mode was requested.</summary>
@@ -9289,7 +10935,7 @@ public sealed class WorkspaceDiffResult
 }
 
 /// <summary>Parameters for computing a workspace diff.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class WorkspacesDiffRequest
 {
     /// <summary>When true, ignore whitespace-only changes (git `--ignore-all-space`). Defaults to false.</summary>
@@ -9306,7 +10952,7 @@ internal sealed class WorkspacesDiffRequest
 }
 
 /// <summary>Current per-window credit limit and consumption for an autopilot objective.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AutopilotObjectiveCreditLimit
 {
     /// <summary>Configured AI-credit cap, when one is set.</summary>
@@ -9324,7 +10970,7 @@ public sealed class AutopilotObjectiveCreditLimit
 }
 
 /// <summary>Public, persistence-independent projection of an autopilot objective.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AutopilotObjectiveState
 {
     /// <summary>Optional summary recorded when the objective completed.</summary>
@@ -9362,7 +11008,7 @@ public sealed class AutopilotObjectiveState
 }
 
 /// <summary>Canonical runtime state for the session's current autopilot objective.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AutopilotObjectiveGetStateResult
 {
     /// <summary>Current objective state, or `null` when the session has no objective.</summary>
@@ -9371,7 +11017,7 @@ public sealed class AutopilotObjectiveGetStateResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionAutopilotObjectiveGetStateRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9380,7 +11026,7 @@ internal sealed class SessionAutopilotObjectiveGetStateRequest
 }
 
 /// <summary>Characters that, when typed in the composer, should trigger a `completions.request`. Empty when the session has no host-driven completions (e.g. local sessions, or a relay host that does not advertise `completionTriggerCharacters`).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CompletionsGetTriggerCharactersResult
 {
     /// <summary>Trigger characters advertised by the host (e.g. `["@", "#"]`). Empty disables host-driven completions for the session.</summary>
@@ -9389,7 +11035,7 @@ public sealed class CompletionsGetTriggerCharactersResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionCompletionsGetTriggerCharactersRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9398,7 +11044,7 @@ internal sealed class SessionCompletionsGetTriggerCharactersRequest
 }
 
 /// <summary>A single host-driven completion. Accepting an item replaces `[rangeStart, rangeEnd)` (UTF-16 code units) in the composer with `insertText`; when the range is absent, the active token around the cursor is replaced.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionCompletionItem
 {
     /// <summary>Text spliced into the composer when the item is accepted.</summary>
@@ -9423,7 +11069,7 @@ public sealed class SessionCompletionItem
 }
 
 /// <summary>Host-driven completion items for the current composer input. Empty when the host returns no items or does not support completions.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CompletionsRequestResult
 {
     /// <summary>Completion items in host-ranked order.</summary>
@@ -9432,7 +11078,7 @@ public sealed class CompletionsRequestResult
 }
 
 /// <summary>Request host-driven completions for the current composer input.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CompletionsRequestRequest
 {
     /// <summary>Cursor offset within `text`, in UTF-16 code units.</summary>
@@ -9449,7 +11095,7 @@ internal sealed class CompletionsRequestRequest
 }
 
 /// <summary>Instruction sources loaded for the session, in merge order.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class InstructionsGetSourcesResult
 {
     /// <summary>Instruction sources for the session.</summary>
@@ -9458,7 +11104,7 @@ public sealed class InstructionsGetSourcesResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionInstructionsGetSourcesRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9466,8 +11112,39 @@ internal sealed class SessionInstructionsGetSourcesRequest
     public string SessionId { get; set; } = string.Empty;
 }
 
+/// <summary>Identifies the target session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionInstructionsReloadRequest
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Diagnostics from reloading skill definitions, with warnings and errors as separate lists.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class SkillsLoadDiagnostics
+{
+    /// <summary>Errors emitted while loading skills (e.g. skills that failed to load entirely).</summary>
+    [JsonPropertyName("errors")]
+    public IList<string> Errors { get => field ??= []; set; }
+
+    /// <summary>Warnings emitted while loading skills (e.g. skills that loaded but had issues).</summary>
+    [JsonPropertyName("warnings")]
+    public IList<string> Warnings { get => field ??= []; set; }
+}
+
+/// <summary>Identifies the target session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionCustomizationsReloadRequest
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
 /// <summary>Indicates whether fleet mode was successfully activated.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FleetStartResult
 {
     /// <summary>Whether fleet mode was successfully activated.</summary>
@@ -9476,7 +11153,7 @@ public sealed class FleetStartResult
 }
 
 /// <summary>Parameters for starting fleet orchestration: an optional user prompt combined with the fleet instructions, plus the send options forwarded to the resulting turn.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FleetStartRequest
 {
     /// <summary>Optional attachments (files, directories, selections, blobs, GitHub references) to include with the fleet request.</summary>
@@ -9502,7 +11179,7 @@ internal sealed class FleetStartRequest
 }
 
 /// <summary>Agents available to the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentList
 {
     /// <summary>Available agents.</summary>
@@ -9511,7 +11188,7 @@ public sealed class AgentList
 }
 
 /// <summary>RPC data type for SessionAgentList operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionAgentListRequest
 {
     /// <summary>When true, request the session's configured built-in agents alongside custom agents. Listing applies feature, context, inclusion, exclusion, and user-disabled-agent policy, but does not evaluate transient invocation requirements such as model availability. Built-in metadata may be omitted when the session cannot project it, such as a relay session.</summary>
@@ -9524,7 +11201,7 @@ public sealed class SessionAgentListRequest
 }
 
 /// <summary>RPC data type for SessionAgentListRequestWithSession operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionAgentListRequestWithSession
 {
     /// <summary>When true, request the session's configured built-in agents alongside custom agents. Listing applies feature, context, inclusion, exclusion, and user-disabled-agent policy, but does not evaluate transient invocation requirements such as model availability. Built-in metadata may be omitted when the session cannot project it, such as a relay session.</summary>
@@ -9541,7 +11218,7 @@ internal sealed class SessionAgentListRequestWithSession
 }
 
 /// <summary>An in-memory authored prompt override for an available agent.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class AgentSetPromptRequest
 {
     /// <summary>Stable effective agent id. Plugin namespace separators are normalized.</summary>
@@ -9558,7 +11235,7 @@ internal sealed class AgentSetPromptRequest
 }
 
 /// <summary>The currently selected custom agent, or null when using the default agent.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentGetCurrentResult
 {
     /// <summary>Currently selected custom agent, or null if using the default agent.</summary>
@@ -9567,7 +11244,7 @@ public sealed class AgentGetCurrentResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionAgentGetCurrentRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9576,7 +11253,7 @@ internal sealed class SessionAgentGetCurrentRequest
 }
 
 /// <summary>The newly selected custom agent.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentSelectResult
 {
     /// <summary>The newly selected custom agent.</summary>
@@ -9585,7 +11262,7 @@ public sealed class AgentSelectResult
 }
 
 /// <summary>Name of the custom agent to select for subsequent turns.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class AgentSelectRequest
 {
     /// <summary>Name of the custom agent to select.</summary>
@@ -9598,7 +11275,7 @@ internal sealed class AgentSelectRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionAgentDeselectRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9607,7 +11284,7 @@ internal sealed class SessionAgentDeselectRequest
 }
 
 /// <summary>Custom agents available to the session after reloading definitions from disk.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentReloadResult
 {
     /// <summary>Reloaded custom agents.</summary>
@@ -9616,7 +11293,7 @@ public sealed class AgentReloadResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionAgentReloadRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9625,7 +11302,7 @@ internal sealed class SessionAgentReloadRequest
 }
 
 /// <summary>Identifier assigned to the newly started background agent task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksStartAgentResult
 {
     /// <summary>Generated agent ID for the background task.</summary>
@@ -9634,7 +11311,7 @@ public sealed class TasksStartAgentResult
 }
 
 /// <summary>Agent type, prompt, name, and optional description and model override for the new task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class TasksStartAgentRequest
 {
     /// <summary>Type of agent to start (e.g., 'explore', 'task', 'general-purpose').</summary>
@@ -9664,7 +11341,7 @@ internal sealed class TasksStartAgentRequest
 
 /// <summary>Tracked task union returned by task APIs, containing an agent, client, or shell task.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -9681,7 +11358,7 @@ public partial class TaskInfo
 
 /// <summary>Tracked background agent task metadata, including IDs, status, timing, agent type, prompt, model, result, and latest response.</summary>
 /// <remarks>The <c>agent</c> variant of <see cref="TaskInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskInfoAgent : TaskInfo
 {
     /// <inheritdoc />
@@ -9779,7 +11456,7 @@ public partial class TaskInfoAgent : TaskInfo
 }
 
 /// <summary>Public owner attribution for a client-owned task. Identifiers are opaque and never authorize requests.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TaskClientOwner
 {
     /// <summary>ISO 8601 timestamp when the bound join disconnected.</summary>
@@ -9813,7 +11490,7 @@ public sealed class TaskClientOwner
 
 /// <summary>Tracked client-owned task metadata.</summary>
 /// <remarks>The <c>client</c> variant of <see cref="TaskInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskInfoClient : TaskInfo
 {
     /// <inheritdoc />
@@ -9917,7 +11594,7 @@ public partial class TaskInfoClient : TaskInfo
 
 /// <summary>Tracked shell task metadata, including ID, command, status, timing, attachment/execution mode, log path, and PID.</summary>
 /// <remarks>The <c>shell</c> variant of <see cref="TaskInfo"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskInfoShell : TaskInfo
 {
     /// <inheritdoc />
@@ -9975,7 +11652,7 @@ public partial class TaskInfoShell : TaskInfo
 }
 
 /// <summary>Background tasks currently tracked by the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TaskList
 {
     /// <summary>Currently tracked tasks.</summary>
@@ -9984,7 +11661,7 @@ public sealed class TaskList
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionTasksListRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -9993,7 +11670,7 @@ internal sealed class SessionTasksListRequest
 }
 
 /// <summary>Tracked client-owned task metadata.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TaskClientInfo
 {
     /// <summary>ISO 8601 timestamp when the current active segment started.</summary>
@@ -10086,7 +11763,7 @@ public sealed class TaskClientInfo
 }
 
 /// <summary>Result of registering or reclaiming a client-owned task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksRegisterResult
 {
     /// <summary>True only when this invocation created a new task.</summary>
@@ -10103,7 +11780,7 @@ public sealed class TasksRegisterResult
 }
 
 /// <summary>Registers or reclaims a client-owned task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class TasksRegisterRequest
 {
     /// <summary>Whether the owner supports runtime cancellation requests.</summary>
@@ -10136,7 +11813,7 @@ internal sealed class TasksRegisterRequest
 }
 
 /// <summary>Result of publishing a client-owned task update.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksUpdateResult
 {
     /// <summary>Whether this invocation changed task state.</summary>
@@ -10154,7 +11831,7 @@ public sealed class TasksUpdateResult
 
 /// <summary>Progress or terminal update for a client-owned task.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -10172,7 +11849,7 @@ public partial class TaskClientUpdate
 
 /// <summary>Publishes nonterminal progress for a running or idle client task.</summary>
 /// <remarks>The <c>progress</c> variant of <see cref="TaskClientUpdate"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskClientUpdateProgress : TaskClientUpdate
 {
     /// <inheritdoc />
@@ -10202,7 +11879,7 @@ public partial class TaskClientUpdateProgress : TaskClientUpdate
 
 /// <summary>Reports successful terminal completion.</summary>
 /// <remarks>The <c>completed</c> variant of <see cref="TaskClientUpdate"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskClientUpdateCompleted : TaskClientUpdate
 {
     /// <inheritdoc />
@@ -10222,7 +11899,7 @@ public partial class TaskClientUpdateCompleted : TaskClientUpdate
 
 /// <summary>Reports terminal failure.</summary>
 /// <remarks>The <c>failed</c> variant of <see cref="TaskClientUpdate"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskClientUpdateFailed : TaskClientUpdate
 {
     /// <inheritdoc />
@@ -10246,7 +11923,7 @@ public partial class TaskClientUpdateFailed : TaskClientUpdate
 
 /// <summary>Reports terminal cancellation after external work stopped.</summary>
 /// <remarks>The <c>cancelled</c> variant of <see cref="TaskClientUpdate"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskClientUpdateCancelled : TaskClientUpdate
 {
     /// <inheritdoc />
@@ -10265,7 +11942,7 @@ public partial class TaskClientUpdateCancelled : TaskClientUpdate
 }
 
 /// <summary>Updates a client-owned task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class TasksUpdateRequest
 {
     /// <summary>Canonical runtime-generated task identifier.</summary>
@@ -10286,13 +11963,13 @@ internal sealed class TasksUpdateRequest
 }
 
 /// <summary>Refresh metadata for any detached background shells the runtime knows about. Use after a long pause to pick up exit/output state for shells running outside the agent loop.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksRefreshResult
 {
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionTasksRefreshRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10301,13 +11978,13 @@ internal sealed class SessionTasksRefreshRequest
 }
 
 /// <summary>Wait until all in-flight background tasks (agents + shells) and any follow-up turns scheduled by their completions have settled. Returns when the runtime is fully drained or after an internal timeout (default 10 minutes; configurable via COPILOT_TASK_WAIT_TIMEOUT_SECONDS).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksWaitForPendingResult
 {
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionTasksWaitForPendingRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10317,7 +11994,7 @@ internal sealed class SessionTasksWaitForPendingRequest
 
 /// <summary>Progress information for the task, discriminated by type. Returns null when no task with this ID is currently tracked.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -10333,7 +12010,7 @@ public partial class TaskProgress
 
 
 /// <summary>Timestamped display line for task progress output or recent agent activity.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TaskProgressLine
 {
     /// <summary>Display message, e.g., "▸ bash", "✓ edit src/foo.ts".</summary>
@@ -10347,7 +12024,7 @@ public sealed class TaskProgressLine
 
 /// <summary>Progress snapshot for an agent task, with recent activity lines and optional latest intent.</summary>
 /// <remarks>The <c>agent</c> variant of <see cref="TaskProgress"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskProgressAgent : TaskProgress
 {
     /// <inheritdoc />
@@ -10366,7 +12043,7 @@ public partial class TaskProgressAgent : TaskProgress
 
 /// <summary>Generic progress for a client-owned task.</summary>
 /// <remarks>The <c>client</c> variant of <see cref="TaskProgress"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskProgressClient : TaskProgress
 {
     /// <inheritdoc />
@@ -10407,7 +12084,7 @@ public partial class TaskProgressClient : TaskProgress
 
 /// <summary>Progress snapshot for a shell task, with recent stdout/stderr output and optional process ID.</summary>
 /// <remarks>The <c>shell</c> variant of <see cref="TaskProgress"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class TaskProgressShell : TaskProgress
 {
     /// <inheritdoc />
@@ -10425,7 +12102,7 @@ public partial class TaskProgressShell : TaskProgress
 }
 
 /// <summary>Progress information for the task, or null when no task with that ID is tracked.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksGetProgressResult
 {
     /// <summary>Progress information for the task, discriminated by type. Returns null when no task with this ID is currently tracked.</summary>
@@ -10434,7 +12111,7 @@ public sealed class TasksGetProgressResult
 }
 
 /// <summary>Identifier of the background task to fetch progress for.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class TasksGetProgressRequest
 {
     /// <summary>Task identifier (agent ID or shell ID).</summary>
@@ -10447,7 +12124,7 @@ internal sealed class TasksGetProgressRequest
 }
 
 /// <summary>The first sync-waiting task that can currently be promoted to background mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksGetCurrentPromotableResult
 {
     /// <summary>The first sync-waiting task (agent first, then shell) that can currently be promoted to background mode. Omitted if no such task exists. The returned task is guaranteed to have executionMode='sync' and canPromoteToBackground=true at the time of the call.</summary>
@@ -10456,7 +12133,7 @@ public sealed class TasksGetCurrentPromotableResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionTasksGetCurrentPromotableRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10465,7 +12142,7 @@ internal sealed class SessionTasksGetCurrentPromotableRequest
 }
 
 /// <summary>Indicates whether the task was successfully promoted to background mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksPromoteToBackgroundResult
 {
     /// <summary>Whether the task was successfully promoted to background mode.</summary>
@@ -10474,7 +12151,7 @@ public sealed class TasksPromoteToBackgroundResult
 }
 
 /// <summary>Identifier of the task to promote to background mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class TasksPromoteToBackgroundRequest
 {
     /// <summary>Task identifier.</summary>
@@ -10487,7 +12164,7 @@ internal sealed class TasksPromoteToBackgroundRequest
 }
 
 /// <summary>The promoted task as it now exists in background mode, omitted if no promotable task was waiting.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksPromoteCurrentToBackgroundResult
 {
     /// <summary>The promoted task as it now exists in background mode, omitted if no promotable task was waiting. Atomic operation: avoids the race window of getCurrentPromotable + promoteToBackground.</summary>
@@ -10496,7 +12173,7 @@ public sealed class TasksPromoteCurrentToBackgroundResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionTasksPromoteCurrentToBackgroundRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10505,7 +12182,7 @@ internal sealed class SessionTasksPromoteCurrentToBackgroundRequest
 }
 
 /// <summary>Indicates whether the background task was successfully cancelled.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksCancelResult
 {
     /// <summary>Whether the task was successfully cancelled.</summary>
@@ -10514,7 +12191,7 @@ public sealed class TasksCancelResult
 }
 
 /// <summary>Identifier of the background task to cancel.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class TasksCancelRequest
 {
     /// <summary>Task identifier.</summary>
@@ -10527,7 +12204,7 @@ internal sealed class TasksCancelRequest
 }
 
 /// <summary>Indicates whether the task was removed. False when the task does not exist or is still running/idle.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksRemoveResult
 {
     /// <summary>Whether the task was removed. Returns false if the task does not exist or is still running/idle (cancel it first).</summary>
@@ -10536,7 +12213,7 @@ public sealed class TasksRemoveResult
 }
 
 /// <summary>Identifier of the completed or cancelled task to remove from tracking.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class TasksRemoveRequest
 {
     /// <summary>Task identifier.</summary>
@@ -10549,7 +12226,7 @@ internal sealed class TasksRemoveRequest
 }
 
 /// <summary>Indicates whether the message was delivered, with an error message when delivery failed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksSendMessageResult
 {
     /// <summary>Error message if delivery failed.</summary>
@@ -10562,7 +12239,7 @@ public sealed class TasksSendMessageResult
 }
 
 /// <summary>Identifier of the target agent task, message content, and optional sender agent ID.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class TasksSendMessageRequest
 {
     /// <summary>Agent ID of the sender, if sent on behalf of another agent.</summary>
@@ -10583,7 +12260,7 @@ internal sealed class TasksSendMessageRequest
 }
 
 /// <summary>Skill metadata available to a session, with name, description, source, enabled/invocable state, path, plugin, and argument hint.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class Skill
 {
     /// <summary>Optional freeform hint describing the skill's expected arguments, from the `argument-hint` frontmatter field.</summary>
@@ -10624,7 +12301,7 @@ public sealed class Skill
 }
 
 /// <summary>Skills available to the session, with their enabled state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SkillList
 {
     /// <summary>Available skills.</summary>
@@ -10633,7 +12310,7 @@ public sealed class SkillList
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSkillsListRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10642,7 +12319,7 @@ internal sealed class SessionSkillsListRequest
 }
 
 /// <summary>Skill invocation record with name, path, content, allowed tools, and turn number.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SkillsInvokedSkill
 {
     /// <summary>Tools that should be auto-approved when this skill is active, captured at invocation time.</summary>
@@ -10671,7 +12348,7 @@ public sealed class SkillsInvokedSkill
 }
 
 /// <summary>Skills invoked during this session, ordered by invocation time (most recent last).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SkillsGetInvokedResult
 {
     /// <summary>Skills invoked during this session, ordered by invocation time (most recent last).</summary>
@@ -10680,7 +12357,7 @@ public sealed class SkillsGetInvokedResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSkillsGetInvokedRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10689,7 +12366,7 @@ internal sealed class SessionSkillsGetInvokedRequest
 }
 
 /// <summary>Name of the skill to enable for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SkillsEnableRequest
 {
     /// <summary>Name of the skill to enable.</summary>
@@ -10702,7 +12379,7 @@ internal sealed class SkillsEnableRequest
 }
 
 /// <summary>Name of the skill to disable for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SkillsDisableRequest
 {
     /// <summary>Name of the skill to disable.</summary>
@@ -10714,21 +12391,8 @@ internal sealed class SkillsDisableRequest
     public string SessionId { get; set; } = string.Empty;
 }
 
-/// <summary>Diagnostics from reloading skill definitions, with warnings and errors as separate lists.</summary>
-[Experimental(Diagnostics.Experimental)]
-public sealed class SkillsLoadDiagnostics
-{
-    /// <summary>Errors emitted while loading skills (e.g. skills that failed to load entirely).</summary>
-    [JsonPropertyName("errors")]
-    public IList<string> Errors { get => field ??= []; set; }
-
-    /// <summary>Warnings emitted while loading skills (e.g. skills that loaded but had issues).</summary>
-    [JsonPropertyName("warnings")]
-    public IList<string> Warnings { get => field ??= []; set; }
-}
-
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSkillsReloadRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10737,7 +12401,7 @@ internal sealed class SessionSkillsReloadRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSkillsEnsureLoadedRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10746,7 +12410,7 @@ internal sealed class SessionSkillsEnsureLoadedRequest
 }
 
 /// <summary>Recorded MCP server connection failure.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpServerFailureInfo
 {
     /// <summary>Failure message produced when the MCP server connection failed.</summary>
@@ -10759,7 +12423,7 @@ public sealed class McpServerFailureInfo
 }
 
 /// <summary>Recorded MCP server pending-auth state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpServerNeedsAuthInfo
 {
     /// <summary>epoch-ms timestamp at which the server signalled it needs authentication.</summary>
@@ -10768,7 +12432,7 @@ public sealed class McpServerNeedsAuthInfo
 }
 
 /// <summary>Host-level state, omitted when no MCP host is initialized.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpHostState
 {
     /// <summary>Names of currently-connected MCP clients.</summary>
@@ -10801,7 +12465,7 @@ public sealed class McpHostState
 }
 
 /// <summary>MCP server status entry, including config source/plugin source and any connection error.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpServer
 {
     /// <summary>Human-readable display name supplied by a managed server catalog.</summary>
@@ -10841,7 +12505,7 @@ public sealed class McpServer
 }
 
 /// <summary>MCP servers configured for the session, with their connection status and host-level state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpServerList
 {
     /// <summary>Host-level state, omitted when no MCP host is initialized.</summary>
@@ -10854,7 +12518,7 @@ public sealed class McpServerList
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMcpListRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10863,7 +12527,7 @@ internal sealed class SessionMcpListRequest
 }
 
 /// <summary>Normalized MCP Apps discovery metadata from a tool's `_meta.ui` block.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpToolUi
 {
     /// <summary>URI of the tool's MCP App resource, typically a `ui://` resource identifier. Use `session.mcp.resources.read` to fetch its HTML and resource metadata.</summary>
@@ -10876,7 +12540,7 @@ public sealed class McpToolUi
 }
 
 /// <summary>MCP tool metadata with tool name, optional description, and normalized MCP Apps discovery metadata.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpTools
 {
     /// <summary>Tool description, when provided.</summary>
@@ -10893,7 +12557,7 @@ public sealed class McpTools
 }
 
 /// <summary>Tools exposed by the connected MCP server. Throws when the server is not connected.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpListToolsResult
 {
     /// <summary>Tools exposed by the server.</summary>
@@ -10902,7 +12566,7 @@ public sealed class McpListToolsResult
 }
 
 /// <summary>Server name whose tool list should be returned.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpListToolsRequest
 {
     /// <summary>Name of the connected MCP server whose tools to list.</summary>
@@ -10918,7 +12582,7 @@ internal sealed class McpListToolsRequest
 }
 
 /// <summary>Name of the MCP server to enable for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpEnableRequest
 {
     /// <summary>Name of the MCP server to enable.</summary>
@@ -10934,7 +12598,7 @@ internal sealed class McpEnableRequest
 }
 
 /// <summary>Name of the MCP server to disable for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpDisableRequest
 {
     /// <summary>Name of the MCP server to disable.</summary>
@@ -10950,7 +12614,7 @@ internal sealed class McpDisableRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMcpReloadRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10959,7 +12623,7 @@ internal sealed class SessionMcpReloadRequest
 }
 
 /// <summary>Result of moving in-flight MCP loading to the background.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MoveMcpLoadingToBackgroundResult
 {
     /// <summary>Whether an in-flight MCP load was moved to the background, releasing turns that were waiting on it. False when no MCP load was in flight or the waiting turns had already been released.</summary>
@@ -10968,7 +12632,7 @@ public sealed class MoveMcpLoadingToBackgroundResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMcpMoveLoadingToBackgroundRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -10977,7 +12641,7 @@ internal sealed class SessionMcpMoveLoadingToBackgroundRequest
 }
 
 /// <summary>MCP server allowed by policy, with server name and optional PII-free explanatory note.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAllowedServer
 {
     /// <summary>Allowed server name.</summary>
@@ -10990,7 +12654,7 @@ public sealed class McpAllowedServer
 }
 
 /// <summary>MCP server whose connection attempt failed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpFailedServer
 {
     /// <summary>The captured connection failure detail.</summary>
@@ -11003,7 +12667,7 @@ public sealed class McpFailedServer
 }
 
 /// <summary>MCP server filtered by policy, with name, reason, and optional redacted reason.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpFilteredServer
 {
     /// <summary>Deprecated. This field is no longer populated.</summary>
@@ -11028,7 +12692,7 @@ public sealed class McpFilteredServer
 }
 
 /// <summary>MCP server startup filtering result.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpStartServersResult
 {
     /// <summary>Non-default servers allowed by policy.</summary>
@@ -11045,7 +12709,7 @@ internal sealed class McpStartServersResult
 }
 
 /// <summary>Opaque MCP reload configuration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpReloadWithConfigRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -11054,13 +12718,13 @@ internal sealed class McpReloadWithConfigRequest
 }
 
 /// <summary>MCP CreateMessageResult payload (with optional 'tools' extension), present when action='success'. Treated as opaque at the schema layer; consumers should construct/consume it per the MCP CreateMessageResult shape.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpExecuteSamplingResult
 {
 }
 
 /// <summary>Outcome of an MCP sampling execution: success result, failure error, or cancellation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpSamplingExecutionResult
 {
     /// <summary>Outcome of the sampling inference. 'success' produced a response; 'failure' encountered an error (including agent-side rejection by content filter or criteria); 'cancelled' the caller cancelled this execution via cancelSamplingExecution.</summary>
@@ -11077,13 +12741,13 @@ public sealed class McpSamplingExecutionResult
 }
 
 /// <summary>Raw MCP CreateMessageRequest params, as received in the `sampling.requested` event. Treated as opaque at the schema layer; the runtime converts the embedded MCP messages into the OpenAI chat-completion shape internally.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpExecuteSamplingRequest
 {
 }
 
 /// <summary>Identifiers and raw MCP CreateMessageRequest params used to run a sampling inference.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpExecuteSamplingParams
 {
     /// <summary>The original MCP JSON-RPC request ID (string or number). Used by the runtime to correlate the inference with the originating MCP request for telemetry; this is distinct from `requestId` (which is the schema-level cancellation handle).</summary>
@@ -11108,7 +12772,7 @@ internal sealed class McpExecuteSamplingParams
 }
 
 /// <summary>Indicates whether an in-flight sampling execution with the given requestId was found and cancelled.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpCancelSamplingExecutionResult
 {
     /// <summary>True if an in-flight execution with the given requestId was found and signalled to cancel. False when no such execution is in flight (already completed, never started, or cancelled by another caller).</summary>
@@ -11117,7 +12781,7 @@ public sealed class McpCancelSamplingExecutionResult
 }
 
 /// <summary>The requestId previously passed to executeSampling that should be cancelled.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpCancelSamplingExecutionParams
 {
     /// <summary>The requestId previously passed to executeSampling that should be cancelled.</summary>
@@ -11130,7 +12794,7 @@ internal sealed class McpCancelSamplingExecutionParams
 }
 
 /// <summary>Env-value mode recorded on the session after the update.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpSetEnvValueModeResult
 {
     /// <summary>Mode recorded on the session after the update.</summary>
@@ -11139,7 +12803,7 @@ public sealed class McpSetEnvValueModeResult
 }
 
 /// <summary>Mode controlling how MCP server env values are resolved (`direct` or `indirect`).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpSetEnvValueModeParams
 {
     /// <summary>How environment-variable values supplied to MCP servers are resolved. "direct" passes literal string values; "indirect" treats values as references (e.g. names of environment variables on the host) that the runtime resolves before launch. Defaults to the runtime's startup mode; clients that intentionally launch MCP servers with literal values (e.g. CLI prompt mode and ACP) set this to "direct".</summary>
@@ -11152,7 +12816,7 @@ internal sealed class McpSetEnvValueModeParams
 }
 
 /// <summary>Indicates whether the auto-managed `github` MCP server was removed (false when nothing to remove).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpRemoveGitHubResult
 {
     /// <summary>True when the auto-managed `github` MCP server was removed; false when no removal happened (e.g. user has explicitly configured a `github` server, or the server was not registered).</summary>
@@ -11161,7 +12825,7 @@ public sealed class McpRemoveGitHubResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMcpRemoveGitHubRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -11170,7 +12834,7 @@ internal sealed class SessionMcpRemoveGitHubRequest
 }
 
 /// <summary>Result of configuring GitHub MCP.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpConfigureGitHubResult
 {
     /// <summary>Whether GitHub MCP configuration changed.</summary>
@@ -11179,7 +12843,7 @@ internal sealed class McpConfigureGitHubResult
 }
 
 /// <summary>Credential-free authentication identity used to configure GitHub MCP.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpConfigureGitHubRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -11188,7 +12852,7 @@ internal sealed class McpConfigureGitHubRequest
 }
 
 /// <summary>Server name and optional configuration for an individual MCP server start. Omit `config` for a config-free start-by-name of an already-configured server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpStartServerRequest
 {
     /// <summary>MCP server configuration (stdio process or remote HTTP/SSE). Omit to start the server with its already-registered configuration (config-free start-by-name).</summary>
@@ -11205,7 +12869,7 @@ internal sealed class McpStartServerRequest
 }
 
 /// <summary>Server name and optional replacement configuration for an individual MCP server restart. Omit `config` for a config-free restart-by-name of an already-configured server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpRestartServerRequest
 {
     /// <summary>Replacement MCP server configuration (stdio process or remote HTTP/SSE). Omit to restart the server with its already-registered configuration (config-free restart-by-name).</summary>
@@ -11222,7 +12886,7 @@ internal sealed class McpRestartServerRequest
 }
 
 /// <summary>Server name for an individual MCP server stop.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpStopServerRequest
 {
     /// <summary>Name of the MCP server to stop.</summary>
@@ -11235,7 +12899,7 @@ internal sealed class McpStopServerRequest
 }
 
 /// <summary>Registration parameters for an external MCP client.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpRegisterExternalClientRequest
 {
     /// <summary>Logical server name for the external client.</summary>
@@ -11248,7 +12912,7 @@ internal sealed class McpRegisterExternalClientRequest
 }
 
 /// <summary>Server name identifying the external client to remove.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpUnregisterExternalClientRequest
 {
     /// <summary>Server name of the external client to unregister.</summary>
@@ -11261,7 +12925,7 @@ internal sealed class McpUnregisterExternalClientRequest
 }
 
 /// <summary>Whether the named MCP server is running.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpIsServerRunningResult
 {
     /// <summary>True if the server has an active client and transport.</summary>
@@ -11270,7 +12934,7 @@ public sealed class McpIsServerRunningResult
 }
 
 /// <summary>Server name to check running status for.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpIsServerRunningRequest
 {
     /// <summary>Name of the MCP server to check.</summary>
@@ -11283,7 +12947,7 @@ internal sealed class McpIsServerRunningRequest
 }
 
 /// <summary>Indicates whether the pending MCP OAuth response was accepted.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpOauthHandlePendingResult
 {
     /// <summary>Whether the response was accepted. False if the request was unknown, timed out, or already resolved.</summary>
@@ -11293,7 +12957,7 @@ public sealed class McpOauthHandlePendingResult
 
 /// <summary>Host response to the pending OAuth request.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -11308,7 +12972,7 @@ public partial class McpOauthPendingRequestResponse
 
 
 /// <summary>The <c>token</c> variant of <see cref="McpOauthPendingRequestResponse"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpOauthPendingRequestResponseToken : McpOauthPendingRequestResponse
 {
     /// <inheritdoc />
@@ -11331,7 +12995,7 @@ public partial class McpOauthPendingRequestResponseToken : McpOauthPendingReques
 }
 
 /// <summary>The <c>cancelled</c> variant of <see cref="McpOauthPendingRequestResponse"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpOauthPendingRequestResponseCancelled : McpOauthPendingRequestResponse
 {
     /// <inheritdoc />
@@ -11340,7 +13004,7 @@ public partial class McpOauthPendingRequestResponseCancelled : McpOauthPendingRe
 }
 
 /// <summary>Pending MCP OAuth request ID and host-provided token or cancellation response.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpOauthHandlePendingRequest
 {
     /// <summary>OAuth request identifier from the mcp.oauth_required event.</summary>
@@ -11357,7 +13021,7 @@ internal sealed class McpOauthHandlePendingRequest
 }
 
 /// <summary>Identifies the MCP server whose persisted OAuth credentials were updated.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpOauthAuthenticationStateChangedRequest
 {
     /// <summary>Whether the target session must mint a session-scoped access token instead of reusing a shared access token persisted by another session.</summary>
@@ -11374,7 +13038,7 @@ internal sealed class McpOauthAuthenticationStateChangedRequest
 }
 
 /// <summary>OAuth authorization URL the caller should open, or empty when cached tokens already authenticated the server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpOauthLoginResult
 {
     /// <summary>URL the caller should open in a browser to complete OAuth. Omitted when cached tokens were still valid and no browser interaction was needed — the server is already reconnected in that case. When present, the runtime starts the callback listener before returning and continues the flow in the background; completion is signaled via session.mcp_server_status_changed.</summary>
@@ -11385,7 +13049,7 @@ public sealed class McpOauthLoginResult
 }
 
 /// <summary>Remote MCP server name and optional overrides controlling reauthentication, OAuth client display name, callback success-page copy, and static OAuth client selection.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpOauthLoginRequest
 {
     /// <summary>Optional override for the body text shown on the OAuth loopback callback success page. When omitted, the runtime applies a neutral fallback; callers driving interactive auth should pass surface-specific copy telling the user where to return.</summary>
@@ -11430,7 +13094,7 @@ internal sealed class McpOauthLoginRequest
 
 /// <summary>Passive MCP OAuth probe result. `authenticated` means the server accepted the probe request while an OAuth-origin access token was attached; it does not prove the server required or independently validated that token. The probe does not make a second unauthenticated request. Failed is an expected probe-domain outcome; JSON-RPC errors are reserved for API-call failures.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>status</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "status",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -11447,7 +13111,7 @@ public partial class McpOauthProbeResult
 
 
 /// <summary>The <c>no-auth-required</c> variant of <see cref="McpOauthProbeResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpOauthProbeResultNoAuthRequired : McpOauthProbeResult
 {
     /// <inheritdoc />
@@ -11460,7 +13124,7 @@ public partial class McpOauthProbeResultNoAuthRequired : McpOauthProbeResult
 }
 
 /// <summary>The <c>authenticated</c> variant of <see cref="McpOauthProbeResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpOauthProbeResultAuthenticated : McpOauthProbeResult
 {
     /// <inheritdoc />
@@ -11473,7 +13137,7 @@ public partial class McpOauthProbeResultAuthenticated : McpOauthProbeResult
 }
 
 /// <summary>The <c>needs-auth</c> variant of <see cref="McpOauthProbeResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpOauthProbeResultNeedsAuth : McpOauthProbeResult
 {
     /// <inheritdoc />
@@ -11495,7 +13159,7 @@ public partial class McpOauthProbeResultNeedsAuth : McpOauthProbeResult
 }
 
 /// <summary>The <c>failed</c> variant of <see cref="McpOauthProbeResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpOauthProbeResultFailed : McpOauthProbeResult
 {
     /// <inheritdoc />
@@ -11513,7 +13177,7 @@ public partial class McpOauthProbeResultFailed : McpOauthProbeResult
 }
 
 /// <summary>Remote MCP server name for a passive OAuth status probe.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpOauthProbeRequest
 {
     /// <summary>Name of the configured remote MCP server to probe.</summary>
@@ -11529,7 +13193,7 @@ internal sealed class McpOauthProbeRequest
 }
 
 /// <summary>Indicates whether the pending MCP OAuth response was accepted.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpOauthRespondResult
 {
     /// <summary>Whether the response was accepted. False if the request was unknown, timed out, or already resolved.</summary>
@@ -11538,7 +13202,7 @@ public sealed class McpOauthRespondResult
 }
 
 /// <summary>Pending MCP OAuth request id to respond to.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpOauthRespondRequest
 {
     /// <summary>OAuth request identifier from the mcp.oauth_required event.</summary>
@@ -11551,7 +13215,7 @@ internal sealed class McpOauthRespondRequest
 }
 
 /// <summary>Indicates whether the pending MCP headers refresh response was accepted.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpHeadersHandlePendingHeadersRefreshRequestResult
 {
     /// <summary>Whether the response was accepted. False if the request was unknown, timed out, or already resolved.</summary>
@@ -11561,7 +13225,7 @@ public sealed class McpHeadersHandlePendingHeadersRefreshRequestResult
 
 /// <summary>Host response: supply dynamic headers or decline this refresh.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -11577,7 +13241,7 @@ public partial class McpHeadersHandlePendingHeadersRefreshRequest
 
 
 /// <summary>The <c>headers</c> variant of <see cref="McpHeadersHandlePendingHeadersRefreshRequest"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpHeadersHandlePendingHeadersRefreshRequestHeaders : McpHeadersHandlePendingHeadersRefreshRequest
 {
     /// <inheritdoc />
@@ -11595,7 +13259,7 @@ public partial class McpHeadersHandlePendingHeadersRefreshRequestHeaders : McpHe
 }
 
 /// <summary>The <c>none</c> variant of <see cref="McpHeadersHandlePendingHeadersRefreshRequest"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpHeadersHandlePendingHeadersRefreshRequestNone : McpHeadersHandlePendingHeadersRefreshRequest
 {
     /// <inheritdoc />
@@ -11604,7 +13268,7 @@ public partial class McpHeadersHandlePendingHeadersRefreshRequestNone : McpHeade
 }
 
 /// <summary>The <c>error</c> variant of <see cref="McpHeadersHandlePendingHeadersRefreshRequest"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class McpHeadersHandlePendingHeadersRefreshRequestError : McpHeadersHandlePendingHeadersRefreshRequest
 {
     /// <inheritdoc />
@@ -11617,7 +13281,7 @@ public partial class McpHeadersHandlePendingHeadersRefreshRequestError : McpHead
 }
 
 /// <summary>MCP headers refresh request id and the host response.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpHeadersHandlePendingHeadersRefreshRequestRequest
 {
     /// <summary>Headers refresh request identifier from mcp.headers_refresh_required.</summary>
@@ -11634,7 +13298,7 @@ internal sealed class McpHeadersHandlePendingHeadersRefreshRequestRequest
 }
 
 /// <summary>MCP Apps resource content with URI, optional MIME type, text or base64 blob, and resource metadata.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsResourceContent
 {
     /// <summary>Resource-level metadata (CSP, permissions, etc.).</summary>
@@ -11659,7 +13323,7 @@ public sealed class McpAppsResourceContent
 }
 
 /// <summary>Resource contents returned by the MCP server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsReadResourceResult
 {
     /// <summary>Resource contents returned by the server.</summary>
@@ -11668,7 +13332,7 @@ public sealed class McpAppsReadResourceResult
 }
 
 /// <summary>MCP server and resource URI to fetch.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpAppsReadResourceRequest
 {
     /// <summary>Name of the MCP server hosting the resource.</summary>
@@ -11688,7 +13352,7 @@ internal sealed class McpAppsReadResourceRequest
 }
 
 /// <summary>App-callable tools from the named MCP server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsListToolsResult
 {
     /// <summary>App-callable tools from the server.</summary>
@@ -11697,7 +13361,7 @@ public sealed class McpAppsListToolsResult
 }
 
 /// <summary>MCP server to list app-callable tools for.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpAppsListToolsRequest
 {
     /// <summary>**Required.** Server whose ui:// view issued the request. Per SEP-1865 ('callable by the app from this server only'), the call is rejected when this differs from `serverName`, and rejected outright when missing.</summary>
@@ -11720,7 +13384,7 @@ internal sealed class McpAppsListToolsRequest
 }
 
 /// <summary>MCP server, tool name, and arguments to invoke from an MCP App view.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpAppsCallToolRequest
 {
     /// <summary>Tool arguments.</summary>
@@ -11751,7 +13415,7 @@ internal sealed class McpAppsCallToolRequest
 }
 
 /// <summary>Host context advertised to MCP App guests.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsSetHostContextDetails
 {
     /// <summary>Display modes the host supports.</summary>
@@ -11784,7 +13448,7 @@ public sealed class McpAppsSetHostContextDetails
 }
 
 /// <summary>Host context to advertise to MCP App guests.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpAppsSetHostContextRequest
 {
     /// <summary>Host context advertised to MCP App guests.</summary>
@@ -11797,7 +13461,7 @@ internal sealed class McpAppsSetHostContextRequest
 }
 
 /// <summary>Current host context.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsHostContextDetails
 {
     /// <summary>Display modes the host supports.</summary>
@@ -11830,7 +13494,7 @@ public sealed class McpAppsHostContextDetails
 }
 
 /// <summary>Current host context advertised to MCP App guests.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsHostContext
 {
     /// <summary>Current host context.</summary>
@@ -11839,7 +13503,7 @@ public sealed class McpAppsHostContext
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMcpAppsGetHostContextRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -11848,7 +13512,7 @@ internal sealed class SessionMcpAppsGetHostContextRequest
 }
 
 /// <summary>Capability negotiation snapshot.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsDiagnoseCapability
 {
     /// <summary>Whether the runtime advertises `extensions.io.modelcontextprotocol/ui` to MCP servers.</summary>
@@ -11865,7 +13529,7 @@ public sealed class McpAppsDiagnoseCapability
 }
 
 /// <summary>What the server returned for this session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsDiagnoseServer
 {
     /// <summary>Whether the named server is currently connected.</summary>
@@ -11886,7 +13550,7 @@ public sealed class McpAppsDiagnoseServer
 }
 
 /// <summary>Diagnostic snapshot of MCP Apps wiring for the named server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsDiagnoseResult
 {
     /// <summary>Capability negotiation snapshot.</summary>
@@ -11899,7 +13563,7 @@ public sealed class McpAppsDiagnoseResult
 }
 
 /// <summary>MCP server to diagnose MCP Apps wiring for.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpAppsDiagnoseRequest
 {
     /// <summary>MCP server to probe.</summary>
@@ -11915,7 +13579,7 @@ internal sealed class McpAppsDiagnoseRequest
 }
 
 /// <summary>MCP resource content with URI, optional MIME type, text or base64 blob, and resource metadata.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpResourceContent
 {
     /// <summary>Resource-level metadata (CSP, permissions, etc.).</summary>
@@ -11940,7 +13604,7 @@ public sealed class McpResourceContent
 }
 
 /// <summary>Resource contents returned by the MCP server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpResourcesReadResult
 {
     /// <summary>Resource contents returned by the server.</summary>
@@ -11949,7 +13613,7 @@ public sealed class McpResourcesReadResult
 }
 
 /// <summary>MCP server and resource URI to fetch.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpResourcesReadRequest
 {
     /// <summary>Name of the MCP server hosting the resource.</summary>
@@ -11969,7 +13633,7 @@ internal sealed class McpResourcesReadRequest
 }
 
 /// <summary>Standard MCP resource annotations plus preserved non-standard annotation fields.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpResourceAnnotations
 {
     /// <summary>Server-provided non-standard annotation fields preserved from the MCP response.</summary>
@@ -11990,7 +13654,7 @@ public sealed class McpResourceAnnotations
 }
 
 /// <summary>A resource icon descriptor plus preserved non-standard icon fields.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpResourceIcon
 {
     /// <summary>Server-provided non-standard icon fields preserved from the MCP response.</summary>
@@ -12015,7 +13679,7 @@ public sealed class McpResourceIcon
 }
 
 /// <summary>An MCP resource descriptor (spec `Resource`): URI, name, and optional title, description, MIME type, size, icons, annotations, and metadata. Server-provided fields outside the standard descriptor shape are exposed under `additionalProperties`.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpResource
 {
     /// <summary>Resource-level metadata.</summary>
@@ -12060,7 +13724,7 @@ public sealed class McpResource
 }
 
 /// <summary>One page of resources advertised by the named MCP server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpResourcesListResult
 {
     /// <summary>Opaque cursor for the next page, if the server has more resources.</summary>
@@ -12073,7 +13737,7 @@ public sealed class McpResourcesListResult
 }
 
 /// <summary>MCP server whose resources to enumerate.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpResourcesListRequest
 {
     /// <summary>Opaque MCP pagination cursor from a prior `nextCursor` value.</summary>
@@ -12093,7 +13757,7 @@ internal sealed class McpResourcesListRequest
 }
 
 /// <summary>An MCP resource template descriptor (spec `ResourceTemplate`): an RFC 6570 URI template, name, and optional title, description, MIME type, icons, annotations, and metadata. Server-provided fields outside the standard descriptor shape are exposed under `additionalProperties`.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpResourceTemplate
 {
     /// <summary>Resource-template-level metadata.</summary>
@@ -12134,7 +13798,7 @@ public sealed class McpResourceTemplate
 }
 
 /// <summary>One page of resource templates advertised by the named MCP server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpResourcesListTemplatesResult
 {
     /// <summary>Opaque cursor for the next page, if the server has more resource templates.</summary>
@@ -12147,7 +13811,7 @@ public sealed class McpResourcesListTemplatesResult
 }
 
 /// <summary>MCP server whose resource templates to enumerate.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class McpResourcesListTemplatesRequest
 {
     /// <summary>Opaque MCP pagination cursor from a prior `nextCursor` value.</summary>
@@ -12166,13 +13830,574 @@ internal sealed class McpResourcesListTemplatesRequest
     public string SessionId { get; set; } = string.Empty;
 }
 
+/// <summary>MCP diagnostic source configuration.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class McpDiagnosticSourceConfiguration
+{
+    /// <summary>Threshold to apply to MCP diagnostic producers in this session.</summary>
+    [JsonPropertyName("level")]
+    public DiagnosticLogLevel Level { get; set; }
+}
+
+/// <summary>Typed diagnostic source configuration. At least one source is required by diagnostics configuration methods.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class DiagnosticSourcesConfiguration
+{
+    /// <summary>MCP diagnostic capture threshold. Omit to leave the current threshold unchanged.</summary>
+    [JsonPropertyName("mcp")]
+    public McpDiagnosticSourceConfiguration? Mcp { get; set; }
+}
+
+/// <summary>Per-source session diagnostics configuration.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class DiagnosticsConfiguration
+{
+    /// <summary>Diagnostic thresholds keyed by supported source.</summary>
+    [JsonPropertyName("sources")]
+    public DiagnosticSourcesConfiguration Sources { get => field ??= new(); set; }
+}
+
+/// <summary>Patch session diagnostic thresholds for explicitly supplied sources.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class DiagnosticsConfigureRequest
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+
+    /// <summary>Sources to configure. At least one supported source must be supplied.</summary>
+    [JsonPropertyName("sources")]
+    public DiagnosticSourcesConfiguration Sources { get => field ??= new(); set; }
+}
+
+/// <summary>One retained session-scoped diagnostic record. Potentially content-bearing diagnostic data is opt-in and must not be exported automatically as telemetry.</summary>
+/// <remarks>Polymorphic base type discriminated by <c>source</c>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonPolymorphic(
+    TypeDiscriminatorPropertyName = "source",
+    UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
+[JsonDerivedType(typeof(DiagnosticEntryMcp), "mcp")]
+public partial class DiagnosticEntry
+{
+    /// <summary>The type discriminator.</summary>
+    [JsonPropertyName("source")]
+    public virtual string Source { get; set; } = string.Empty;
+}
+
+
+/// <summary>MCP-specific detail for a source-discriminated diagnostic entry.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class McpDiagnosticDetails
+{
+    /// <summary>Fresh identifier for the MCP connection attempt, including failed starts.</summary>
+    [JsonPropertyName("connectionId")]
+    public string ConnectionId { get; set; } = string.Empty;
+
+    /// <summary>Serialized diagnostic detail. Protocol and HTTP records use JSON when detail is present.</summary>
+    [JsonPropertyName("data")]
+    public string? Data { get; set; }
+
+    /// <summary>Protocol-frame direction when kind is protocol.</summary>
+    [JsonPropertyName("direction")]
+    public McpDiagnosticDirection? Direction { get; set; }
+
+    /// <summary>Diagnostic record category.</summary>
+    [JsonPropertyName("kind")]
+    public McpDiagnosticKind Kind { get; set; }
+
+    /// <summary>Configured MCP server name.</summary>
+    [JsonPropertyName("serverName")]
+    public string ServerName { get; set; } = string.Empty;
+}
+
+/// <summary>The <c>mcp</c> variant of <see cref="DiagnosticEntry"/>.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class DiagnosticEntryMcp : DiagnosticEntry
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Source => "mcp";
+
+    /// <summary>Agent identifier for a subagent host. Omitted for the root agent.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("agentId")]
+    public string? AgentId { get; set; }
+
+    /// <summary>Typed MCP diagnostic detail.</summary>
+    [JsonPropertyName("details")]
+    public required McpDiagnosticDetails Details { get; set; }
+
+    /// <summary>Severity of this emitted diagnostic record.</summary>
+    [JsonPropertyName("level")]
+    public required DiagnosticSeverity Level { get; set; }
+
+    /// <summary>Human-readable diagnostic summary.</summary>
+    [JsonPropertyName("message")]
+    public required string Message { get; set; }
+
+    /// <summary>Original byte count when a known-size message or data value was truncated.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("originalBytes")]
+    public long? OriginalBytes { get; set; }
+
+    /// <summary>UTC RFC 3339 timestamp captured at the diagnostic source.</summary>
+    [JsonPropertyName("timestamp")]
+    public required string Timestamp { get; set; }
+
+    /// <summary>Whether message or data was truncated to the record-size bound.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("truncated")]
+    public bool? Truncated { get; set; }
+}
+
+/// <summary>One cursor-addressed page of retained session diagnostics.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class DiagnosticsReadResult
+{
+    /// <summary>Opaque cursor for the next independent read.</summary>
+    [JsonPropertyName("cursor")]
+    public string Cursor { get; set; } = string.Empty;
+
+    /// <summary>Whether the requested cursor remained within the retained buffer window.</summary>
+    [JsonPropertyName("cursorStatus")]
+    public DiagnosticCursorStatus CursorStatus { get; set; }
+
+    /// <summary>Number of records lost before this page when known. Omitted when a buffer generation change makes the count unknowable.</summary>
+    [JsonPropertyName("droppedCount")]
+    public long? DroppedCount { get; set; }
+
+    /// <summary>Retained records beginning at the requested cursor.</summary>
+    [JsonPropertyName("entries")]
+    public IList<DiagnosticEntry> Entries { get => field ??= []; set; }
+
+    /// <summary>Whether additional retained records follow this page.</summary>
+    [JsonPropertyName("hasMore")]
+    public bool HasMore { get; set; }
+}
+
+/// <summary>Cursor-based request for session diagnostics. The default limit is 100 (maximum 500); the default waitMs is zero (maximum 30000).</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class DiagnosticsReadRequest
+{
+    /// <summary>Opaque cursor returned by an earlier read. Omit to start at the oldest retained record.</summary>
+    [JsonPropertyName("cursor")]
+    public string? Cursor { get; set; }
+
+    /// <summary>Maximum number of records to return, from 1 through 500. Omit for 100.</summary>
+    [JsonPropertyName("max")]
+    public long? Max { get; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+
+    /// <summary>Nonempty selection of sources to read. Each source may be listed once.</summary>
+    [JsonPropertyName("sources")]
+    public IList<DiagnosticSource> Sources { get => field ??= []; set; }
+
+    /// <summary>Maximum time in milliseconds to wait for a new record, from 0 through 30000.</summary>
+    [JsonPropertyName("waitMs")]
+    public int? WaitMs { get; set; }
+}
+
+/// <summary>Feature detection and hard polling limits for the EXPERIMENTAL session connector API.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ConnectorCapabilities
+{
+    /// <summary>Connector API contract version.</summary>
+    [JsonPropertyName("apiVersion")]
+    public long ApiVersion { get; set; }
+
+    /// <summary>Current session availability. Disabled availability is reported without making a Connector request.</summary>
+    [JsonPropertyName("availability")]
+    public ConnectorAvailability Availability { get; set; }
+
+    /// <summary>Whether connect and reconnect can return an opaque continuation for bounded consent polling.</summary>
+    [JsonPropertyName("consentContinuation")]
+    public bool ConsentContinuation { get; set; }
+
+    /// <summary>Maximum accepted wall-clock deadline in milliseconds for one continuation call.</summary>
+    [JsonPropertyName("maxDeadlineMs")]
+    public long MaxDeadlineMs { get; set; }
+
+    /// <summary>Maximum accepted polling attempts for one continuation call.</summary>
+    [JsonPropertyName("maxPollAttempts")]
+    public long MaxPollAttempts { get; set; }
+
+    /// <summary>Maximum accepted delay in milliseconds between polling attempts.</summary>
+    [JsonPropertyName("maxPollIntervalMs")]
+    public long MaxPollIntervalMs { get; set; }
+
+    /// <summary>Whether callers select a host-owned GitHub account through an opaque selection ID rather than supplying a provider token.</summary>
+    [JsonPropertyName("opaqueAccountSelection")]
+    public bool OpaqueAccountSelection { get; set; }
+}
+
+/// <summary>Identifies the target session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionConnectorsGetCapabilitiesRequest
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Account-targeted authorization update required by the Connector service. The account ID is an opaque host routing identifier; no credential is included.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ConnectorAuthorizationRequirement
+{
+    /// <summary>Exact opaque account selection that made the Connector request.</summary>
+    [JsonPropertyName("accountId")]
+    public string AccountId { get; set; } = string.Empty;
+
+    /// <summary>Stable OAuth scope the selected account must grant.</summary>
+    [JsonPropertyName("scope")]
+    public ConnectorAuthorizationScope Scope { get; set; }
+}
+
+/// <summary>Credential-free Connector catalog entry.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ConnectorCatalogEntry
+{
+    /// <summary>Untrusted service description, when present.</summary>
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    /// <summary>Untrusted display label from the service.</summary>
+    [JsonPropertyName("displayName")]
+    public string DisplayName { get; set; } = string.Empty;
+
+    /// <summary>Canonical Connector name used by lifecycle methods.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Opaque stable runtime IDs currently projected into the session for this Connector.</summary>
+    [JsonPropertyName("runtimeServerIds")]
+    public IList<string> RuntimeServerIds { get => field ??= []; set; }
+
+    /// <summary>Current authoritative service connection state.</summary>
+    [JsonPropertyName("status")]
+    public ConnectorCatalogStatus Status { get; set; }
+}
+
+/// <summary>Validated Connector catalog snapshot cached by the session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ConnectorCatalogResult
+{
+    /// <summary>Validated catalog entries in service order.</summary>
+    [JsonPropertyName("connectors")]
+    public IList<ConnectorCatalogEntry> Connectors { get => field ??= []; set; }
+
+    /// <summary>Unix epoch milliseconds when this snapshot was accepted.</summary>
+    [JsonPropertyName("refreshedAtMs")]
+    public long RefreshedAtMs { get; set; }
+
+    /// <summary>Monotonically increasing session-local catalog revision.</summary>
+    [JsonPropertyName("revision")]
+    public long Revision { get; set; }
+}
+
+/// <summary>Live status of one session-owned MCP projection.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ConnectorRuntimeStatus
+{
+    /// <summary>Canonical Connector name that owns this server.</summary>
+    [JsonPropertyName("connectorName")]
+    public string ConnectorName { get; set; } = string.Empty;
+
+    /// <summary>Opaque runtime server ID.</summary>
+    [JsonPropertyName("runtimeServerId")]
+    public string RuntimeServerId { get; set; } = string.Empty;
+
+    /// <summary>Current live MCP host status.</summary>
+    [JsonPropertyName("status")]
+    public ConnectorMcpStatus Status { get; set; }
+}
+
+/// <summary>Authoritative session connector state. Account IDs are opaque routing identifiers and credentials are never included.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ConnectorStatus
+{
+    /// <summary>Opaque account selection pinned to this session, when one has been selected.</summary>
+    [JsonPropertyName("accountId")]
+    public string? AccountId { get; set; }
+
+    /// <summary>Connector API contract version.</summary>
+    [JsonPropertyName("apiVersion")]
+    public long ApiVersion { get; set; }
+
+    /// <summary>Exact selected account and stable scope requiring an authorization update, when proven by the Connector service.</summary>
+    [JsonPropertyName("authorizationRequirement")]
+    public ConnectorAuthorizationRequirement? AuthorizationRequirement { get; set; }
+
+    /// <summary>Current feature and session availability.</summary>
+    [JsonPropertyName("availability")]
+    public ConnectorAvailability Availability { get; set; }
+
+    /// <summary>Latest validated catalog snapshot, when available.</summary>
+    [JsonPropertyName("catalog")]
+    public ConnectorCatalogResult? Catalog { get; set; }
+
+    /// <summary>Number of active opaque connection continuations.</summary>
+    [JsonPropertyName("pendingConnections")]
+    public long PendingConnections { get; set; }
+
+    /// <summary>Live MCP status for every Connector-owned runtime server.</summary>
+    [JsonPropertyName("runtimeServers")]
+    public IList<ConnectorRuntimeStatus> RuntimeServers { get => field ??= []; set; }
+}
+
+/// <summary>Identifies the target session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionConnectorsGetStatusRequest
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Pins a Connector operation to one host-owned GitHub account through its opaque selection ID. Provider tokens are never accepted.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class ConnectorAccountRequest
+{
+    /// <summary>Opaque account selection ID previously returned by an account discovery API.</summary>
+    [JsonPropertyName("accountId")]
+    public string AccountId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Typed result of initiating or continuing a Connector connection.</summary>
+/// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonPolymorphic(
+    TypeDiscriminatorPropertyName = "kind",
+    UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
+[JsonDerivedType(typeof(ConnectorConnectResultConnected), "connected")]
+[JsonDerivedType(typeof(ConnectorConnectResultConsentRequired), "consent_required")]
+[JsonDerivedType(typeof(ConnectorConnectResultPending), "pending")]
+public partial class ConnectorConnectResult
+{
+    /// <summary>The type discriminator.</summary>
+    [JsonPropertyName("kind")]
+    public virtual string Kind { get; set; } = string.Empty;
+}
+
+
+/// <summary>The service is connected and the session MCP graph was reconciled.</summary>
+/// <remarks>The <c>connected</c> variant of <see cref="ConnectorConnectResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class ConnectorConnectResultConnected : ConnectorConnectResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "connected";
+
+    /// <summary>Fresh authoritative Connector state after MCP reconciliation.</summary>
+    [JsonPropertyName("status")]
+    public required ConnectorStatus Status { get; set; }
+}
+
+/// <summary>Host-owned consent is required before bounded continuation can complete.</summary>
+/// <remarks>The <c>consent_required</c> variant of <see cref="ConnectorConnectResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class ConnectorConnectResultConsentRequired : ConnectorConnectResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "consent_required";
+
+    /// <summary>Validated HTTPS consent URL. The runtime does not open it.</summary>
+    [JsonPropertyName("consentUrl")]
+    public required string ConsentUrl { get; set; }
+
+    /// <summary>Opaque ID accepted by continueConnection.</summary>
+    [JsonPropertyName("continuationId")]
+    public required string ContinuationId { get; set; }
+}
+
+/// <summary>The service is still completing the connection without a consent URL.</summary>
+/// <remarks>The <c>pending</c> variant of <see cref="ConnectorConnectResult"/>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class ConnectorConnectResultPending : ConnectorConnectResult
+{
+    /// <inheritdoc />
+    [JsonIgnore]
+    public override string Kind => "pending";
+
+    /// <summary>Opaque ID accepted by continueConnection.</summary>
+    [JsonPropertyName("continuationId")]
+    public required string ContinuationId { get; set; }
+}
+
+/// <summary>Selects one Connector and the pinned host-owned account used for its service and MCP authorization.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class ConnectorConnectRequest
+{
+    /// <summary>Opaque account selection ID. It must match the account already pinned to the session, if any.</summary>
+    [JsonPropertyName("accountId")]
+    public string AccountId { get; set; } = string.Empty;
+
+    /// <summary>Canonical Connector name from the current catalog.</summary>
+    [JsonPropertyName("connectorName")]
+    public string ConnectorName { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Explicitly bounded continuation of a pending Connector connection.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class ConnectorContinueRequest
+{
+    /// <summary>Opaque continuation ID returned by connect, reconnect, or an earlier continuation.</summary>
+    [JsonPropertyName("continuationId")]
+    public string ContinuationId { get; set; } = string.Empty;
+
+    /// <summary>Maximum wall-clock duration in milliseconds for this call. Must be between one and the capability limit.</summary>
+    [JsonPropertyName("deadlineMs")]
+    public int DeadlineMs { get; set; }
+
+    /// <summary>Maximum catalog requests made by this call. Must be between one and the capability limit.</summary>
+    [JsonPropertyName("maxAttempts")]
+    public int MaxAttempts { get; set; }
+
+    /// <summary>Delay in milliseconds between attempts. Must not exceed the capability limit.</summary>
+    [JsonPropertyName("pollIntervalMs")]
+    public int PollIntervalMs { get; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Authoritative result after disconnect and MCP reconciliation.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ConnectorDisconnectResult
+{
+    /// <summary>Whether the service accepted the idempotent disconnect.</summary>
+    [JsonPropertyName("disconnected")]
+    public bool Disconnected { get; set; }
+
+    /// <summary>Fresh authoritative session state after removing Connector-owned MCP servers.</summary>
+    [JsonPropertyName("status")]
+    public ConnectorStatus Status { get => field ??= new(); set; }
+}
+
+/// <summary>Requests authoritative Connector-to-MCP reconciliation for the pinned account.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class ConnectorReconcileRequest
+{
+    /// <summary>Opaque account selection ID. It must match the account already pinned to the session, if any.</summary>
+    [JsonPropertyName("accountId")]
+    public string AccountId { get; set; } = string.Empty;
+
+    /// <summary>When true, refresh the catalog before reconciling. A disabled Connector API performs no service request.</summary>
+    [JsonPropertyName("refreshCatalog")]
+    public bool? RefreshCatalog { get; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Identifies the target session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionConnectorsWithdrawProjectionRequest
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Enterprise managed-settings resolution: the effective managed settings the session applied and which channels contributed, so SDK clients can show users what is enterprise-managed. Fires whenever managed policy is (re)applied — at session start, on resume, and on account switch. This is an ephemeral live snapshot (delivered to subscribers but not persisted to the session event log), because at session start it resolves before `session.start` is emitted. Device values take precedence over server values, then the policy helper, per ordinary key, while permissions compose restrictively across device, server, policy-helper, and SDK-client layers. The account-scoped `getManagedSettings()` API does not include session-local client injection. Marked experimental while the managed-settings surface stabilizes.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ManagedSettingsResolvedData
+{
+    /// <summary>Whether enterprise policy disables bypass-permissions ("yolo") mode for this session. Deny-wins across layers, and forced on when `failClosed` is true.</summary>
+    [JsonPropertyName("bypassPermissionsDisabled")]
+    public bool BypassPermissionsDisabled { get; set; }
+
+    /// <summary>Whether a session-local permissions layer injected by the SDK host was present.</summary>
+    [JsonPropertyName("clientManaged")]
+    public bool? ClientManaged { get; set; }
+
+    /// <summary>Whether an actual device MDM/plist/registry/file managed-settings layer was present.</summary>
+    [JsonPropertyName("deviceManaged")]
+    public bool DeviceManaged { get; set; }
+
+    /// <summary>Whether managed policy could not be determined (e.g. a failed server fetch) and the session fell back to the fail-closed restriction. When true, restrictions such as disabling bypass-permissions are enforced even though `settings` may be absent.</summary>
+    [JsonPropertyName("failClosed")]
+    public bool FailClosed { get; set; }
+
+    /// <summary>The setting keys under enterprise management in the effective managed settings (e.g. `model`, `enabledPlugins`, `permissions`). Empty when no managed settings are in force.</summary>
+    [JsonPropertyName("managedKeys")]
+    public IList<string> ManagedKeys { get => field ??= []; set; }
+
+    /// <summary>Whether at least two managed sources supplied permission allowlists, so enforcement intersects them and the flattened settings payload omits `permissions.allow`.</summary>
+    [JsonPropertyName("permissionsAllowIntersected")]
+    public bool? PermissionsAllowIntersected { get; set; }
+
+    /// <summary>Whether the policy-helper managed-settings layer was present. The policy helper is the weakest channel: it fills keys no enterprise source set and can never replace one.</summary>
+    [JsonPropertyName("policyHelperManaged")]
+    public bool? PolicyHelperManaged { get; set; }
+
+    /// <summary>Whether the effective sandbox policy forces the sandbox on *only* because managed policy could not be determined, rather than because the policy requires it. Lets clients tell a user whose `--no-sandbox` was overridden that the sandbox stayed on as a fail-closed fallback, instead of attributing it to an administrator who set no such policy.</summary>
+    [JsonPropertyName("sandboxEnabledByUndeterminedPolicy")]
+    public bool? SandboxEnabledByUndeterminedPolicy { get; set; }
+
+    /// <summary>Whether the server (account/org) managed-settings layer was present.</summary>
+    [JsonPropertyName("serverManaged")]
+    public bool ServerManaged { get; set; }
+
+    /// <summary>The effective (resolved) managed settings values, so clients can render exactly what is enforced. Absent when no managed policy is in force.</summary>
+    [JsonPropertyName("settings")]
+    public JsonElement? Settings { get; set; }
+
+    /// <summary>Channel summary: `server`, `device`, `client`, or `policyHelper` when exactly one channel contributed; `mixed` when multiple channels contributed; otherwise `none`. Consult the per-channel booleans for exact provenance.</summary>
+    [JsonPropertyName("source")]
+    public ManagedSettingsResolvedSource Source { get; set; }
+}
+
+/// <summary>Identifies the target session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionManagedSettingsGetRequest
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
 /// <summary>Session plugin metadata, with name, marketplace, optional version, and enabled state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class Plugin
 {
+    /// <summary>Opaque stable identity for a direct plugin source.</summary>
+    [JsonPropertyName("directSourceId")]
+    public string? DirectSourceId { get; set; }
+
     /// <summary>Whether the plugin is currently enabled.</summary>
     [JsonPropertyName("enabled")]
     public bool Enabled { get; set; }
+
+    /// <summary>Whether this managed desired plugin has an installed or live record.</summary>
+    [JsonPropertyName("installed")]
+    public bool? Installed { get; set; }
+
+    /// <summary>Absolute marketplace directory for a live plugin.</summary>
+    [JsonPropertyName("installedFrom")]
+    public string? InstalledFrom { get; set; }
+
+    /// <summary>Whether enterprise managed settings control this plugin.</summary>
+    [JsonPropertyName("managed")]
+    public bool? Managed { get; set; }
+
+    /// <summary>Enabled state required by enterprise managed settings.</summary>
+    [JsonPropertyName("managedDesiredEnabled")]
+    public bool? ManagedDesiredEnabled { get; set; }
 
     /// <summary>Marketplace the plugin came from.</summary>
     [JsonPropertyName("marketplace")]
@@ -12182,13 +14407,17 @@ public sealed class Plugin
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>Runtime plugin provenance, such as "builtin".</summary>
+    [JsonPropertyName("source")]
+    public string? Source { get; set; }
+
     /// <summary>Installed version.</summary>
     [JsonPropertyName("version")]
     public string? Version { get; set; }
 }
 
 /// <summary>Plugins installed for the session, with their enabled state and version metadata.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PluginList
 {
     /// <summary>Installed plugins.</summary>
@@ -12197,7 +14426,7 @@ public sealed class PluginList
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionPluginsListRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -12205,8 +14434,77 @@ internal sealed class SessionPluginsListRequest
     public string SessionId { get; set; } = string.Empty;
 }
 
+/// <summary>Plugin source resolved relative to the session's authoritative working directory.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionPluginsInstallRequest
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+
+    /// <summary>Plugin install spec. Accepts the same forms as the CLI: "plugin@marketplace" (marketplace install), "owner/repo" or "owner/repo:subpath" (GitHub direct), an http/https/ssh URL, or a local path. Direct (non-marketplace) installs are deprecated and will produce a deprecationWarning in the result.</summary>
+    [JsonPropertyName("source")]
+    public string Source { get; set; } = string.Empty;
+}
+
+/// <summary>Name (or spec) of the plugin to uninstall.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class PluginsUninstallRequestWithSession
+{
+    /// <summary>Stable source identity for a direct (non-marketplace) install. Disambiguates uninstall when multiple installed plugins share the same name.</summary>
+    [JsonPropertyName("directSourceId")]
+    public string? DirectSourceId { get; set; }
+
+    /// <summary>Plugin name or "plugin@marketplace" spec to uninstall. When ambiguous, prefer the fully-qualified spec.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Name (or spec) of the plugin to update.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class PluginsUpdateRequestWithSession
+{
+    /// <summary>Plugin name or "plugin@marketplace" spec to update.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Plugin names (or specs) to enable in the session's authoritative working directory.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionPluginsEnableRequest
+{
+    /// <summary>Plugin names or "plugin@marketplace" specs to enable. Unknown names are ignored. Non-marketplace direct installs are always enabled and cannot be toggled via this API.</summary>
+    [JsonPropertyName("names")]
+    public IList<string> Names { get => field ??= []; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Plugin names (or specs) to disable in the session's authoritative working directory.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionPluginsDisableRequest
+{
+    /// <summary>Plugin names or "plugin@marketplace" specs to disable. Unknown names are ignored. Non-marketplace direct installs cannot be disabled via this API; uninstall them instead. Plugin-owned MCP servers are stopped in active sessions immediately; other plugin contributions remain available until each session reloads plugins.</summary>
+    [JsonPropertyName("names")]
+    public IList<string> Names { get => field ??= []; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
 /// <summary>RPC data type for SessionPluginsReload operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionPluginsReloadRequest
 {
     /// <summary>When true, skip repo-level hooks during the hook reload. Use before folder trust is confirmed; load them post-trust via `sessions.loadDeferredRepoHooks`.</summary>
@@ -12231,7 +14529,7 @@ public sealed class SessionPluginsReloadRequest
 }
 
 /// <summary>RPC data type for SessionPluginsReloadRequestWithSession operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionPluginsReloadRequestWithSession
 {
     /// <summary>When true, skip repo-level hooks during the hook reload. Use before folder trust is confirmed; load them post-trust via `sessions.loadDeferredRepoHooks`.</summary>
@@ -12259,8 +14557,86 @@ internal sealed class SessionPluginsReloadRequestWithSession
     public string SessionId { get; set; } = string.Empty;
 }
 
+/// <summary>Identifies the target session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionPluginsMarketplacesListRequest
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Marketplace source and optional working directory for relative-path resolution.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class PluginsMarketplacesAddRequestWithSession
+{
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+
+    /// <summary>Marketplace source. Accepts the same forms as the CLI: "owner/repo" or "owner/repo#ref" (GitHub), an http/https/ssh URL (optionally with #ref), a git scp-style URL (user@host:path), or a local path. The marketplace's own name (from its manifest) is used as the registration key.</summary>
+    [JsonPropertyName("source")]
+    public string Source { get; set; } = string.Empty;
+
+    /// <summary>Working directory used to resolve relative local paths in `source`. Defaults to the server's current working directory.</summary>
+    [JsonPropertyName("workingDirectory")]
+    public string? WorkingDirectory { get; set; }
+}
+
+/// <summary>Name of the marketplace to remove and an optional force flag.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class PluginsMarketplacesRemoveRequestWithSession
+{
+    /// <summary>When true, also uninstall every plugin sourced from this marketplace. When false (default), removal is a no-op if any plugin from this marketplace is installed and the dependent plugin names are returned in the result.</summary>
+    [JsonPropertyName("force")]
+    public bool? Force { get; set; }
+
+    /// <summary>Marketplace name to remove.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Name of the marketplace whose plugin catalog to fetch.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class PluginsMarketplacesBrowseRequestWithSession
+{
+    /// <summary>Marketplace name to browse.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>RPC data type for SessionPluginsMarketplacesRefresh operations.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class SessionPluginsMarketplacesRefreshRequest
+{
+    /// <summary>Marketplace name to refresh. When omitted, every registered marketplace is refreshed.</summary>
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+}
+
+/// <summary>RPC data type for SessionPluginsMarketplacesRefreshRequestWithSession operations.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class SessionPluginsMarketplacesRefreshRequestWithSession
+{
+    /// <summary>Marketplace name to refresh. When omitted, every registered marketplace is refreshed.</summary>
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
 /// <summary>Short-lived, rotating credential the caller must send on every request, in addition to `apiKey` if one is present. Omitted when the endpoint does not require one.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProviderSessionToken
 {
     /// <summary>When the token expires, if known. Callers should refresh by calling `getEndpoint` again before this time, or reactively on any 401/403 response from `baseUrl`.</summary>
@@ -12281,7 +14657,7 @@ public sealed class ProviderSessionToken
 }
 
 /// <summary>A snapshot of the provider endpoint the session is currently configured to talk to.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProviderEndpoint
 {
     /// <summary>A credential the caller should use with this endpoint. Omitted only when the endpoint accepts unauthenticated requests.</summary>
@@ -12316,7 +14692,7 @@ public sealed class ProviderEndpoint
 }
 
 /// <summary>RPC data type for SessionProviderGetEndpoint operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionProviderGetEndpointRequest
 {
     /// <summary>Model identifier the caller intends to use against the returned endpoint. Used to pick the correct wire shape. Omit to use whichever model the session is currently using.</summary>
@@ -12325,7 +14701,7 @@ public sealed class SessionProviderGetEndpointRequest
 }
 
 /// <summary>RPC data type for SessionProviderGetEndpointRequestWithSession operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionProviderGetEndpointRequestWithSession
 {
     /// <summary>Model identifier the caller intends to use against the returned endpoint. Used to pick the correct wire shape. Omit to use whichever model the session is currently using.</summary>
@@ -12338,7 +14714,7 @@ internal sealed class SessionProviderGetEndpointRequestWithSession
 }
 
 /// <summary>The selectable model entries synthesized for the models added by this call.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProviderAddResult
 {
     /// <summary>Synthesized selectable model entries for the newly added BYOK models, each under its provider-qualified selection id (`provider/id`). Empty when only providers were added.</summary>
@@ -12347,7 +14723,7 @@ public sealed class ProviderAddResult
 }
 
 /// <summary>RPC data type for ProtocolSystemMessageAppendConfig operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProtocolSystemMessageAppendConfig
 {
     /// <summary>Text appended to the standard system prompt.</summary>
@@ -12360,9 +14736,13 @@ public sealed class ProtocolSystemMessageAppendConfig
 }
 
 /// <summary>RPC data type for SystemMessageBlock operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SystemMessageBlock
 {
+    /// <summary>Whether providers with explicit prompt caching should place a cache breakpoint after this block.</summary>
+    [JsonPropertyName("cacheBreakpoint")]
+    public bool? CacheBreakpoint { get; set; }
+
     /// <summary>Text content for this system-message block.</summary>
     [JsonPropertyName("content")]
     public string Content { get; set; } = string.Empty;
@@ -12373,7 +14753,7 @@ public sealed class SystemMessageBlock
 }
 
 /// <summary>RPC data type for ProtocolSystemMessageReplaceConfig operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProtocolSystemMessageReplaceConfig
 {
     /// <summary>Complete replacement system-message text.</summary>
@@ -12390,7 +14770,7 @@ public sealed class ProtocolSystemMessageReplaceConfig
 }
 
 /// <summary>RPC data type for ProtocolStaticSectionOverride operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProtocolStaticSectionOverride
 {
     /// <summary>Declarative operation applied to the section.</summary>
@@ -12403,7 +14783,7 @@ public sealed class ProtocolStaticSectionOverride
 }
 
 /// <summary>Polymorphic base type discriminated by <c>action</c>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "action",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -12418,7 +14798,7 @@ public partial class ProtocolMarkerSectionOverride
 
 
 /// <summary>The <c>transform</c> variant of <see cref="ProtocolMarkerSectionOverride"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ProtocolMarkerSectionOverrideTransform : ProtocolMarkerSectionOverride
 {
     /// <inheritdoc />
@@ -12427,7 +14807,7 @@ public partial class ProtocolMarkerSectionOverrideTransform : ProtocolMarkerSect
 }
 
 /// <summary>The <c>preserve</c> variant of <see cref="ProtocolMarkerSectionOverride"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ProtocolMarkerSectionOverridePreserve : ProtocolMarkerSectionOverride
 {
     /// <inheritdoc />
@@ -12436,7 +14816,7 @@ public partial class ProtocolMarkerSectionOverridePreserve : ProtocolMarkerSecti
 }
 
 /// <summary>JSON union data type for <c>ProtocolSectionOverride</c>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 public sealed partial class ProtocolSectionOverride
 {
@@ -12514,7 +14894,7 @@ public sealed partial class ProtocolSectionOverride
 }
 
 /// <summary>RPC data type for ProtocolSystemMessageCustomizeConfig operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProtocolSystemMessageCustomizeConfig
 {
     /// <summary>Text appended after the customized sections.</summary>
@@ -12531,7 +14911,7 @@ public sealed class ProtocolSystemMessageCustomizeConfig
 }
 
 /// <summary>JSON union data type for <c>ProtocolSystemMessageConfig</c>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 public sealed partial class ProtocolSystemMessageConfig
 {
@@ -12632,7 +15012,7 @@ public sealed partial class ProtocolSystemMessageConfig
 }
 
 /// <summary>A BYOK model definition referencing a named provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProviderModelConfig
 {
     /// <summary>Optional capability overrides (vision, tool_calls, reasoning, etc.).</summary>
@@ -12654,6 +15034,10 @@ public sealed class ProviderModelConfig
     /// <summary>Maximum prompt/input tokens for the model.</summary>
     [JsonPropertyName("maxPromptTokens")]
     public double? MaxPromptTokens { get; set; }
+
+    /// <summary>Provider-published model metadata, preserved verbatim as the public Model.metadata object.</summary>
+    [JsonPropertyName("metadata")]
+    public IDictionary<string, JsonElement>? Metadata { get; set; }
 
     /// <summary>Well-known base model id used for behavior/capability/config lookup. Defaults to `id`.</summary>
     [JsonPropertyName("modelId")]
@@ -12677,7 +15061,7 @@ public sealed class ProviderModelConfig
 }
 
 /// <summary>Azure-specific provider options.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProviderConfigAzure
 {
     /// <summary>API version. When set, uses the versioned deployment route. When omitted, uses the GA versionless v1 route.</summary>
@@ -12686,7 +15070,7 @@ public sealed class ProviderConfigAzure
 }
 
 /// <summary>External SDK input for a named custom model provider. Ingested by the native protocol boundary before host dispatch.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class NamedProviderConfig
 {
     /// <summary>Static API key used to authenticate provider requests.</summary>
@@ -12731,7 +15115,7 @@ public sealed class NamedProviderConfig
 }
 
 /// <summary>BYOK providers and/or models to add to the session's registry at runtime. Both fields are optional; provide providers, models, or both.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ProviderAddRequest
 {
     /// <summary>BYOK model definitions to register. Each must reference a provider that is already registered or included in this same call. Selection ids (`provider/id`) must be unique across the registry.</summary>
@@ -12747,8 +15131,42 @@ internal sealed class ProviderAddRequest
     public string SessionId { get; set; } = string.Empty;
 }
 
+/// <summary>The selectable model entries and selection ids synthesized for the synchronized BYOK models.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ProviderSyncResult
+{
+    /// <summary>True when synchronization withdrew the selected host-managed model, leaving the session with no explicit selection, so ordinary model resolution picks the session default. Synchronization never promotes a surviving host model in its place: publishing a model offers it, and the choice of which model to use stays with the user.</summary>
+    [JsonPropertyName("modelDeselected")]
+    public bool? ModelDeselected { get; set; }
+
+    /// <summary>Synthesized selectable model entries for the synchronized BYOK models.</summary>
+    [JsonPropertyName("models")]
+    public IList<JsonElement> Models { get => field ??= []; set; }
+
+    /// <summary>Provider-qualified model selection ids present after synchronization.</summary>
+    [JsonPropertyName("selectionIds")]
+    public IList<string> SelectionIds { get => field ??= []; set; }
+}
+
+/// <summary>Authoritative BYOK provider and model registry snapshot to apply atomically to the session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class ProviderSyncRequest
+{
+    /// <summary>BYOK model definition snapshot. Models absent from this list are removed.</summary>
+    [JsonPropertyName("models")]
+    public IList<ProviderModelConfig>? Models { get; set; }
+
+    /// <summary>Named BYOK provider connection snapshot. Providers absent from this list are removed.</summary>
+    [JsonPropertyName("providers")]
+    public IList<NamedProviderConfig>? Providers { get; set; }
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
 /// <summary>Indicates whether the session options patch was applied successfully.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionUpdateOptionsResult
 {
     /// <summary>Number of hooks loaded from installed plugins, returned when installedPlugins is updated.</summary>
@@ -12761,7 +15179,7 @@ public sealed class SessionUpdateOptionsResult
 }
 
 /// <summary>Source descriptor for a `session.options.update` content-exclusion rule, with source name and type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class OptionsUpdateAdditionalContentExclusionPolicyRuleSource
 {
     /// <summary>Name of the policy source.</summary>
@@ -12774,7 +15192,7 @@ public sealed class OptionsUpdateAdditionalContentExclusionPolicyRuleSource
 }
 
 /// <summary>Single content-exclusion rule supplied to `session.options.update`, with paths, match conditions, and source.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class OptionsUpdateAdditionalContentExclusionPolicyRule
 {
     /// <summary>Conditions of which at least one must match.</summary>
@@ -12795,7 +15213,7 @@ public sealed class OptionsUpdateAdditionalContentExclusionPolicyRule
 }
 
 /// <summary>Content-exclusion policy supplied to `session.options.update`, with rules, last-updated data, and scope.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class OptionsUpdateAdditionalContentExclusionPolicy
 {
     /// <summary>Opaque policy update timestamp supplied by the host.</summary>
@@ -12812,7 +15230,7 @@ public sealed class OptionsUpdateAdditionalContentExclusionPolicy
 }
 
 /// <summary>Options scoped to the built-in CAPI (Copilot API) provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CapiSessionOptions
 {
     /// <summary>Routing preference for sessions whose model is `auto`. On create or cold resume, this establishes the preference sent as `tier` on CAPI `/auto` requests; when omitted on cold resume, the runtime restores the last committed preference. On resident resume, a different value requests a safe switch after resume succeeds and cannot change an in-flight turn. Successful switches are persisted for later cold resume. When no preference is supplied or restored, CAPI default routing is used. `fast` is an integrator-only latency preset, not a first-party GitHub Copilot product preference.</summary>
@@ -12825,7 +15243,7 @@ public sealed class CapiSessionOptions
 }
 
 /// <summary>Installed plugin record for a session, with marketplace, version, install time, enabled state, cache path, and source.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionInstalledPlugin
 {
     /// <summary>Path where the plugin is cached locally.</summary>
@@ -12866,7 +15284,7 @@ public sealed class SessionInstalledPlugin
 }
 
 /// <summary>Custom model-provider configuration (BYOK).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProviderConfig
 {
     /// <summary>API key. Optional for local providers like Ollama.</summary>
@@ -12935,7 +15353,7 @@ public sealed class ProviderConfig
 }
 
 /// <summary>Credential-injection capability flags applied while the sandbox is enabled. For the same capability independent of sandboxing, and matched to the credential's GitHub host, see `shell.credentials`; the two are additive.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxConfigAuth
 {
     /// <summary>Whether to export `GH_TOKEN` so the `gh` CLI authenticates inside the sandbox without the OS keyring the sandbox blocks. Default: false (opt-in).</summary>
@@ -12948,7 +15366,7 @@ public sealed class SandboxConfigAuth
 }
 
 /// <summary>macOS seatbelt experimental options.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxConfigUserPolicyExperimentalSeatbelt
 {
     /// <summary>Whether the macOS seatbelt profile may access the keychain.</summary>
@@ -12957,7 +15375,7 @@ public sealed class SandboxConfigUserPolicyExperimentalSeatbelt
 }
 
 /// <summary>Platform-specific experimental policy fields.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxConfigUserPolicyExperimental
 {
     /// <summary>macOS seatbelt experimental options.</summary>
@@ -12966,7 +15384,7 @@ public sealed class SandboxConfigUserPolicyExperimental
 }
 
 /// <summary>Filesystem rules to merge into the base policy.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxConfigUserPolicyFilesystem
 {
     /// <summary>Whether to clear the policy when the session exits.</summary>
@@ -12987,7 +15405,7 @@ public sealed class SandboxConfigUserPolicyFilesystem
 }
 
 /// <summary>HTTP proxy configuration for sandboxed traffic.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxConfigUserPolicyNetworkProxy
 {
     /// <summary>Optional password for proxy authentication, combined with the URL at spawn time. The persisted value may be a literal password, a `${secret:…}` reference resolved from the OS keychain, or a `${VAR}`/`$VAR` environment reference; it is resolved just before the sandboxed process routes through the proxy. The /sandbox dialog stores a real password in the OS keychain and persists only a `${secret:…}` placeholder (never plaintext in settings.json); the field is masked in the dialog and redacted by /settings show.</summary>
@@ -13004,7 +15422,7 @@ public sealed class SandboxConfigUserPolicyNetworkProxy
 }
 
 /// <summary>Network rules to merge into the base policy.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxConfigUserPolicyNetwork
 {
     /// <summary>Hosts allowed through the built-in sandbox proxy. A non-empty list denies unmatched hosts; an absent or empty list allows all hosts not blocked. Supports exact hostnames, IP addresses, and *.example.com for strict subdomains. Host rules do not override the outbound or local-network toggles.</summary>
@@ -13023,13 +15441,13 @@ public sealed class SandboxConfigUserPolicyNetwork
     [JsonPropertyName("blockedHosts")]
     public IList<string>? BlockedHosts { get; set; }
 
-    /// <summary>HTTP(S) proxy for sandboxed traffic. With host rules, this is the built-in local proxy's upstream; credentials stay in the runtime, and Linux and macOS restrict the child to the local listener. Without host rules, Linux restricts egress to this endpoint but rejects credentials, and macOS proxying is cooperative. Windows enforcement depends on the application's networking stack. Configure credentials in the separate username/password fields. The transient local listener URL is never persisted.</summary>
+    /// <summary>HTTP(S) proxy for sandboxed traffic. This is the built-in local proxy's upstream: every sandboxed command reaches it through a loopback listener, so credentials stay in the runtime and never reach the child. On Windows the sandbox also needs local network access, because it reaches that listener over host loopback. Configure credentials in the separate username/password fields. The transient local listener URL is never persisted.</summary>
     [JsonPropertyName("proxy")]
     public SandboxConfigUserPolicyNetworkProxy? Proxy { get; set; }
 }
 
 /// <summary>macOS seatbelt-specific options.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxConfigUserPolicySeatbelt
 {
     /// <summary>Whether the macOS seatbelt profile may access the keychain.</summary>
@@ -13038,7 +15456,7 @@ public sealed class SandboxConfigUserPolicySeatbelt
 }
 
 /// <summary>User-managed sandbox policy fragment merged into the auto-discovered base policy.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxConfigUserPolicy
 {
     /// <summary>Deprecated legacy location for `seatbelt`; read only when the top-level `seatbelt` is absent.</summary>
@@ -13059,7 +15477,7 @@ public sealed class SandboxConfigUserPolicy
 }
 
 /// <summary>Resolved sandbox configuration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxConfig
 {
     /// <summary>Whether to auto-add the current working directory to readwritePaths. Default: true.</summary>
@@ -13124,7 +15542,7 @@ public sealed class SandboxConfig
 /// an OS sandboxing backend is available. `sandboxConfig.auth` remains the sandbox-scoped
 /// spelling and is additive with this one.
 /// </summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ShellCredentials
 {
     /// <summary>
@@ -13153,7 +15571,7 @@ public sealed class ShellCredentials
 }
 
 /// <summary>A host-provided script sourced before each built-in shell command when its shell target matches the active shell.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ShellInitScript
 {
     /// <summary>Path to the script to source.</summary>
@@ -13166,7 +15584,7 @@ public sealed class ShellInitScript
 }
 
 /// <summary>Per-session settings for built-in shell tools.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ShellOptions
 {
     /// <summary>Command-scoped GitHub credential injection for shell commands.</summary>
@@ -13201,11 +15619,11 @@ public sealed class ShellOptions
 }
 
 /// <summary>Patch of mutable session options to apply to the running session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionUpdateOptionsParams
 {
     /// <summary>Additional content-exclusion policies to merge into the session's policy set.</summary>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     [JsonPropertyName("additionalContentExclusionPolicies")]
     public IList<OptionsUpdateAdditionalContentExclusionPolicy>? AdditionalContentExclusionPolicies { get; set; }
 
@@ -13316,6 +15734,10 @@ internal sealed class SessionUpdateOptionsParams
     /// <summary>Map of feature-flag IDs to their boolean enabled state.</summary>
     [JsonPropertyName("featureFlags")]
     public IDictionary<string, bool>? FeatureFlags { get; set; }
+
+    /// <summary>Skill scan directories and descendants excluded from discovery. Supports `~`-relative paths.</summary>
+    [JsonPropertyName("ignoredSkillsLocations")]
+    public IList<string>? IgnoredSkillsLocations { get; set; }
 
     /// <summary>Built-in subagent names to include in this session. When specified, only these built-ins are available, subject to runtime availability and exclusions. Custom agents with the same name remain available. Set to null to remove the allowlist restriction.</summary>
     [JsonPropertyName("includedBuiltinAgents")]
@@ -13452,7 +15874,7 @@ internal sealed class SessionUpdateOptionsParams
 }
 
 /// <summary>Parameters for (re)loading the merged LSP configuration set.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class LspInitializeRequest
 {
     /// <summary>Force re-initialization even when LSP configs were already loaded for the working directory.</summary>
@@ -13473,7 +15895,7 @@ internal sealed class LspInitializeRequest
 }
 
 /// <summary>Discovered extension metadata, including source-qualified ID, name, discovery source, status, and optional process ID.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class Extension
 {
     /// <summary>Source-qualified ID (e.g., 'project:my-ext', 'user:auth-helper', 'plugin:my-plugin:my-ext').</summary>
@@ -13498,7 +15920,7 @@ public sealed class Extension
 }
 
 /// <summary>Extensions discovered for the session, with their current status.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ExtensionList
 {
     /// <summary>Discovered extensions and their current status.</summary>
@@ -13507,7 +15929,7 @@ public sealed class ExtensionList
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionExtensionsListRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -13516,7 +15938,7 @@ internal sealed class SessionExtensionsListRequest
 }
 
 /// <summary>Source-qualified extension identifier to enable for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ExtensionsEnableRequest
 {
     /// <summary>Source-qualified extension ID to enable.</summary>
@@ -13529,7 +15951,7 @@ internal sealed class ExtensionsEnableRequest
 }
 
 /// <summary>Source-qualified extension identifier to disable for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ExtensionsDisableRequest
 {
     /// <summary>Source-qualified extension ID to disable.</summary>
@@ -13542,7 +15964,7 @@ internal sealed class ExtensionsDisableRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionExtensionsReloadRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -13552,7 +15974,7 @@ internal sealed class SessionExtensionsReloadRequest
 
 /// <summary>Attachment union accepted by push input, covering files, directories, GitHub objects, blobs, snippets, and extension context.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -13580,7 +16002,7 @@ public partial class PushAttachment
 
 
 /// <summary>Optional line range to scope the attachment to a specific section of the file.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PushAttachmentFileLineRange
 {
     /// <summary>End line number (1-based, inclusive).</summary>
@@ -13594,7 +16016,7 @@ public sealed class PushAttachmentFileLineRange
 
 /// <summary>File attachment.</summary>
 /// <remarks>The <c>file</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentFile : PushAttachment
 {
     /// <inheritdoc />
@@ -13617,7 +16039,7 @@ public partial class PushAttachmentFile : PushAttachment
 
 /// <summary>Directory attachment.</summary>
 /// <remarks>The <c>directory</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentDirectory : PushAttachment
 {
     /// <inheritdoc />
@@ -13634,7 +16056,7 @@ public partial class PushAttachmentDirectory : PushAttachment
 }
 
 /// <summary>End position of the selection.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PushAttachmentSelectionDetailsEnd
 {
     /// <summary>End character offset within the line (0-based).</summary>
@@ -13647,7 +16069,7 @@ public sealed class PushAttachmentSelectionDetailsEnd
 }
 
 /// <summary>Start position of the selection.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PushAttachmentSelectionDetailsStart
 {
     /// <summary>Start character offset within the line (0-based).</summary>
@@ -13660,7 +16082,7 @@ public sealed class PushAttachmentSelectionDetailsStart
 }
 
 /// <summary>Position range of the selection within the file.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PushAttachmentSelectionDetails
 {
     /// <summary>End position of the selection.</summary>
@@ -13674,7 +16096,7 @@ public sealed class PushAttachmentSelectionDetails
 
 /// <summary>Code selection attachment from an editor.</summary>
 /// <remarks>The <c>selection</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentSelection : PushAttachment
 {
     /// <inheritdoc />
@@ -13700,7 +16122,7 @@ public partial class PushAttachmentSelection : PushAttachment
 
 /// <summary>GitHub issue, pull request, or discussion reference.</summary>
 /// <remarks>The <c>github_reference</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubReference : PushAttachment
 {
     /// <inheritdoc />
@@ -13729,7 +16151,7 @@ public partial class PushAttachmentGitHubReference : PushAttachment
 }
 
 /// <summary>Pointer to a GitHub repository.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PushGitHubRepoRef
 {
     /// <summary>Numeric GitHub repository id.</summary>
@@ -13747,7 +16169,7 @@ public sealed class PushGitHubRepoRef
 
 /// <summary>Pointer to a GitHub commit.</summary>
 /// <remarks>The <c>github_commit</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubCommit : PushAttachment
 {
     /// <inheritdoc />
@@ -13773,7 +16195,7 @@ public partial class PushAttachmentGitHubCommit : PushAttachment
 
 /// <summary>Pointer to a GitHub release.</summary>
 /// <remarks>The <c>github_release</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubRelease : PushAttachment
 {
     /// <inheritdoc />
@@ -13799,7 +16221,7 @@ public partial class PushAttachmentGitHubRelease : PushAttachment
 
 /// <summary>Pointer to a GitHub Actions job.</summary>
 /// <remarks>The <c>github_actions_job</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubActionsJob : PushAttachment
 {
     /// <inheritdoc />
@@ -13834,7 +16256,7 @@ public partial class PushAttachmentGitHubActionsJob : PushAttachment
 
 /// <summary>Pointer to a GitHub repository.</summary>
 /// <remarks>The <c>github_repository</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubRepository : PushAttachment
 {
     /// <inheritdoc />
@@ -13861,7 +16283,7 @@ public partial class PushAttachmentGitHubRepository : PushAttachment
 }
 
 /// <summary>One side of a file diff (head or base).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PushAttachmentGitHubFileDiffSide
 {
     /// <summary>Repository-relative path to the file.</summary>
@@ -13879,7 +16301,7 @@ public sealed class PushAttachmentGitHubFileDiffSide
 
 /// <summary>Pointer to a single-file diff. At least one of `head` and `base` must be present.</summary>
 /// <remarks>The <c>github_file_diff</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubFileDiff : PushAttachment
 {
     /// <inheritdoc />
@@ -13902,7 +16324,7 @@ public partial class PushAttachmentGitHubFileDiff : PushAttachment
 }
 
 /// <summary>One side of a tree comparison (head or base).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PushAttachmentGitHubTreeComparisonSide
 {
     /// <summary>Repository the revision belongs to.</summary>
@@ -13916,7 +16338,7 @@ public sealed class PushAttachmentGitHubTreeComparisonSide
 
 /// <summary>Pointer to a comparison between two git revisions.</summary>
 /// <remarks>The <c>github_tree_comparison</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubTreeComparison : PushAttachment
 {
     /// <inheritdoc />
@@ -13938,7 +16360,7 @@ public partial class PushAttachmentGitHubTreeComparison : PushAttachment
 
 /// <summary>Generic GitHub URL reference.</summary>
 /// <remarks>The <c>github_url</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubUrl : PushAttachment
 {
     /// <inheritdoc />
@@ -13952,7 +16374,7 @@ public partial class PushAttachmentGitHubUrl : PushAttachment
 
 /// <summary>Pointer to a file in a GitHub repository at a specific ref.</summary>
 /// <remarks>The <c>github_file</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubFile : PushAttachment
 {
     /// <inheritdoc />
@@ -13978,7 +16400,7 @@ public partial class PushAttachmentGitHubFile : PushAttachment
 
 /// <summary>Pointer to a line range inside a file in a GitHub repository.</summary>
 /// <remarks>The <c>github_snippet</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentGitHubSnippet : PushAttachment
 {
     /// <inheritdoc />
@@ -14008,7 +16430,7 @@ public partial class PushAttachmentGitHubSnippet : PushAttachment
 
 /// <summary>Blob attachment with inline base64-encoded data.</summary>
 /// <remarks>The <c>blob</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentBlob : PushAttachment
 {
     /// <inheritdoc />
@@ -14032,7 +16454,7 @@ public partial class PushAttachmentBlob : PushAttachment
 
 /// <summary>Slim input shape for extension_context attachments; identity fields are runtime-derived.</summary>
 /// <remarks>The <c>extension_context</c> variant of <see cref="PushAttachment"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PushAttachmentExtensionContext : PushAttachment
 {
     /// <inheritdoc />
@@ -14051,7 +16473,7 @@ public partial class PushAttachmentExtensionContext : PushAttachment
 }
 
 /// <summary>Parameters for session.extensions.sendAttachmentsToMessage.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SendAttachmentsToMessageParams
 {
     /// <summary>Attachments to push into the next user-message turn. extension_context entries take the slim shape; standard variants take their full AttachmentSchema shape.</summary>
@@ -14068,7 +16490,7 @@ internal sealed class SendAttachmentsToMessageParams
 }
 
 /// <summary>A tool name and arguments to execute through the session's native invocation pipeline.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ToolsExecuteRequest
 {
     /// <summary>Arguments supplied to the tool.</summary>
@@ -14089,7 +16511,7 @@ internal sealed class ToolsExecuteRequest
 }
 
 /// <summary>Custom grammar input format accepted by a built-in tool.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class BuiltinToolFormat
 {
     /// <summary>Grammar definition accepted by the tool.</summary>
@@ -14106,7 +16528,7 @@ public sealed class BuiltinToolFormat
 }
 
 /// <summary>JSON Schema object accepted by a built-in tool.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class BuiltinToolInputSchema
 {
     /// <summary>Root type of the tool input schema.</summary>
@@ -14115,7 +16537,7 @@ public sealed class BuiltinToolInputSchema
 }
 
 /// <summary>Rust-owned metadata and input schema for a built-in tool.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class BuiltinToolDescriptor
 {
     /// <summary>Model-facing description of the tool's behavior.</summary>
@@ -14160,7 +16582,7 @@ public sealed class BuiltinToolDescriptor
 }
 
 /// <summary>Rust-owned built-in tool descriptors for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolsGetBuiltinDescriptorsResult
 {
     /// <summary>Built-in tool descriptors materialized for the session.</summary>
@@ -14169,7 +16591,7 @@ public sealed class ToolsGetBuiltinDescriptorsResult
 }
 
 /// <summary>Shell-specific names and description lines used to materialize built-in shell tool descriptors.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolsShellDescriptorConfig
 {
     /// <summary>Additional model-facing shell description lines.</summary>
@@ -14202,7 +16624,7 @@ public sealed class ToolsShellDescriptorConfig
 }
 
 /// <summary>Options controlling how Rust-owned built-in tool descriptors are materialized.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ToolsGetBuiltinDescriptorsRequest
 {
     /// <summary>Whether background task completion notifications are enabled.</summary>
@@ -14239,9 +16661,13 @@ internal sealed class ToolsGetBuiltinDescriptorsRequest
 }
 
 /// <summary>Task completion notification with summary from the agent.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TaskCompleteData
 {
+    /// <summary>Structured blocker details when outcome is blocked.</summary>
+    [JsonPropertyName("blocker")]
+    public TaskBlocker? Blocker { get; set; }
+
     /// <summary>Active autopilot objective ID evaluated by the completion reviewer.</summary>
     [JsonPropertyName("objectiveId")]
     public long? ObjectiveId { get; set; }
@@ -14264,7 +16690,7 @@ public sealed class TaskCompleteData
 }
 
 /// <summary>Binary result returned by a tool for the model.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ExternalToolTextResultForLlmBinaryResultsForLlm
 {
     /// <summary>Base64-encoded binary data.</summary>
@@ -14291,7 +16717,7 @@ public sealed class ExternalToolTextResultForLlmBinaryResultsForLlm
 
 /// <summary>A content block within a tool result, which may be text, terminal output, image, audio, or a resource.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>type</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -14312,7 +16738,7 @@ public partial class ExternalToolTextResultForLlmContent
 
 /// <summary>Plain text content block.</summary>
 /// <remarks>The <c>text</c> variant of <see cref="ExternalToolTextResultForLlmContent"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ExternalToolTextResultForLlmContentText : ExternalToolTextResultForLlmContent
 {
     /// <inheritdoc />
@@ -14326,7 +16752,7 @@ public partial class ExternalToolTextResultForLlmContentText : ExternalToolTextR
 
 /// <summary>Terminal/shell output content block with optional exit code and working directory.</summary>
 /// <remarks>The <c>terminal</c> variant of <see cref="ExternalToolTextResultForLlmContent"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ExternalToolTextResultForLlmContentTerminal : ExternalToolTextResultForLlmContent
 {
     /// <inheritdoc />
@@ -14350,7 +16776,7 @@ public partial class ExternalToolTextResultForLlmContentTerminal : ExternalToolT
 
 /// <summary>Shell command exit metadata with optional output preview.</summary>
 /// <remarks>The <c>shell_exit</c> variant of <see cref="ExternalToolTextResultForLlmContent"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ExternalToolTextResultForLlmContentShellExit : ExternalToolTextResultForLlmContent
 {
     /// <inheritdoc />
@@ -14388,7 +16814,7 @@ public partial class ExternalToolTextResultForLlmContentShellExit : ExternalTool
 
 /// <summary>Image content block with base64-encoded data.</summary>
 /// <remarks>The <c>image</c> variant of <see cref="ExternalToolTextResultForLlmContent"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ExternalToolTextResultForLlmContentImage : ExternalToolTextResultForLlmContent
 {
     /// <inheritdoc />
@@ -14407,7 +16833,7 @@ public partial class ExternalToolTextResultForLlmContentImage : ExternalToolText
 
 /// <summary>Audio content block with base64-encoded data.</summary>
 /// <remarks>The <c>audio</c> variant of <see cref="ExternalToolTextResultForLlmContent"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ExternalToolTextResultForLlmContentAudio : ExternalToolTextResultForLlmContent
 {
     /// <inheritdoc />
@@ -14425,7 +16851,7 @@ public partial class ExternalToolTextResultForLlmContentAudio : ExternalToolText
 }
 
 /// <summary>Icon image for a resource.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ExternalToolTextResultForLlmContentResourceLinkIcon
 {
     /// <summary>MIME type of the icon image.</summary>
@@ -14447,7 +16873,7 @@ public sealed class ExternalToolTextResultForLlmContentResourceLinkIcon
 
 /// <summary>Resource link content block referencing an external resource.</summary>
 /// <remarks>The <c>resource_link</c> variant of <see cref="ExternalToolTextResultForLlmContent"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ExternalToolTextResultForLlmContentResourceLink : ExternalToolTextResultForLlmContent
 {
     /// <inheritdoc />
@@ -14490,7 +16916,7 @@ public partial class ExternalToolTextResultForLlmContentResourceLink : ExternalT
 
 /// <summary>Embedded resource content block with inline text or binary data.</summary>
 /// <remarks>The <c>resource</c> variant of <see cref="ExternalToolTextResultForLlmContent"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class ExternalToolTextResultForLlmContentResource : ExternalToolTextResultForLlmContent
 {
     /// <inheritdoc />
@@ -14503,7 +16929,7 @@ public partial class ExternalToolTextResultForLlmContentResource : ExternalToolT
 }
 
 /// <summary>A message injected by a tool result.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolResultNewMessage
 {
     /// <summary>Message content to inject after the tool result.</summary>
@@ -14516,7 +16942,7 @@ public sealed class ToolResultNewMessage
 }
 
 /// <summary>RPC data type for TaskCompletionDecision operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TaskCompletionDecision
 {
     /// <summary>Objective eligibility token captured when the decision was evaluated.</summary>
@@ -14549,7 +16975,7 @@ public sealed class TaskCompletionDecision
 }
 
 /// <summary>Expanded canonical result returned by a session tool.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolResultExpanded
 {
     /// <summary>Base64-encoded binary results returned to the model.</summary>
@@ -14622,7 +17048,7 @@ public sealed class ToolResultExpanded
 }
 
 /// <summary>Task-completion tool arguments and final result used to build a label-safe session event payload.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ToolsTaskCompleteEventDataRequest
 {
     /// <summary>Final expanded result returned by the task_complete tool.</summary>
@@ -14639,7 +17065,7 @@ internal sealed class ToolsTaskCompleteEventDataRequest
 }
 
 /// <summary>Indicates whether the external tool call result was handled successfully.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HandlePendingToolCallResult
 {
     /// <summary>Whether the tool call result was handled successfully.</summary>
@@ -14648,7 +17074,7 @@ public sealed class HandlePendingToolCallResult
 }
 
 /// <summary>Pending external tool call request ID, with the tool result or an error describing why it failed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class HandlePendingToolCallRequest
 {
     /// <summary>Error message if the tool call failed.</summary>
@@ -14669,13 +17095,13 @@ internal sealed class HandlePendingToolCallRequest
 }
 
 /// <summary>Resolve, build, and validate the runtime tool list for this session. Subagent sessions and consumer flows that need an initialized tool set before `send` invoke this. Default base-class implementation is a no-op for sessions that don't support tool validation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolsInitializeAndValidateResult
 {
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionToolsInitializeAndValidateRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -14684,7 +17110,7 @@ internal sealed class SessionToolsInitializeAndValidateRequest
 }
 
 /// <summary>Lightweight metadata for a currently initialized session tool.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CurrentToolMetadata
 {
     /// <summary>Whether the tool is loaded on demand via tool search.</summary>
@@ -14717,7 +17143,7 @@ public sealed class CurrentToolMetadata
 }
 
 /// <summary>Current lightweight tool metadata snapshot for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolsGetCurrentMetadataResult
 {
     /// <summary>Current tool metadata, or null when tools have not been initialized yet.</summary>
@@ -14726,7 +17152,7 @@ public sealed class ToolsGetCurrentMetadataResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionToolsGetCurrentMetadataRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -14735,13 +17161,13 @@ internal sealed class SessionToolsGetCurrentMetadataRequest
 }
 
 /// <summary>Empty result after replacing the calling connection's externally implemented tools.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolsSetResult
 {
 }
 
 /// <summary>Serializable definition of a caller-implemented tool whose execution is handled over the SDK connection.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProtocolExternalToolDefinition
 {
     /// <summary>Tool-loading deferral policy.</summary>
@@ -14782,7 +17208,7 @@ public sealed class ProtocolExternalToolDefinition
 }
 
 /// <summary>Complete externally implemented tool list for the calling connection. An empty list removes every tool previously supplied by that connection.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ToolsSetRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -14795,13 +17221,13 @@ internal sealed class ToolsSetRequest
 }
 
 /// <summary>Empty result after applying subagent settings.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolsUpdateSubagentSettingsResult
 {
 }
 
 /// <summary>Subagent model, reasoning effort, context tier, and auto-invocation settings.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SubagentSettingsEntry
 {
     /// <summary>Whether this agent's runtime-defined proactive invocation prompting is enabled, if supported. Currently consumed by the built-in rubber-duck agent.</summary>
@@ -14846,7 +17272,7 @@ public sealed class UpdateSubagentSettingsRequestSubagents
 }
 
 /// <summary>Subagent settings to apply to the current session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UpdateSubagentSettingsRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -14859,7 +17285,7 @@ internal sealed class UpdateSubagentSettingsRequest
 }
 
 /// <summary>RPC data type for SessionCommandsList operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionCommandsListRequest
 {
     /// <summary>Include runtime built-in commands.</summary>
@@ -14876,7 +17302,7 @@ public sealed class SessionCommandsListRequest
 }
 
 /// <summary>RPC data type for SessionCommandsListRequestWithSession operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionCommandsListRequestWithSession
 {
     /// <summary>Include runtime built-in commands.</summary>
@@ -14898,7 +17324,7 @@ internal sealed class SessionCommandsListRequestWithSession
 
 /// <summary>Result of invoking the slash command (text output, prompt to send to the agent, completion, or subcommand selection).</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -14920,7 +17346,7 @@ public partial class SlashCommandInvocationResult
 
 /// <summary>Slash-command invocation result containing text output plus Markdown/ANSI rendering flags.</summary>
 /// <remarks>The <c>text</c> variant of <see cref="SlashCommandInvocationResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SlashCommandInvocationResultText : SlashCommandInvocationResult
 {
     /// <inheritdoc />
@@ -14954,7 +17380,7 @@ public partial class SlashCommandInvocationResultText : SlashCommandInvocationRe
 
 /// <summary>Slash-command invocation result that submits an agent prompt, with display prompt, optional mode, optional user-facing notice, and settings-change flag.</summary>
 /// <remarks>The <c>agent-prompt</c> variant of <see cref="SlashCommandInvocationResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SlashCommandInvocationResultAgentPrompt : SlashCommandInvocationResult
 {
     /// <inheritdoc />
@@ -14987,7 +17413,7 @@ public partial class SlashCommandInvocationResultAgentPrompt : SlashCommandInvoc
 
 /// <summary>Slash-command invocation result indicating completion, with optional message and settings-change flag.</summary>
 /// <remarks>The <c>completed</c> variant of <see cref="SlashCommandInvocationResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SlashCommandInvocationResultCompleted : SlashCommandInvocationResult
 {
     /// <inheritdoc />
@@ -15011,7 +17437,7 @@ public partial class SlashCommandInvocationResultCompleted : SlashCommandInvocat
 }
 
 /// <summary>Selectable slash-command subcommand option with name, description, and optional group label.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SlashCommandSelectSubcommandOption
 {
     /// <summary>Human-readable description of the subcommand.</summary>
@@ -15029,7 +17455,7 @@ public sealed class SlashCommandSelectSubcommandOption
 
 /// <summary>Slash-command invocation result asking the client to present subcommand options for a parent command.</summary>
 /// <remarks>The <c>select-subcommand</c> variant of <see cref="SlashCommandInvocationResult"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SlashCommandInvocationResultSelectSubcommand : SlashCommandInvocationResult
 {
     /// <inheritdoc />
@@ -15055,7 +17481,7 @@ public partial class SlashCommandInvocationResultSelectSubcommand : SlashCommand
 }
 
 /// <summary>RPC data type for SlashCommandTimelineEntry operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SlashCommandTimelineEntry
 {
     /// <summary>What the user must do to recover, when the entry reports a failure the runtime knows an action for. The `text` never names a client affordance, so a client that offers one renders it from this value.</summary>
@@ -15076,7 +17502,7 @@ public sealed class SlashCommandTimelineEntry
 }
 
 /// <summary>The <c>add-timeline-entry</c> variant of <see cref="SlashCommandInvocationResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SlashCommandInvocationResultAddTimelineEntry : SlashCommandInvocationResult
 {
     /// <inheritdoc />
@@ -15099,7 +17525,7 @@ public partial class SlashCommandInvocationResultAddTimelineEntry : SlashCommand
 }
 
 /// <summary>RPC data type for SlashCommandModelPickerDialog operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SlashCommandModelPickerDialog
 {
     /// <summary>Discriminator for a model-picker dialog.</summary>
@@ -15120,7 +17546,7 @@ public sealed class SlashCommandModelPickerDialog
 }
 
 /// <summary>The <c>show-dialog</c> variant of <see cref="SlashCommandInvocationResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SlashCommandInvocationResultShowDialog : SlashCommandInvocationResult
 {
     /// <inheritdoc />
@@ -15143,7 +17569,7 @@ public sealed class SlashCommandInvocationResultSetModelRevertOnCancel
 }
 
 /// <summary>The <c>set-model</c> variant of <see cref="SlashCommandInvocationResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SlashCommandInvocationResultSetModel : SlashCommandInvocationResult
 {
     /// <inheritdoc />
@@ -15186,7 +17612,7 @@ public partial class SlashCommandInvocationResultSetModel : SlashCommandInvocati
 }
 
 /// <summary>The <c>set-plan-model</c> variant of <see cref="SlashCommandInvocationResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SlashCommandInvocationResultSetPlanModel : SlashCommandInvocationResult
 {
     /// <inheritdoc />
@@ -15209,7 +17635,7 @@ public partial class SlashCommandInvocationResultSetPlanModel : SlashCommandInvo
 }
 
 /// <summary>Slash command name and optional raw input string to invoke.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CommandsInvokeRequest
 {
     /// <summary>Raw input after the command name.</summary>
@@ -15230,7 +17656,7 @@ internal sealed class CommandsInvokeRequest
 }
 
 /// <summary>Whether finalizing the invocation effect succeeded, and the failure reason when it did not.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CommandsFinalizeInvocationEffectResult
 {
     /// <summary>Failure reason when the invocation effect could not be finalized.</summary>
@@ -15248,7 +17674,7 @@ public sealed class CommandsFinalizeInvocationEffectRequestEffect
 }
 
 /// <summary>The pending slash-command invocation effect to finalize, plus whether the host applied or cancelled it.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CommandsFinalizeInvocationEffectRequest
 {
     /// <summary>The slash-command result object that produced the pending effect, echoed back unchanged.</summary>
@@ -15265,7 +17691,7 @@ internal sealed class CommandsFinalizeInvocationEffectRequest
 }
 
 /// <summary>Indicates whether the pending client-handled command was completed successfully.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CommandsHandlePendingCommandResult
 {
     /// <summary>Whether the command was handled successfully.</summary>
@@ -15274,7 +17700,7 @@ public sealed class CommandsHandlePendingCommandResult
 }
 
 /// <summary>Pending command request ID and an optional error if the client handler failed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CommandsHandlePendingCommandRequest
 {
     /// <summary>Error message if the command handler failed.</summary>
@@ -15291,7 +17717,7 @@ internal sealed class CommandsHandlePendingCommandRequest
 }
 
 /// <summary>Error message produced while executing the command, if any.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ExecuteCommandResult
 {
     /// <summary>Error message produced while executing the command, if any. Omitted when the handler succeeded.</summary>
@@ -15300,7 +17726,7 @@ public sealed class ExecuteCommandResult
 }
 
 /// <summary>Slash command name and argument string to execute synchronously.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ExecuteCommandParams
 {
     /// <summary>Argument string to pass to the command (empty string if none).</summary>
@@ -15317,16 +17743,22 @@ internal sealed class ExecuteCommandParams
 }
 
 /// <summary>Indicates whether the command was accepted into the local execution queue.</summary>
-[Experimental(Diagnostics.Experimental)]
-public sealed class EnqueueCommandResult
+/// <remarks>Data type discriminated by <c>queued</c>.</remarks>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public partial class EnqueueCommandResult
 {
-    /// <summary>True when the command was accepted into the local execution queue. False when the call targets a session that does not support local command queueing (e.g. remote sessions).</summary>
+    /// <summary>The boolean discriminator.</summary>
     [JsonPropertyName("queued")]
     public bool Queued { get; set; }
+
+    /// <summary>Stable opaque ID of the queued command.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("queueId")]
+    public string? QueueId { get; set; }
 }
 
 /// <summary>Slash-prefixed command string to enqueue for FIFO processing.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class EnqueueCommandParams
 {
     /// <summary>Slash-prefixed command string to enqueue, e.g. '/compact' or '/model gpt-4'. Queued FIFO with any in-flight items; if the session is idle, processing kicks off immediately.</summary>
@@ -15343,7 +17775,7 @@ internal sealed class EnqueueCommandParams
 }
 
 /// <summary>Indicates whether the queued-command response was matched to a pending request.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CommandsRespondToQueuedCommandResult
 {
     /// <summary>Whether a pending queued command with the given request ID was found and resolved. False when the request was already resolved, cancelled, or unknown.</summary>
@@ -15353,7 +17785,7 @@ public sealed class CommandsRespondToQueuedCommandResult
 
 /// <summary>Result of the queued command execution.</summary>
 /// <remarks>Data type discriminated by <c>handled</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class QueuedCommandResult
 {
     /// <summary>The boolean discriminator.</summary>
@@ -15367,7 +17799,7 @@ public partial class QueuedCommandResult
 }
 
 /// <summary>Queued-command request ID and the result indicating whether the host executed it (and whether to stop processing further queued commands).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class CommandsRespondToQueuedCommandRequest
 {
     /// <summary>Request ID from the `command.queued` event the host is responding to.</summary>
@@ -15384,7 +17816,7 @@ internal sealed class CommandsRespondToQueuedCommandRequest
 }
 
 /// <summary>Telemetry engagement ID for the session, when available.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionTelemetryEngagement
 {
     /// <summary>Current telemetry engagement ID, when available.</summary>
@@ -15393,7 +17825,7 @@ public sealed class SessionTelemetryEngagement
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionTelemetryGetEngagementIdRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -15402,7 +17834,7 @@ internal sealed class SessionTelemetryGetEngagementIdRequest
 }
 
 /// <summary>Feature override key/value pairs to attach to subsequent telemetry events from this session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class TelemetrySetFeatureOverridesRequest
 {
     /// <summary>Override key/value pairs to attach to subsequent telemetry events from this session. Replaces any previously-set overrides.</summary>
@@ -15415,7 +17847,7 @@ internal sealed class TelemetrySetFeatureOverridesRequest
 }
 
 /// <summary>Completed transient query. Ordered chunks and the terminal outcome are also delivered through `ui.ephemeral_query` session events while it runs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIEphemeralQueryResult
 {
     /// <summary>Answer returned by the model.</summary>
@@ -15424,7 +17856,7 @@ public sealed class UIEphemeralQueryResult
 }
 
 /// <summary>Transient question to answer without adding it to conversation history.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UIEphemeralQueryRequest
 {
     /// <summary>Question to answer from the current conversation context.</summary>
@@ -15442,7 +17874,7 @@ public sealed class UIElicitationResponseMeta
 }
 
 /// <summary>The elicitation response (accept with form values, decline, or cancel).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIElicitationResponse
 {
     /// <summary>MCP response metadata.</summary>
@@ -15464,7 +17896,7 @@ public sealed class UIElicitationRequestMeta
 }
 
 /// <summary>JSON Schema describing the form fields to present to the user.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIElicitationSchema
 {
     /// <summary>Form field definitions, keyed by field name.</summary>
@@ -15481,7 +17913,7 @@ public sealed class UIElicitationSchema
 }
 
 /// <summary>Metadata controlling an MCP task's lifetime.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpTaskMetadata
 {
     /// <summary>Task time-to-live.</summary>
@@ -15490,7 +17922,7 @@ public sealed class McpTaskMetadata
 }
 
 /// <summary>Prompt message and JSON schema describing the form fields to elicit from the user.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UIElicitationRequest
 {
     /// <summary>MCP request metadata.</summary>
@@ -15519,7 +17951,7 @@ internal sealed class UIElicitationRequest
 }
 
 /// <summary>Indicates whether the elicitation response was accepted; false if it was already resolved by another client.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIElicitationResult
 {
     /// <summary>Whether the response was accepted. False if the request was already resolved by another client.</summary>
@@ -15528,7 +17960,7 @@ public sealed class UIElicitationResult
 }
 
 /// <summary>Pending elicitation request ID and the user's response (accept/decline/cancel + form values).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UIHandlePendingElicitationRequest
 {
     /// <summary>The unique request ID from the elicitation.requested event.</summary>
@@ -15545,7 +17977,7 @@ internal sealed class UIHandlePendingElicitationRequest
 }
 
 /// <summary>Indicates whether the pending UI request was resolved by this call.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIHandlePendingResult
 {
     /// <summary>True if the request was still pending and was resolved by this call. False if the request ID was unknown, already resolved by another client (e.g. GitHub), expired, or otherwise no longer pending.</summary>
@@ -15554,7 +17986,7 @@ public sealed class UIHandlePendingResult
 }
 
 /// <summary>User response for a pending user-input request, with answer text and whether it was typed freeform.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIUserInputResponse
 {
     /// <summary>The user's answer text.</summary>
@@ -15567,7 +17999,7 @@ public sealed class UIUserInputResponse
 }
 
 /// <summary>Request ID of a pending `user_input.requested` event and the user's response.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UIHandlePendingUserInputRequest
 {
     /// <summary>The unique request ID from the user_input.requested event.</summary>
@@ -15584,13 +18016,13 @@ internal sealed class UIHandlePendingUserInputRequest
 }
 
 /// <summary>Optional sampling result payload. Omit to reject/cancel the sampling request without providing a result.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIHandlePendingSamplingResponse
 {
 }
 
 /// <summary>Request ID of a pending `sampling.requested` event and an optional sampling result payload (omit to reject).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UIHandlePendingSamplingRequest
 {
     /// <summary>The unique request ID from the sampling.requested event.</summary>
@@ -15607,7 +18039,7 @@ internal sealed class UIHandlePendingSamplingRequest
 }
 
 /// <summary>Request ID of a pending `auto_mode_switch.requested` event and the user's response.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UIHandlePendingAutoModeSwitchRequest
 {
     /// <summary>The unique request ID from the auto_mode_switch.requested event.</summary>
@@ -15624,7 +18056,7 @@ internal sealed class UIHandlePendingAutoModeSwitchRequest
 }
 
 /// <summary>The user's selected action for an exhausted session limit.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UISessionLimitsExhaustedResponse
 {
     /// <summary>Action selected by the user.</summary>
@@ -15641,7 +18073,7 @@ public sealed class UISessionLimitsExhaustedResponse
 }
 
 /// <summary>Request ID of a pending `session_limits_exhausted.requested` event and the user's selected limit action.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UIHandlePendingSessionLimitsExhaustedRequest
 {
     /// <summary>The unique request ID from the session_limits_exhausted.requested event.</summary>
@@ -15658,7 +18090,7 @@ internal sealed class UIHandlePendingSessionLimitsExhaustedRequest
 }
 
 /// <summary>User response for a pending exit-plan-mode request, with approval state, selected action, auto-approve flag, and feedback.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIExitPlanModeResponse
 {
     /// <summary>Whether the plan was approved.</summary>
@@ -15683,7 +18115,7 @@ public sealed class UIExitPlanModeResponse
 }
 
 /// <summary>Request ID of a pending `exit_plan_mode.requested` event and the user's response.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UIHandlePendingExitPlanModeRequest
 {
     /// <summary>The unique request ID from the exit_plan_mode.requested event.</summary>
@@ -15700,7 +18132,7 @@ internal sealed class UIHandlePendingExitPlanModeRequest
 }
 
 /// <summary>Register an in-process handler for `auto_mode_switch.requested` events. The caller still attaches the actual listener via the standard event-subscription mechanism; this registration solely tells the server bridge to skip its own dispatch (so a remote client doesn't race the in-process handler for the same requestId).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIRegisterDirectAutoModeSwitchHandlerResult
 {
     /// <summary>Opaque handle representing the registration. Pass this same handle to `unregisterDirectAutoModeSwitchHandler` when the in-process handler is no longer active. Multiple registrations are reference-counted; the server bridge will only dispatch auto-mode-switch requests when no handles are active.</summary>
@@ -15709,7 +18141,7 @@ public sealed class UIRegisterDirectAutoModeSwitchHandlerResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionUiRegisterDirectAutoModeSwitchHandlerRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -15718,7 +18150,7 @@ internal sealed class SessionUiRegisterDirectAutoModeSwitchHandlerRequest
 }
 
 /// <summary>Indicates whether the handle was active and the registration count was decremented.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UIUnregisterDirectAutoModeSwitchHandlerResult
 {
     /// <summary>True if the handle was active and decremented the counter; false if the handle was unknown.</summary>
@@ -15727,7 +18159,7 @@ public sealed class UIUnregisterDirectAutoModeSwitchHandlerResult
 }
 
 /// <summary>Opaque handle previously returned by `registerDirectAutoModeSwitchHandler` to release.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class UIUnregisterDirectAutoModeSwitchHandlerRequest
 {
     /// <summary>Handle previously returned by `registerDirectAutoModeSwitchHandler`.</summary>
@@ -15740,7 +18172,7 @@ internal sealed class UIUnregisterDirectAutoModeSwitchHandlerRequest
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsConfigureResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -15749,7 +18181,7 @@ public sealed class PermissionsConfigureResult
 }
 
 /// <summary>Source descriptor for a `session.permissions.configure` content-exclusion rule, with source name and type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsConfigureAdditionalContentExclusionPolicyRuleSource
 {
     /// <summary>Name of the policy source.</summary>
@@ -15762,7 +18194,7 @@ public sealed class PermissionsConfigureAdditionalContentExclusionPolicyRuleSour
 }
 
 /// <summary>Single content-exclusion rule supplied to `session.permissions.configure`, with paths, match conditions, and source.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsConfigureAdditionalContentExclusionPolicyRule
 {
     /// <summary>Conditions of which at least one must match.</summary>
@@ -15783,7 +18215,7 @@ public sealed class PermissionsConfigureAdditionalContentExclusionPolicyRule
 }
 
 /// <summary>Content-exclusion policy supplied to `session.permissions.configure`, with rules, last-updated data, and scope.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsConfigureAdditionalContentExclusionPolicy
 {
     /// <summary>Opaque policy update timestamp supplied by the host.</summary>
@@ -15800,7 +18232,7 @@ public sealed class PermissionsConfigureAdditionalContentExclusionPolicy
 }
 
 /// <summary>If specified, replaces the session's path-permission policy. The runtime constructs the appropriate PathManager based on these inputs (rooted at the session's working directory). Omit to leave the current path policy unchanged.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionPathsConfig
 {
     /// <summary>Additional directories to allow tool access to (in addition to the session's working directory). Conventional `.github/skills/` and `.github/agents/` definitions under them also join the session catalogs when their subsystem gates are enabled, so supplying a directory is a trust decision for configuration stored there. When `unrestricted` is true, these are still pre-populated on the UnrestrictedPathManager so they remain visible via getDirectories() (e.g. for @-mention completion).</summary>
@@ -15821,7 +18253,7 @@ public sealed class PermissionPathsConfig
 }
 
 /// <summary>If specified, replaces the session's approved/denied permission rules. Omit to leave the current rules unchanged.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionRulesSet
 {
     /// <summary>Rules that auto-approve matching requests.</summary>
@@ -15834,7 +18266,7 @@ public sealed class PermissionRulesSet
 }
 
 /// <summary>If specified, replaces the session's URL-permission policy. The runtime constructs a fresh DefaultUrlManager based on these inputs. Omit to leave the current URL policy unchanged.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionUrlsConfig
 {
     /// <summary>Initial list of allowed URL/domain patterns. Patterns may include path components. Ignored when `unrestricted` is true.</summary>
@@ -15847,7 +18279,7 @@ public sealed class PermissionUrlsConfig
 }
 
 /// <summary>Patch of permission policy fields to apply (omit a field to leave it unchanged).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionsConfigureParams
 {
     /// <summary>If specified, replaces the host-supplied GitHub Content Exclusion policies on the session (combined with natively-discovered policies when evaluating tool/file access). Omit to leave the current policies unchanged.</summary>
@@ -15880,7 +18312,7 @@ internal sealed class PermissionsConfigureParams
 }
 
 /// <summary>Indicates whether the permission decision was applied; false when the request was already resolved.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionRequestResult
 {
     /// <summary>Whether the permission request was handled successfully.</summary>
@@ -15890,7 +18322,7 @@ public sealed class PermissionRequestResult
 
 /// <summary>The client's response to the pending permission prompt.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -15919,7 +18351,7 @@ public partial class PermissionDecision
 
 /// <summary>Permission-decision request variant to approve only the current permission request.</summary>
 /// <remarks>The <c>approve-once</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveOnce : PermissionDecision
 {
     /// <inheritdoc />
@@ -15934,7 +18366,7 @@ public partial class PermissionDecisionApproveOnce : PermissionDecision
 
 /// <summary>Session-scoped approval to remember (tool prompts only; omitted for path/url prompts).</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -15959,7 +18391,7 @@ public partial class PermissionDecisionApproveForSessionApproval
 
 /// <summary>Session-scoped approval details for specific command identifiers.</summary>
 /// <remarks>The <c>commands</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalCommands : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -15973,7 +18405,7 @@ public partial class PermissionDecisionApproveForSessionApprovalCommands : Permi
 
 /// <summary>Session-scoped approval details for read-only filesystem operations.</summary>
 /// <remarks>The <c>read</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalRead : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -15983,7 +18415,7 @@ public partial class PermissionDecisionApproveForSessionApprovalRead : Permissio
 
 /// <summary>Session-scoped approval details for filesystem write operations.</summary>
 /// <remarks>The <c>write</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalWrite : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -15993,7 +18425,7 @@ public partial class PermissionDecisionApproveForSessionApprovalWrite : Permissi
 
 /// <summary>Session-scoped approval details for an MCP server tool, or all tools on the server when `toolName` is null.</summary>
 /// <remarks>The <c>mcp</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalMcp : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -16011,7 +18443,7 @@ public partial class PermissionDecisionApproveForSessionApprovalMcp : Permission
 
 /// <summary>Session-scoped approval details for MCP sampling requests from a server.</summary>
 /// <remarks>The <c>mcp-sampling</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalMcpSampling : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -16025,7 +18457,7 @@ public partial class PermissionDecisionApproveForSessionApprovalMcpSampling : Pe
 
 /// <summary>Session-scoped approval details for writes to long-term memory.</summary>
 /// <remarks>The <c>memory</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalMemory : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -16035,7 +18467,7 @@ public partial class PermissionDecisionApproveForSessionApprovalMemory : Permiss
 
 /// <summary>Session-scoped approval details for a custom tool, keyed by tool name.</summary>
 /// <remarks>The <c>custom-tool</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalCustomTool : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -16049,7 +18481,7 @@ public partial class PermissionDecisionApproveForSessionApprovalCustomTool : Per
 
 /// <summary>Session-scoped approval details for extension-management operations, optionally narrowed by operation.</summary>
 /// <remarks>The <c>extension-management</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalExtensionManagement : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -16064,7 +18496,7 @@ public partial class PermissionDecisionApproveForSessionApprovalExtensionManagem
 
 /// <summary>Session-scoped factory approval, optionally narrowed by approval key.</summary>
 /// <remarks>The <c>factory</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalFactory : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -16079,7 +18511,7 @@ public partial class PermissionDecisionApproveForSessionApprovalFactory : Permis
 
 /// <summary>Session-scoped approval details for an extension's permission-gated capability access, keyed by extension name.</summary>
 /// <remarks>The <c>extension-permission-access</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalExtensionPermissionAccess : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -16093,7 +18525,7 @@ public partial class PermissionDecisionApproveForSessionApprovalExtensionPermiss
 
 /// <summary>Session-scoped approval details for an extension's access to sensitive environment variables, keyed by extension name and the exact set of variable names.</summary>
 /// <remarks>The <c>extension-env-access</c> variant of <see cref="PermissionDecisionApproveForSessionApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSessionApprovalExtensionEnvAccess : PermissionDecisionApproveForSessionApproval
 {
     /// <inheritdoc />
@@ -16111,7 +18543,7 @@ public partial class PermissionDecisionApproveForSessionApprovalExtensionEnvAcce
 
 /// <summary>Permission-decision request variant to approve for the rest of the session, with optional tool approval or URL domain.</summary>
 /// <remarks>The <c>approve-for-session</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForSession : PermissionDecision
 {
     /// <inheritdoc />
@@ -16131,7 +18563,7 @@ public partial class PermissionDecisionApproveForSession : PermissionDecision
 
 /// <summary>Approval to persist for this location.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -16156,7 +18588,7 @@ public partial class PermissionDecisionApproveForLocationApproval
 
 /// <summary>Location-scoped approval details for specific command identifiers.</summary>
 /// <remarks>The <c>commands</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalCommands : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16170,7 +18602,7 @@ public partial class PermissionDecisionApproveForLocationApprovalCommands : Perm
 
 /// <summary>Location-scoped approval details for read-only filesystem operations.</summary>
 /// <remarks>The <c>read</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalRead : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16180,7 +18612,7 @@ public partial class PermissionDecisionApproveForLocationApprovalRead : Permissi
 
 /// <summary>Location-scoped approval details for filesystem write operations.</summary>
 /// <remarks>The <c>write</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalWrite : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16190,7 +18622,7 @@ public partial class PermissionDecisionApproveForLocationApprovalWrite : Permiss
 
 /// <summary>Location-scoped approval details for an MCP server tool, or all tools on the server when `toolName` is null.</summary>
 /// <remarks>The <c>mcp</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalMcp : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16208,7 +18640,7 @@ public partial class PermissionDecisionApproveForLocationApprovalMcp : Permissio
 
 /// <summary>Location-scoped approval details for MCP sampling requests from a server.</summary>
 /// <remarks>The <c>mcp-sampling</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalMcpSampling : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16222,7 +18654,7 @@ public partial class PermissionDecisionApproveForLocationApprovalMcpSampling : P
 
 /// <summary>Location-scoped approval details for writes to long-term memory.</summary>
 /// <remarks>The <c>memory</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalMemory : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16232,7 +18664,7 @@ public partial class PermissionDecisionApproveForLocationApprovalMemory : Permis
 
 /// <summary>Location-scoped approval details for a custom tool, keyed by tool name.</summary>
 /// <remarks>The <c>custom-tool</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalCustomTool : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16246,7 +18678,7 @@ public partial class PermissionDecisionApproveForLocationApprovalCustomTool : Pe
 
 /// <summary>Location-scoped approval details for extension-management operations, optionally narrowed by operation.</summary>
 /// <remarks>The <c>extension-management</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalExtensionManagement : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16261,7 +18693,7 @@ public partial class PermissionDecisionApproveForLocationApprovalExtensionManage
 
 /// <summary>Location-scoped factory approval, optionally narrowed by approval key.</summary>
 /// <remarks>The <c>factory</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalFactory : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16276,7 +18708,7 @@ public partial class PermissionDecisionApproveForLocationApprovalFactory : Permi
 
 /// <summary>Location-scoped approval details for an extension's permission-gated capability access, keyed by extension name.</summary>
 /// <remarks>The <c>extension-permission-access</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalExtensionPermissionAccess : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16290,7 +18722,7 @@ public partial class PermissionDecisionApproveForLocationApprovalExtensionPermis
 
 /// <summary>Location-scoped approval details for an extension's access to sensitive environment variables, keyed by extension name and the exact set of variable names.</summary>
 /// <remarks>The <c>extension-env-access</c> variant of <see cref="PermissionDecisionApproveForLocationApproval"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocationApprovalExtensionEnvAccess : PermissionDecisionApproveForLocationApproval
 {
     /// <inheritdoc />
@@ -16308,7 +18740,7 @@ public partial class PermissionDecisionApproveForLocationApprovalExtensionEnvAcc
 
 /// <summary>Permission-decision request variant to approve and persist a permission for a project location, with approval details and location key.</summary>
 /// <remarks>The <c>approve-for-location</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproveForLocation : PermissionDecision
 {
     /// <inheritdoc />
@@ -16326,7 +18758,7 @@ public partial class PermissionDecisionApproveForLocation : PermissionDecision
 
 /// <summary>Permission-decision request variant to permanently approve a URL domain across sessions.</summary>
 /// <remarks>The <c>approve-permanently</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApprovePermanently : PermissionDecision
 {
     /// <inheritdoc />
@@ -16340,7 +18772,7 @@ public partial class PermissionDecisionApprovePermanently : PermissionDecision
 
 /// <summary>Permission-decision request variant to reject a pending permission request, with optional feedback.</summary>
 /// <remarks>The <c>reject</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionReject : PermissionDecision
 {
     /// <inheritdoc />
@@ -16355,7 +18787,7 @@ public partial class PermissionDecisionReject : PermissionDecision
 
 /// <summary>Permission-decision variant indicating no user was available to confirm the request.</summary>
 /// <remarks>The <c>user-not-available</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionUserNotAvailable : PermissionDecision
 {
     /// <inheritdoc />
@@ -16365,7 +18797,7 @@ public partial class PermissionDecisionUserNotAvailable : PermissionDecision
 
 /// <summary>Permission-decision variant indicating the request was approved.</summary>
 /// <remarks>The <c>approved</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApproved : PermissionDecision
 {
     /// <inheritdoc />
@@ -16375,7 +18807,7 @@ public partial class PermissionDecisionApproved : PermissionDecision
 
 /// <summary>Permission-decision variant indicating approval was remembered for the session, with approval details.</summary>
 /// <remarks>The <c>approved-for-session</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApprovedForSession : PermissionDecision
 {
     /// <inheritdoc />
@@ -16389,7 +18821,7 @@ public partial class PermissionDecisionApprovedForSession : PermissionDecision
 
 /// <summary>Permission-decision variant indicating approval was persisted for a project location, with approval details and location key.</summary>
 /// <remarks>The <c>approved-for-location</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionApprovedForLocation : PermissionDecision
 {
     /// <inheritdoc />
@@ -16407,7 +18839,7 @@ public partial class PermissionDecisionApprovedForLocation : PermissionDecision
 
 /// <summary>Permission-decision variant indicating the request was cancelled before use, with an optional reason.</summary>
 /// <remarks>The <c>cancelled</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionCancelled : PermissionDecision
 {
     /// <inheritdoc />
@@ -16422,7 +18854,7 @@ public partial class PermissionDecisionCancelled : PermissionDecision
 
 /// <summary>Permission-decision variant indicating explicit denial by permission rules, with the matching rules.</summary>
 /// <remarks>The <c>denied-by-rules</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionDeniedByRules : PermissionDecision
 {
     /// <inheritdoc />
@@ -16436,7 +18868,7 @@ public partial class PermissionDecisionDeniedByRules : PermissionDecision
 
 /// <summary>Permission-decision variant indicating no approval rule matched and user confirmation was unavailable.</summary>
 /// <remarks>The <c>denied-no-approval-rule-and-could-not-request-from-user</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionDeniedNoApprovalRuleAndCouldNotRequestFromUser : PermissionDecision
 {
     /// <inheritdoc />
@@ -16446,7 +18878,7 @@ public partial class PermissionDecisionDeniedNoApprovalRuleAndCouldNotRequestFro
 
 /// <summary>Permission-decision variant indicating the user denied an interactive prompt, with optional feedback and force-reject flag.</summary>
 /// <remarks>The <c>denied-interactively-by-user</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionDeniedInteractivelyByUser : PermissionDecision
 {
     /// <inheritdoc />
@@ -16466,7 +18898,7 @@ public partial class PermissionDecisionDeniedInteractivelyByUser : PermissionDec
 
 /// <summary>Permission-decision variant indicating denial by content-exclusion policy, with path and message.</summary>
 /// <remarks>The <c>denied-by-content-exclusion-policy</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionDeniedByContentExclusionPolicy : PermissionDecision
 {
     /// <inheritdoc />
@@ -16484,7 +18916,7 @@ public partial class PermissionDecisionDeniedByContentExclusionPolicy : Permissi
 
 /// <summary>Permission-decision variant indicating denial by a permission request hook, with optional message and interrupt flag.</summary>
 /// <remarks>The <c>denied-by-permission-request-hook</c> variant of <see cref="PermissionDecision"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionDecisionDeniedByPermissionRequestHook : PermissionDecision
 {
     /// <inheritdoc />
@@ -16503,7 +18935,7 @@ public partial class PermissionDecisionDeniedByPermissionRequestHook : Permissio
 }
 
 /// <summary>Pending permission request ID and the decision to apply (approve/reject and scope).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionDecisionRequest
 {
     /// <summary>Optional informational context describing how and where this response was made. Omit it to preserve legacy behavior without attributing an origin.</summary>
@@ -16524,9 +18956,13 @@ internal sealed class PermissionDecisionRequest
 }
 
 /// <summary>Pending permission prompt reconstructed from event history, with request ID and user-facing prompt details.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PendingPermissionRequest
 {
+    /// <summary>Permission-recovery episode that authorized this request to surface for interactive attention.</summary>
+    [JsonPropertyName("recoveryEpisodeId")]
+    public string? RecoveryEpisodeId { get; set; }
+
     /// <summary>The user-facing permission prompt details (commands, write, read, mcp, url, memory, custom-tool, path, hook).</summary>
     [JsonPropertyName("request")]
     public PermissionPromptRequest Request { get; set; } = null!;
@@ -16537,7 +18973,7 @@ public sealed class PendingPermissionRequest
 }
 
 /// <summary>List of pending permission requests reconstructed from event history.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PendingPermissionRequestList
 {
     /// <summary>Pending permission prompts reconstructed from the session's event history. Equivalent to the set of `permission.requested` events that have not yet been followed by a matching `permission.completed` event. Used by clients (e.g. the CLI) to hydrate UI for prompts that were emitted before the client attached to the session.</summary>
@@ -16546,7 +18982,7 @@ public sealed class PendingPermissionRequestList
 }
 
 /// <summary>No parameters; returns currently-pending permission requests for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionsPendingRequestsRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -16555,7 +18991,7 @@ internal sealed class PermissionsPendingRequestsRequest
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsSetApproveAllResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -16564,7 +19000,7 @@ public sealed class PermissionsSetApproveAllResult
 }
 
 /// <summary>Allow-all toggle for tool permission requests, with an optional telemetry source.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionsSetApproveAllRequest
 {
     /// <summary>Whether to auto-approve all tool permission requests.</summary>
@@ -16581,7 +19017,7 @@ internal sealed class PermissionsSetApproveAllRequest
 }
 
 /// <summary>Indicates whether the requested permission mode was applied and reports the authoritative post-mutation mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsSetModeResult
 {
     /// <summary>Authoritative permission mode after the mutation.</summary>
@@ -16594,7 +19030,7 @@ public sealed class PermissionsSetModeResult
 }
 
 /// <summary>Permission mode to apply for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionsSetModeRequest
 {
     /// <summary>Optional judge model id for assisted mode. When omitted, the session resolves the provider default: `gpt-5.5` for CAPI sessions and the active session model for BYOK sessions.</summary>
@@ -16615,7 +19051,7 @@ internal sealed class PermissionsSetModeRequest
 }
 
 /// <summary>Current permission mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsGetModeResult
 {
     /// <summary>Current permission mode.</summary>
@@ -16624,7 +19060,7 @@ public sealed class PermissionsGetModeResult
 }
 
 /// <summary>No parameters.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionsGetModeRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -16633,7 +19069,7 @@ internal sealed class PermissionsGetModeRequest
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsModifyRulesResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -16642,7 +19078,7 @@ public sealed class PermissionsModifyRulesResult
 }
 
 /// <summary>Scope and add/remove instructions for modifying session- or location-scoped permission rules.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionsModifyRulesParams
 {
     /// <summary>Rules to add to the scope. Applied before `remove`/`removeAll`.</summary>
@@ -16667,7 +19103,7 @@ internal sealed class PermissionsModifyRulesParams
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsSetRequiredResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -16676,7 +19112,7 @@ public sealed class PermissionsSetRequiredResult
 }
 
 /// <summary>Toggles whether permission prompts should be bridged into session events for this client.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionsSetRequiredRequest
 {
     /// <summary>Whether the client wants `permission.requested` events bridged from the session-owned permission service. CLI clients that render prompt UI set this to `true` for as long as their listener is mounted; headless callers leave it unset (the default is `false`).</summary>
@@ -16689,7 +19125,7 @@ internal sealed class PermissionsSetRequiredRequest
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsResetSessionApprovalsResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -16697,11 +19133,11 @@ public sealed class PermissionsResetSessionApprovalsResult
     public bool Success { get; set; }
 }
 
-/// <summary>Clears session-scoped tool permission approvals, and optionally the location-scoped ones.</summary>
-[Experimental(Diagnostics.Experimental)]
+/// <summary>Clears session-scoped tool approvals and optionally clears location-scoped approvals and exact session-approved paths.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionsResetSessionApprovalsRequest
 {
-    /// <summary>Whether location-scoped approvals are cleared too. Defaults to `true`.</summary>
+    /// <summary>Whether location-scoped approvals and exact session-approved paths are cleared too. Defaults to `true`.</summary>
     [JsonPropertyName("includeLocation")]
     public bool? IncludeLocation { get; set; }
 
@@ -16711,7 +19147,7 @@ internal sealed class PermissionsResetSessionApprovalsRequest
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsNotifyPromptShownResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -16720,7 +19156,7 @@ public sealed class PermissionsNotifyPromptShownResult
 }
 
 /// <summary>Notification payload describing the permission prompt that the client just rendered.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionPromptShownNotification
 {
     /// <summary>Human-readable description of the prompt the user is being asked to approve. Used by the runtime to fire the registered `permission_prompt` notification hook (e.g. terminal bell, desktop notification).</summary>
@@ -16732,8 +19168,8 @@ internal sealed class PermissionPromptShownNotification
     public string SessionId { get; set; } = string.Empty;
 }
 
-/// <summary>Snapshot of the session's allow-listed directories and primary working directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+/// <summary>Snapshot of the session's recursive directory grants, exact session-approved paths, and primary working directory.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionPathsList
 {
     /// <summary>All directories currently allowed for tool access on this session.</summary>
@@ -16743,10 +19179,14 @@ public sealed class PermissionPathsList
     /// <summary>The primary working directory for this session.</summary>
     [JsonPropertyName("primary")]
     public string Primary { get; set; } = string.Empty;
+
+    /// <summary>Exact paths approved for this session without recursively allowing their descendants.</summary>
+    [JsonPropertyName("sessionApprovedPaths")]
+    public IList<string>? SessionApprovedPaths { get; set; }
 }
 
-/// <summary>No parameters; returns the session's allow-listed directories.</summary>
-[Experimental(Diagnostics.Experimental)]
+/// <summary>No parameters; returns the session's recursive directory grants and exact session-approved paths.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionsPathsListRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -16755,7 +19195,7 @@ internal sealed class PermissionsPathsListRequest
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsPathsAddResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -16764,7 +19204,7 @@ public sealed class PermissionsPathsAddResult
 }
 
 /// <summary>Directory path to add to the session's allowed directories.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionPathsAddParams
 {
     /// <summary>Directory to add to the allow-list. The runtime resolves and validates the path before adding, then loads conventional `.github/skills/` and `.github/agents/` definitions under it when their subsystem gates are enabled. Adding the directory is therefore also a trust decision for configuration stored there.</summary>
@@ -16777,7 +19217,7 @@ internal sealed class PermissionPathsAddParams
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsPathsUpdatePrimaryResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -16786,7 +19226,7 @@ public sealed class PermissionsPathsUpdatePrimaryResult
 }
 
 /// <summary>Directory path to set as the session's new primary working directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionPathsUpdatePrimaryParams
 {
     /// <summary>Directory to set as the new primary working directory for the session's permission policy.</summary>
@@ -16799,7 +19239,7 @@ internal sealed class PermissionPathsUpdatePrimaryParams
 }
 
 /// <summary>Indicates whether the supplied path is within the session's allowed directories.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionPathsAllowedCheckResult
 {
     /// <summary>Whether the path is within the session's allowed directories.</summary>
@@ -16808,7 +19248,7 @@ public sealed class PermissionPathsAllowedCheckResult
 }
 
 /// <summary>Path to evaluate against the session's allowed directories.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionPathsAllowedCheckParams
 {
     /// <summary>Path to check against the session's allowed directories.</summary>
@@ -16821,7 +19261,7 @@ internal sealed class PermissionPathsAllowedCheckParams
 }
 
 /// <summary>Indicates whether the supplied path is within the session's workspace directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionPathsWorkspaceCheckResult
 {
     /// <summary>Whether the path is within the session workspace directory.</summary>
@@ -16830,7 +19270,7 @@ public sealed class PermissionPathsWorkspaceCheckResult
 }
 
 /// <summary>Path to evaluate against the session's workspace (primary) directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionPathsWorkspaceCheckParams
 {
     /// <summary>Path to check against the session workspace directory.</summary>
@@ -16843,7 +19283,7 @@ internal sealed class PermissionPathsWorkspaceCheckParams
 }
 
 /// <summary>Resolved location-permissions key and type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionLocationResolveResult
 {
     /// <summary>Location key used in the location-permissions store.</summary>
@@ -16856,7 +19296,7 @@ public sealed class PermissionLocationResolveResult
 }
 
 /// <summary>Working directory to resolve into a location-permissions key.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionLocationResolveParams
 {
     /// <summary>Target session identifier.</summary>
@@ -16869,7 +19309,7 @@ internal sealed class PermissionLocationResolveParams
 }
 
 /// <summary>Summary of persisted location permissions applied to the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionLocationApplyResult
 {
     /// <summary>Number of persisted allowed directories added to the live path manager.</summary>
@@ -16898,7 +19338,7 @@ public sealed class PermissionLocationApplyResult
 }
 
 /// <summary>Working directory to load persisted location permissions for.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionLocationApplyParams
 {
     /// <summary>Target session identifier.</summary>
@@ -16911,7 +19351,7 @@ internal sealed class PermissionLocationApplyParams
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsLocationsAddToolApprovalResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -16921,7 +19361,7 @@ public sealed class PermissionsLocationsAddToolApprovalResult
 
 /// <summary>Tool approval to persist and apply.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -16946,7 +19386,7 @@ public partial class PermissionsLocationsAddToolApprovalDetails
 
 /// <summary>Location-persisted tool approval details for specific command identifiers.</summary>
 /// <remarks>The <c>commands</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsCommands : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -16960,7 +19400,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsCommands : Permis
 
 /// <summary>Location-persisted tool approval details for read-only filesystem operations.</summary>
 /// <remarks>The <c>read</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsRead : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -16970,7 +19410,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsRead : Permission
 
 /// <summary>Location-persisted tool approval details for filesystem write operations.</summary>
 /// <remarks>The <c>write</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsWrite : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -16980,7 +19420,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsWrite : Permissio
 
 /// <summary>Location-persisted tool approval details for an MCP server tool, or all tools when `toolName` is null.</summary>
 /// <remarks>The <c>mcp</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsMcp : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -16998,7 +19438,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsMcp : Permissions
 
 /// <summary>Location-persisted tool approval details for MCP sampling requests from a server.</summary>
 /// <remarks>The <c>mcp-sampling</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsMcpSampling : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -17012,7 +19452,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsMcpSampling : Per
 
 /// <summary>Location-persisted tool approval details for writes to long-term memory.</summary>
 /// <remarks>The <c>memory</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsMemory : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -17022,7 +19462,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsMemory : Permissi
 
 /// <summary>Location-persisted tool approval details for a custom tool, keyed by tool name.</summary>
 /// <remarks>The <c>custom-tool</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsCustomTool : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -17036,7 +19476,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsCustomTool : Perm
 
 /// <summary>Location-persisted tool approval details for extension-management operations, optionally narrowed by operation.</summary>
 /// <remarks>The <c>extension-management</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsExtensionManagement : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -17051,7 +19491,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsExtensionManageme
 
 /// <summary>Location-persisted factory approval, optionally narrowed by approval key.</summary>
 /// <remarks>The <c>factory</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsFactory : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -17066,7 +19506,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsFactory : Permiss
 
 /// <summary>Location-persisted tool approval details for an extension's permission-gated capability access, keyed by extension name.</summary>
 /// <remarks>The <c>extension-permission-access</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsExtensionPermissionAccess : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -17080,7 +19520,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsExtensionPermissi
 
 /// <summary>Location-persisted tool approval details for an extension's access to sensitive environment variables, keyed by extension name and the exact set of variable names.</summary>
 /// <remarks>The <c>extension-env-access</c> variant of <see cref="PermissionsLocationsAddToolApprovalDetails"/>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class PermissionsLocationsAddToolApprovalDetailsExtensionEnvAccess : PermissionsLocationsAddToolApprovalDetails
 {
     /// <inheritdoc />
@@ -17097,7 +19537,7 @@ public partial class PermissionsLocationsAddToolApprovalDetailsExtensionEnvAcces
 }
 
 /// <summary>Location-scoped tool approval to persist.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionLocationAddToolApprovalParams
 {
     /// <summary>Tool approval to persist and apply.</summary>
@@ -17114,7 +19554,7 @@ internal sealed class PermissionLocationAddToolApprovalParams
 }
 
 /// <summary>Folder trust check result.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FolderTrustCheckResult
 {
     /// <summary>Whether the folder is trusted.</summary>
@@ -17123,7 +19563,7 @@ public sealed class FolderTrustCheckResult
 }
 
 /// <summary>Folder path to check for trust.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FolderTrustCheckParams
 {
     /// <summary>Folder path to check.</summary>
@@ -17136,7 +19576,7 @@ internal sealed class FolderTrustCheckParams
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsFolderTrustAddTrustedResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -17145,7 +19585,7 @@ public sealed class PermissionsFolderTrustAddTrustedResult
 }
 
 /// <summary>Folder path to add to trusted folders.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class FolderTrustAddParams
 {
     /// <summary>Folder path to mark as trusted.</summary>
@@ -17158,7 +19598,7 @@ internal sealed class FolderTrustAddParams
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsUrlsSetUnrestrictedModeResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -17167,7 +19607,7 @@ public sealed class PermissionsUrlsSetUnrestrictedModeResult
 }
 
 /// <summary>Whether the URL-permission policy should run in unrestricted mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class PermissionUrlsSetUnrestrictedModeParams
 {
     /// <summary>Whether to allow access to all URLs without prompting. Toggles the runtime's URL-permission policy in place.</summary>
@@ -17180,7 +19620,7 @@ internal sealed class PermissionUrlsSetUnrestrictedModeParams
 }
 
 /// <summary>The repository the remote session targets.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataSnapshotRemoteMetadataRepository
 {
     /// <summary>The branch the remote session is operating on.</summary>
@@ -17197,7 +19637,7 @@ public sealed class MetadataSnapshotRemoteMetadataRepository
 }
 
 /// <summary>Remote-session-specific metadata. Populated only when `isRemote` is true. Fields are immutable for the lifetime of the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataSnapshotRemoteMetadata
 {
     /// <summary>The pull request number the remote session is associated with, if any.</summary>
@@ -17264,7 +19704,7 @@ public sealed class SessionMetadataSnapshotWorkspace
 }
 
 /// <summary>Point-in-time snapshot of slow-changing session identifier and state fields.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionMetadataSnapshot
 {
     /// <summary>True when the session was detected to be in use by another process at construction time. Local consumers may surface a confirmation prompt before fully attaching. Always false for new sessions.</summary>
@@ -17278,6 +19718,10 @@ public sealed class SessionMetadataSnapshot
     /// <summary>The current agent mode for this session (e.g., 'interactive', 'plan', 'autopilot').</summary>
     [JsonPropertyName("currentMode")]
     public MetadataSnapshotCurrentMode CurrentMode { get; set; }
+
+    /// <summary>Live indexed-search state for this session activation. Omitted by runtimes that do not expose indexed-search status; absence does not indicate enablement.</summary>
+    [JsonPropertyName("indexedSearch")]
+    public IndexedSearchState? IndexedSearch { get; set; }
 
     /// <summary>User-provided name supplied at session construction (via `--name`), if any. Immutable after construction.</summary>
     [JsonPropertyName("initialName")]
@@ -17329,7 +19773,7 @@ public sealed class SessionMetadataSnapshot
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMetadataSnapshotRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -17338,7 +19782,7 @@ internal sealed class SessionMetadataSnapshotRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMetadataGetClientMetadataRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -17347,7 +19791,7 @@ internal sealed class SessionMetadataGetClientMetadataRequest
 }
 
 /// <summary>Atomic patch for client-owned session metadata. Operations apply in clear, remove, then set order. The resulting bag must satisfy the ClientMetadata entry and serialized-size limits. Local storage coordinates concurrent runtime processes; custom SessionFs providers must serialize writers that access the same session from multiple processes.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class MetadataUpdateClientMetadataRequest
 {
     /// <summary>Remove every existing client metadata entry before applying remove and set. Defaults to false.</summary>
@@ -17368,7 +19812,7 @@ internal sealed class MetadataUpdateClientMetadataRequest
 }
 
 /// <summary>Indicates whether the local session is currently processing a turn or background continuation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataIsProcessingResult
 {
     /// <summary>Whether the session is currently processing user/agent messages. False for non-local sessions (which don't run a local agentic loop). Reflects an in-flight turn or background continuation.</summary>
@@ -17377,7 +19821,7 @@ public sealed class MetadataIsProcessingResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMetadataIsProcessingRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -17386,7 +19830,7 @@ internal sealed class SessionMetadataIsProcessingRequest
 }
 
 /// <summary>Current activity flags for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionActivity
 {
     /// <summary>Whether an in-flight operation can currently be aborted.</summary>
@@ -17399,7 +19843,7 @@ public sealed class SessionActivity
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMetadataActivityRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -17452,7 +19896,7 @@ public sealed class MetadataContextInfoResultContextInfo
 }
 
 /// <summary>Token breakdown for the session's current context window, or null if uninitialized.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataContextInfoResult
 {
     /// <summary>Token breakdown for the current context window, or null if the session has not yet been initialized (no system prompt or tool metadata cached).</summary>
@@ -17461,7 +19905,7 @@ public sealed class MetadataContextInfoResult
 }
 
 /// <summary>Model identifier and token limits used to compute the context-info breakdown.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class MetadataContextInfoRequest
 {
     /// <summary>Maximum output tokens allowed by the target model. Pass 0 if unknown.</summary>
@@ -17594,7 +20038,7 @@ public sealed class MetadataContextAttributionResultContextAttribution
 }
 
 /// <summary>Per-source attribution breakdown for the session's current context window, or null if uninitialized.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataContextAttributionResult
 {
     /// <summary>Per-source context-window attribution, or null if the session has not yet been initialized (no system prompt or tool metadata cached).</summary>
@@ -17603,7 +20047,7 @@ public sealed class MetadataContextAttributionResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionMetadataGetContextAttributionRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -17612,7 +20056,7 @@ internal sealed class SessionMetadataGetContextAttributionRequest
 }
 
 /// <summary>A single large message currently in context.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ContextHeaviestMessage
 {
     /// <summary>Stable identifier for this message within the snapshot.</summary>
@@ -17633,7 +20077,7 @@ public sealed class ContextHeaviestMessage
 }
 
 /// <summary>The heaviest individual messages in the session's context window, most-expensive first.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataContextHeaviestMessagesResult
 {
     /// <summary>Heaviest messages, most-expensive first.</summary>
@@ -17646,7 +20090,7 @@ public sealed class MetadataContextHeaviestMessagesResult
 }
 
 /// <summary>Parameters for the heaviest-messages query.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class MetadataContextHeaviestMessagesRequest
 {
     /// <summary>Maximum number of messages to return, most-expensive first. Omit for the server default.</summary>
@@ -17659,13 +20103,13 @@ internal sealed class MetadataContextHeaviestMessagesRequest
 }
 
 /// <summary>Notify the session that its working directory context has changed. Emits a `session.context_changed` event so consumers (telemetry, OTel tracker, ACP, the timeline UI) can react. Use this when the host has detected a cwd/branch/repo change outside the session's normal lifecycle (e.g., after a shell command in interactive mode). For a local session, a report whose `cwd` diverges from the session's current working directory is ignored (the call still succeeds but records nothing and emits no event); move a local session's working directory via `metadata.setWorkingDirectory` instead.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataRecordContextChangeResult
 {
 }
 
 /// <summary>Updated working directory and git context. Emitted as the new payload of `session.context_changed`.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionWorkingDirectoryContext
 {
     /// <summary>Merge-base commit SHA (fork point from the remote default branch).</summary>
@@ -17702,7 +20146,7 @@ public sealed class SessionWorkingDirectoryContext
 }
 
 /// <summary>Updated working-directory/git context to record on the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class MetadataRecordContextChangeRequest
 {
     /// <summary>Updated working directory and git context. Emitted as the new payload of `session.context_changed`.</summary>
@@ -17715,7 +20159,7 @@ internal sealed class MetadataRecordContextChangeRequest
 }
 
 /// <summary>Update the session's working directory. Used by the host when the user explicitly changes cwd (e.g., the `/cd` slash command). The host is responsible for any related side-effects (file index, etc.); it does NOT change the process working directory (a session's cwd is per-session, not process-global). For local sessions the runtime validates the target first (an absolute path that exists on disk) and re-bases the permission primary directory; a rejected validation fails the call before anything is mutated, persisted, or emitted. Location-scoped permission rules are then re-keyed to the new directory (best-effort). Remote sessions only record the path.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataSetWorkingDirectoryResult
 {
     /// <summary>Working directory after the update.</summary>
@@ -17724,7 +20168,7 @@ public sealed class MetadataSetWorkingDirectoryResult
 }
 
 /// <summary>Absolute path to set as the session's new working directory. For local sessions the path must be absolute and exist on disk: it is validated before any session state changes, and a failing validation rejects the call with nothing mutated, persisted, or emitted. Remote sessions record the path as-is.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class MetadataSetWorkingDirectoryRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -17737,7 +20181,7 @@ internal sealed class MetadataSetWorkingDirectoryRequest
 }
 
 /// <summary>Re-tokenize the session's existing messages against `modelId` and return the token totals. Useful for hosts that want an initial estimate of context usage on session resume, before the next agent turn fires `session.context_info_changed` events. Returns zeros for an empty session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataRecomputeContextTokensResult
 {
     /// <summary>Tokens contributed by user/assistant/tool messages (excludes system/developer prompts).</summary>
@@ -17754,7 +20198,7 @@ public sealed class MetadataRecomputeContextTokensResult
 }
 
 /// <summary>Model identifier to use when re-tokenizing the session's existing messages.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class MetadataRecomputeContextTokensRequest
 {
     /// <summary>Model identifier used for tokenization. The runtime token-counts both chat-context and system-context messages against this model.</summary>
@@ -17767,7 +20211,7 @@ internal sealed class MetadataRecomputeContextTokensRequest
 }
 
 /// <summary>Availability of built-in job tools surfaced to boundary consumers.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionSettingsBuiltInToolAvailabilitySnapshot
 {
     /// <summary>Whether the create-pull-request tool is available.</summary>
@@ -17780,7 +20224,7 @@ public sealed class SessionSettingsBuiltInToolAvailabilitySnapshot
 }
 
 /// <summary>Redacted job settings for a session. The job nonce is excluded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionSettingsJobSnapshot
 {
     /// <summary>Availability of job-specific built-in tools.</summary>
@@ -17797,7 +20241,7 @@ public sealed class SessionSettingsJobSnapshot
 }
 
 /// <summary>Redacted model routing settings for a session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionSettingsModelSnapshot
 {
     /// <summary>Agent service callback URL for job and progress updates.</summary>
@@ -17818,7 +20262,7 @@ public sealed class SessionSettingsModelSnapshot
 }
 
 /// <summary>Online-evaluation settings safe to expose across the SDK boundary.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionSettingsOnlineEvaluationSnapshot
 {
     /// <summary>Whether online evaluation is disabled.</summary>
@@ -17831,7 +20275,7 @@ public sealed class SessionSettingsOnlineEvaluationSnapshot
 }
 
 /// <summary>Redacted repository and GitHub host settings for a session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionSettingsRepoSnapshot
 {
     /// <summary>Checked-out repository branch.</summary>
@@ -17884,7 +20328,7 @@ public sealed class SessionSettingsRepoSnapshot
 }
 
 /// <summary>Redacted validation and memory-tool settings for a session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionSettingsValidationSnapshot
 {
     /// <summary>Whether advisory validation is enabled.</summary>
@@ -17925,7 +20369,7 @@ public sealed class SessionSettingsValidationSnapshot
 }
 
 /// <summary>Redacted, serializable view of session runtime settings for SDK boundary consumers. Secrets and raw feature flags are intentionally excluded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSettingsSnapshot
 {
     /// <summary>Name of the SDK client that created the session.</summary>
@@ -17966,7 +20410,7 @@ internal sealed class SessionSettingsSnapshot
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSettingsSnapshotRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -17975,7 +20419,7 @@ internal sealed class SessionSettingsSnapshotRequest
 }
 
 /// <summary>Result of evaluating a Rust-owned settings predicate.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSettingsEvaluatePredicateResult
 {
     /// <summary>Whether the named settings predicate evaluated to enabled.</summary>
@@ -17984,7 +20428,7 @@ internal sealed class SessionSettingsEvaluatePredicateResult
 }
 
 /// <summary>Named Rust-owned settings predicate to evaluate for this session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionSettingsEvaluatePredicateRequest
 {
     /// <summary>Predicate name. The runtime owns the raw feature-flag names and composition logic.</summary>
@@ -18001,7 +20445,7 @@ internal sealed class SessionSettingsEvaluatePredicateRequest
 }
 
 /// <summary>Content-exclusion decision for one requested path.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ContentExclusionPathCheck
 {
     /// <summary>Whether the session's complete content-exclusion policy excludes the path.</summary>
@@ -18014,7 +20458,7 @@ public sealed class ContentExclusionPathCheck
 }
 
 /// <summary>Batch content-exclusion result. Callers must fail closed when policy evaluation is unavailable.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ContentExclusionCheckPathsResult
 {
     /// <summary>Whether the session's policy service was available for the complete batch. When false, checks is empty and callers must treat every requested path as excluded.</summary>
@@ -18027,7 +20471,7 @@ public sealed class ContentExclusionCheckPathsResult
 }
 
 /// <summary>Local file system absolute paths within the session working directory to check against its content-exclusion policy.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ContentExclusionCheckPathsRequest
 {
     /// <summary>Local file system absolute paths within the session working directory to check. Results are returned in the same order, including duplicates.</summary>
@@ -18040,7 +20484,7 @@ internal sealed class ContentExclusionCheckPathsRequest
 }
 
 /// <summary>Identifier of the spawned process, used to correlate streamed output and exit notifications.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ShellExecResult
 {
     /// <summary>Unique identifier for tracking streamed output.</summary>
@@ -18049,7 +20493,7 @@ public sealed class ShellExecResult
 }
 
 /// <summary>Shell command to run, with optional working directory and timeout in milliseconds.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ShellExecRequest
 {
     /// <summary>Shell command to execute.</summary>
@@ -18071,7 +20515,7 @@ internal sealed class ShellExecRequest
 }
 
 /// <summary>Indicates whether the signal was delivered; false if the process was unknown or already exited.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ShellKillResult
 {
     /// <summary>Whether the signal was sent successfully.</summary>
@@ -18080,7 +20524,7 @@ public sealed class ShellKillResult
 }
 
 /// <summary>Identifier of a process previously returned by "shell.exec" and the signal to send.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ShellKillRequest
 {
     /// <summary>Process identifier returned by shell.exec.</summary>
@@ -18097,7 +20541,7 @@ internal sealed class ShellKillRequest
 }
 
 /// <summary>Result of a user-requested shell command.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UserRequestedShellCommandResult
 {
     /// <summary>Error output when the execution failed.</summary>
@@ -18122,7 +20566,7 @@ public sealed class UserRequestedShellCommandResult
 }
 
 /// <summary>User-requested shell command and cancellation handle.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ShellExecuteUserRequestedRequest
 {
     /// <summary>Shell command to execute.</summary>
@@ -18139,7 +20583,7 @@ internal sealed class ShellExecuteUserRequestedRequest
 }
 
 /// <summary>Cancellation result for a user-requested shell command.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CancelUserRequestedShellCommandResult
 {
     /// <summary>Whether an in-flight execution was found and signalled to cancel.</summary>
@@ -18148,7 +20592,7 @@ public sealed class CancelUserRequestedShellCommandResult
 }
 
 /// <summary>User-requested shell execution cancellation handle.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ShellCancelUserRequestedRequest
 {
     /// <summary>Request ID previously passed to executeUserRequested.</summary>
@@ -18161,7 +20605,7 @@ internal sealed class ShellCancelUserRequestedRequest
 }
 
 /// <summary>Post-compaction context window usage breakdown.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryCompactContextWindow
 {
     /// <summary>Token count from non-system messages (user, assistant, tool).</summary>
@@ -18190,7 +20634,7 @@ public sealed class HistoryCompactContextWindow
 }
 
 /// <summary>Compaction outcome with the number of tokens and messages removed, summary text, and the resulting context window breakdown.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryCompactResult
 {
     /// <summary>Post-compaction context window usage breakdown.</summary>
@@ -18215,7 +20659,7 @@ public sealed class HistoryCompactResult
 }
 
 /// <summary>RPC data type for SessionHistoryCompact operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionHistoryCompactRequest
 {
     /// <summary>Optional user-provided instructions to focus the compaction summary.</summary>
@@ -18234,7 +20678,7 @@ public sealed class SessionHistoryCompactRequest
 }
 
 /// <summary>RPC data type for SessionHistoryCompactRequestWithSession operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionHistoryCompactRequestWithSession
 {
     /// <summary>Optional user-provided instructions to focus the compaction summary.</summary>
@@ -18257,7 +20701,7 @@ internal sealed class SessionHistoryCompactRequestWithSession
 }
 
 /// <summary>Number of events that were removed by the truncation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryTruncateResult
 {
     /// <summary>Failure detail when checkpointCleanupFailed is true.</summary>
@@ -18274,7 +20718,7 @@ public sealed class HistoryTruncateResult
 }
 
 /// <summary>Identifier of the event to truncate to; this event and all later events are removed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class HistoryTruncateRequest
 {
     /// <summary>Event ID to truncate to. This event and all events after it are removed from the session.</summary>
@@ -18287,7 +20731,7 @@ internal sealed class HistoryTruncateRequest
 }
 
 /// <summary>A root user turn that the session can rewind to.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryRewindPoint
 {
     /// <summary>Whether at least one file in this turn or a later turn can be restored.</summary>
@@ -18328,7 +20772,7 @@ public sealed class HistoryRewindPoint
 }
 
 /// <summary>Rewind points and file-change-tracking availability for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryListRewindPointsResult
 {
     /// <summary>Whether this session captured file changes from its first turn.</summary>
@@ -18345,7 +20789,7 @@ public sealed class HistoryListRewindPointsResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionHistoryListRewindPointsRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18354,7 +20798,7 @@ internal sealed class SessionHistoryListRewindPointsRequest
 }
 
 /// <summary>A file that a conversation-and-files rewind would restore.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryRewindFilePreview
 {
     /// <summary>Aggregate change made across the discarded turns.</summary>
@@ -18375,7 +20819,7 @@ public sealed class HistoryRewindFilePreview
 }
 
 /// <summary>Files and aggregate changes for a prospective rewind.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryPreviewRewindResult
 {
     /// <summary>Whether file restore is available for this session. This is authoritative: switch on it and read `reason` only when it is false.</summary>
@@ -18396,7 +20840,7 @@ public sealed class HistoryPreviewRewindResult
 }
 
 /// <summary>Event boundary to preview for conversation-and-files rewind.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class HistoryPreviewRewindRequest
 {
     /// <summary>ID of the user.message event that begins the discarded suffix.</summary>
@@ -18409,7 +20853,7 @@ internal sealed class HistoryPreviewRewindRequest
 }
 
 /// <summary>A captured file that rewind intentionally left unchanged.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistorySkippedFileRestore
 {
     /// <summary>Absolute path of the skipped file.</summary>
@@ -18422,7 +20866,7 @@ public sealed class HistorySkippedFileRestore
 }
 
 /// <summary>Structured outcome of a rewind request.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryRewindResult
 {
     /// <summary>Failure detail. Set only for the failure and partial-failure outcomes (`files-rolled-back`, `rollback-incomplete`, `truncation-failed`, `checkpoint-cleanup-failed`, `snapshot-prune-failed`); omitted for `success` and for the unavailable outcomes (`session-busy`, `file-change-tracking-disabled`, `unsupported-remote-session`).</summary>
@@ -18447,7 +20891,7 @@ public sealed class HistoryRewindResult
 }
 
 /// <summary>Boundary and mode for rewinding session history.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class HistoryRewindRequest
 {
     /// <summary>ID of the user.message event that begins the discarded suffix.</summary>
@@ -18464,7 +20908,7 @@ internal sealed class HistoryRewindRequest
 }
 
 /// <summary>Indicates whether an in-progress background compaction was cancelled.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryCancelBackgroundCompactionResult
 {
     /// <summary>Whether an in-progress background compaction was cancelled. False when no compaction was running, when the session is remote, or when the underlying processor was unavailable.</summary>
@@ -18473,7 +20917,7 @@ public sealed class HistoryCancelBackgroundCompactionResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionHistoryCancelBackgroundCompactionRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18482,7 +20926,7 @@ internal sealed class SessionHistoryCancelBackgroundCompactionRequest
 }
 
 /// <summary>Indicates whether an in-progress manual compaction was aborted.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryAbortManualCompactionResult
 {
     /// <summary>Whether an in-progress manual compaction was aborted. False when no manual compaction was running, when its abort controller was already aborted, or when the session is remote.</summary>
@@ -18491,7 +20935,7 @@ public sealed class HistoryAbortManualCompactionResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionHistoryAbortManualCompactionRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18500,7 +20944,7 @@ internal sealed class SessionHistoryAbortManualCompactionRequest
 }
 
 /// <summary>Markdown summary of the conversation context (empty when not available).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistorySummarizeForHandoffResult
 {
     /// <summary>Markdown summary of the conversation context produced by an LLM. Empty string when there are no messages or when the session does not support local summarization.</summary>
@@ -18509,7 +20953,7 @@ public sealed class HistorySummarizeForHandoffResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionHistorySummarizeForHandoffRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18518,7 +20962,7 @@ internal sealed class SessionHistorySummarizeForHandoffRequest
 }
 
 /// <summary>What a successful clear removed. A clear that could not be applied rejects instead of reporting a count.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryClearContextResult
 {
     /// <summary>Number of non-system, non-developer messages that were removed from the conversation. Zero only when the window already held no conversation.</summary>
@@ -18527,7 +20971,7 @@ public sealed class HistoryClearContextResult
 }
 
 /// <summary>Parameters for clearing the conversation and seeding the window that replaces it.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class HistoryClearContextRequest
 {
     /// <summary>First user message of the fresh context window. Required: a cleared window holding only system and developer messages is not a conversation a model can answer, so every clear seeds the window it creates. Delivered by the enclosing turn driver once the agentic loop exits, which is why the call must be made from inside a tool handler.</summary>
@@ -18540,7 +20984,7 @@ internal sealed class HistoryClearContextRequest
 }
 
 /// <summary>User-facing pending queue entry, with kind and display text for a queued message, slash command, or model change.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueuePendingItems
 {
     /// <summary>Agent mode stored on this queued entry, as stamped when it was enqueued. Items without an explicit mode report interactive. This is not necessarily the mode that will constrain the turn: a plan or autopilot session applies its own write gate, continuation loop and permission posture to every drained item regardless of the mode stored here.</summary>
@@ -18562,10 +21006,14 @@ public sealed class QueuePendingItems
     /// <summary>Stable identity of the queued user message. Present for message rows and absent for slash commands and model changes.</summary>
     [JsonPropertyName("messageId")]
     public string? MessageId { get; set; }
+
+    /// <summary>Optional source tag associated with this pending queue entry. This is an open string, not authenticated authorship. In particular, `user` does not prove that a person typed the message. If the source is absent or unrecognized, consumers must not infer human or agent authorship and should handle the entry neutrally. Consumers should tolerate future source values.</summary>
+    [JsonPropertyName("source")]
+    public string? Source { get; set; }
 }
 
 /// <summary>Snapshot of the session's pending queued items and immediate-steering messages.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueuePendingItemsResult
 {
     /// <summary>How many leading entries of `steeringMessages` have already been folded into the running turn (and so have an emitted `user.message`), as opposed to still waiting for one. Absent for hosts that do not distinguish the two.</summary>
@@ -18579,10 +21027,14 @@ public sealed class QueuePendingItemsResult
     /// <summary>Display text for messages currently in the immediate steering queue (interjections sent during a running turn).</summary>
     [JsonPropertyName("steeringMessages")]
     public IList<string> SteeringMessages { get => field ??= []; set; }
+
+    /// <summary>ID of the running turn's user message while the model has not answered it, so `withdrawMessage` can still take it back once nothing sent after it is pending. A message leaves `items` when its turn starts, before its `user.message` is recorded; this tells that message apart from one that was removed. Absent when no turn prompt can be taken back.</summary>
+    [JsonPropertyName("withdrawableTurnMessageId")]
+    public string? WithdrawableTurnMessageId { get; set; }
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionQueuePendingItemsRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18591,9 +21043,13 @@ internal sealed class SessionQueuePendingItemsRequest
 }
 
 /// <summary>Internal snapshot of native queue state for local session orchestration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueSnapshotResult
 {
+    /// <summary>Queue item identifier of a model switch that has been dequeued but not yet applied.</summary>
+    [JsonPropertyName("inFlightModelChangeId")]
+    public string? InFlightModelChangeId { get; set; }
+
     /// <summary>Insertion orders for queued items, aligned with `items`.</summary>
     [JsonPropertyName("itemOrders")]
     public IList<long>? ItemOrders { get; set; }
@@ -18612,7 +21068,7 @@ internal sealed class QueueSnapshotResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionQueueSnapshotRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18621,7 +21077,7 @@ internal sealed class SessionQueueSnapshotRequest
 }
 
 /// <summary>Result of moving a queued item.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueueMoveItemResult
 {
     /// <summary>True when the item changed position; false when it was already at the requested position.</summary>
@@ -18630,7 +21086,7 @@ public sealed class QueueMoveItemResult
 }
 
 /// <summary>Parameters for moving a queued item by stable id.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueMoveItemRequest
 {
     /// <summary>Stable opaque queued-item id.</summary>
@@ -18647,7 +21103,7 @@ internal sealed class QueueMoveItemRequest
 }
 
 /// <summary>Result of inserting a queued message.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueueInsertAtResult
 {
     /// <summary>Fresh stable opaque id assigned to the inserted item.</summary>
@@ -18656,7 +21112,7 @@ public sealed class QueueInsertAtResult
 }
 
 /// <summary>Serializable message fields accepted by queue.insertAt.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueueInsertMessage
 {
     /// <summary>Optional explicit agent mode. When omitted, the session's current mode is assigned.</summary>
@@ -18709,7 +21165,7 @@ public sealed class QueueInsertMessage
 }
 
 /// <summary>Parameters for inserting a queued message at a public visible position.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueInsertAtRequest
 {
     /// <summary>Queued message contents and delivery metadata.</summary>
@@ -18726,7 +21182,7 @@ internal sealed class QueueInsertAtRequest
 }
 
 /// <summary>Result of removing a queued item.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueueRemoveAtResult
 {
     /// <summary>True when the addressed item was removed.</summary>
@@ -18735,7 +21191,7 @@ public sealed class QueueRemoveAtResult
 }
 
 /// <summary>Parameters for removing a queued item by stable id.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueRemoveAtRequest
 {
     /// <summary>Stable opaque ID of the queued item to remove.</summary>
@@ -18748,7 +21204,7 @@ internal sealed class QueueRemoveAtRequest
 }
 
 /// <summary>Result of editing a queued message.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueueUpdateTextResult
 {
     /// <summary>True when the stored text changed.</summary>
@@ -18757,7 +21213,7 @@ public sealed class QueueUpdateTextResult
 }
 
 /// <summary>Parameters for editing a single queued message.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueUpdateTextRequest
 {
     /// <summary>Optional replacement prompt displayed to the user.</summary>
@@ -18777,8 +21233,71 @@ internal sealed class QueueUpdateTextRequest
     public string SessionId { get; set; } = string.Empty;
 }
 
+/// <summary>Result of withdrawing a user message.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class QueueWithdrawMessageResult
+{
+    /// <summary>True when the running turn was interrupted to withdraw the message. With removed false, the turn was interrupted but its events could not be removed, for example because the model answered first, so the message stays in the interrupted turn.</summary>
+    [JsonPropertyName("interrupted")]
+    public bool Interrupted { get; set; }
+
+    /// <summary>True when the message left the queue or, for a running turn, history.</summary>
+    [JsonPropertyName("removed")]
+    public bool Removed { get; set; }
+}
+
+/// <summary>Conditional withdrawal of a single user message, from its queue or from the running turn it started.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class QueueWithdrawMessageRequest
+{
+    /// <summary>The prompt originally sent. A message edited since submission is not withdrawn, so an obsolete draft cannot replace the edit.</summary>
+    [JsonPropertyName("expectedPrompt")]
+    public string ExpectedPrompt { get; set; } = string.Empty;
+
+    /// <summary>Message identity returned by send, not the queue item id. Batch messages are not eligible.</summary>
+    [JsonPropertyName("messageId")]
+    public string MessageId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Append to one pending steering message without changing its identity or delivery position.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+internal sealed class QueueAppendSteeringRequest
+{
+    /// <summary>Mode captured at submission. Only steering messages in the same mode may be combined.</summary>
+    [JsonPropertyName("agentMode")]
+    public SendAgentMode AgentMode { get; set; }
+
+    /// <summary>Attachments to add after the message's existing attachments. An empty list preserves the existing attachments.</summary>
+    [JsonPropertyName("attachments")]
+    public IList<Attachment> Attachments { get => field ??= []; set; }
+
+    /// <summary>Display text to append to the existing preview after a blank line.</summary>
+    [JsonPropertyName("displayPrompt")]
+    public string DisplayPrompt { get; set; } = string.Empty;
+
+    /// <summary>Expected current prompt, including any previous appends. The runtime applies plan-mode normalization before comparing and refuses a changed message.</summary>
+    [JsonPropertyName("expectedPrompt")]
+    public string ExpectedPrompt { get; set; } = string.Empty;
+
+    /// <summary>Message identity returned by send, not the queue item id. Only unclaimed user steering messages are eligible.</summary>
+    [JsonPropertyName("messageId")]
+    public string MessageId { get; set; } = string.Empty;
+
+    /// <summary>Text to append after a blank line.</summary>
+    [JsonPropertyName("prompt")]
+    public string Prompt { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
 /// <summary>Result of duplicating a queued item.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueueDuplicateAtResult
 {
     /// <summary>Fresh stable opaque id assigned to the duplicate.</summary>
@@ -18787,7 +21306,7 @@ public sealed class QueueDuplicateAtResult
 }
 
 /// <summary>Parameters for duplicating a queued item.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueDuplicateAtRequest
 {
     /// <summary>Stable opaque ID of the queued item to duplicate.</summary>
@@ -18800,7 +21319,7 @@ internal sealed class QueueDuplicateAtRequest
 }
 
 /// <summary>Parameters for acquiring or releasing the queued-lane drain pause. Acquisition is exclusive and non-idempotent: `paused: true` against an already-paused session fails with `queue_already_paused`. The pause is never released automatically — it is not tied to the caller's lifetime, so a client that exits without sending `paused: false` leaves the lane frozen. Release is unowned: `paused: false` clears the pause for any caller, including one that never acquired it.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueSetDrainPausedRequest
 {
     /// <summary>Whether queued-lane draining should be paused.</summary>
@@ -18813,7 +21332,7 @@ internal sealed class QueueSetDrainPausedRequest
 }
 
 /// <summary>Result of trying to steer a queued message into a live turn.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueueSendNowResult
 {
     /// <summary>True when the item was accepted into the steering lane; false when no main turn was live.</summary>
@@ -18822,7 +21341,7 @@ public sealed class QueueSendNowResult
 }
 
 /// <summary>Parameters for steering a queued message into a live turn.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueSendNowRequest
 {
     /// <summary>Stable opaque ID of the queued item to steer into the live turn.</summary>
@@ -18835,7 +21354,7 @@ internal sealed class QueueSendNowRequest
 }
 
 /// <summary>Whether the native queue has pending work.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueHasPendingResult
 {
     /// <summary>True when queued or immediate native work is pending.</summary>
@@ -18844,7 +21363,7 @@ internal sealed class QueueHasPendingResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionQueueHasPendingRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18853,7 +21372,7 @@ internal sealed class SessionQueueHasPendingRequest
 }
 
 /// <summary>Whether a deferred-idle drain should run.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueBeginDeferredIdleDrainResult
 {
     /// <summary>True when the host should run finishDeferredIdleDrain asynchronously.</summary>
@@ -18862,7 +21381,7 @@ internal sealed class QueueBeginDeferredIdleDrainResult
 }
 
 /// <summary>Inputs for starting a deferred-idle drain.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueBeginDeferredIdleDrainRequest
 {
     /// <summary>Whether the host still has active background work.</summary>
@@ -18875,7 +21394,7 @@ internal sealed class QueueBeginDeferredIdleDrainRequest
 }
 
 /// <summary>Action selected by the native deferred-idle drain.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueFinishDeferredIdleDrainResult
 {
     /// <summary>Whether the deferred idle was caused by an aborted foreground turn.</summary>
@@ -18888,7 +21407,7 @@ internal sealed class QueueFinishDeferredIdleDrainResult
 }
 
 /// <summary>Inputs for completing a deferred-idle drain.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueFinishDeferredIdleDrainRequest
 {
     /// <summary>Whether the host still has active background work.</summary>
@@ -18905,7 +21424,7 @@ internal sealed class QueueFinishDeferredIdleDrainRequest
 }
 
 /// <summary>Inputs for marking session.idle deferred in native state.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueDeferSessionIdleRequest
 {
     /// <summary>Whether the deferred idle was caused by an aborted foreground turn.</summary>
@@ -18918,7 +21437,7 @@ internal sealed class QueueDeferSessionIdleRequest
 }
 
 /// <summary>Indicates whether a user-facing pending item was removed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueueRemoveMostRecentResult
 {
     /// <summary>True if a user-facing pending item was removed (LIFO across both queues); false when no removable items remained.</summary>
@@ -18927,7 +21446,7 @@ public sealed class QueueRemoveMostRecentResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionQueueRemoveMostRecentRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18936,7 +21455,7 @@ internal sealed class SessionQueueRemoveMostRecentRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionQueueClearRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18945,7 +21464,7 @@ internal sealed class SessionQueueClearRequest
 }
 
 /// <summary>Internal filter for consuming queued system notifications.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueConsumeSystemNotificationsRequest
 {
     /// <summary>Opaque runtime-owned filter object.</summary>
@@ -18958,7 +21477,7 @@ internal sealed class QueueConsumeSystemNotificationsRequest
 }
 
 /// <summary>Result of enqueueing the resume-pending wake item.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class QueueEnqueueResumePendingResult
 {
     /// <summary>True when a wake item was newly queued.</summary>
@@ -18967,7 +21486,7 @@ internal sealed class QueueEnqueueResumePendingResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionQueueEnqueueResumePendingRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18976,7 +21495,7 @@ internal sealed class SessionQueueEnqueueResumePendingRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionQueueProcessRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -18985,7 +21504,7 @@ internal sealed class SessionQueueProcessRequest
 }
 
 /// <summary>Cursor, batch size, and optional long-poll/filter parameters for reading session events.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class EventLogReadRequest
 {
     /// <summary>Optional non-empty list of subagent identifiers. When provided, only events owned by one of these agents are returned; ownership recognizes the event envelope's agentId plus legacy data.agentId and data.parentToolCallId markers. This filter takes precedence over agentScope.</summary>
@@ -19027,7 +21546,7 @@ internal sealed class EventLogReadRequest
 }
 
 /// <summary>Snapshot of the current tail cursor without returning any events. Use this when a consumer wants to subscribe to live events going forward without first paginating through the entire persisted history (which would happen if `read` were called without a cursor on a long-lived session).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class EventLogTailResult
 {
     /// <summary>Opaque cursor pointing at the current tail of the session's persisted-events history. Pass back to `read` to receive only events that arrive AFTER this snapshot. When the session has no events, this returns the same sentinel as an unset cursor (i.e. equivalent to omitting the cursor on a first read).</summary>
@@ -19036,7 +21555,7 @@ public sealed class EventLogTailResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionEventLogTailRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -19045,7 +21564,7 @@ internal sealed class SessionEventLogTailRequest
 }
 
 /// <summary>Opaque handle representing an event-type interest registration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RegisterEventInterestResult
 {
     /// <summary>Opaque handle for this registration. Pass to releaseInterest to release. Each call to registerInterest produces a fresh handle, even when the same eventType is registered multiple times.</summary>
@@ -19054,7 +21573,7 @@ public sealed class RegisterEventInterestResult
 }
 
 /// <summary>Event type to register consumer interest for, used by runtime gating logic.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class RegisterEventInterestParams
 {
     /// <summary>The event type the consumer wants the runtime to treat as 'observed' for behavior-switching gating. Some runtime code paths inspect whether any consumer is interested in a specific event type and choose a different implementation accordingly (e.g. `mcp.oauth_required`: when interest is registered the runtime delegates interactive OAuth token acquisition to the consumer via `mcp.oauth_required` events; when no interest is registered the runtime still attempts non-interactive reconnect from cached or refreshable tokens, and only marks the server `needs-auth` if usable credentials are unavailable — it does not open a browser or start interactive OAuth without a consumer). SDK clients that long-poll events do NOT automatically appear as listeners to these gating checks — they must explicitly call `registerInterest` for each event type they want the runtime to count as having a consumer. Multiple registrations for the same event type from the same or different consumers are tracked independently and must each be released. See: `mcp.oauth_required`, `sampling.requested`, `auto_mode_switch.requested`, `session_limits_exhausted.requested`, `user_input.requested`, `elicitation.requested`, `command.queued`, `exit_plan_mode.requested`.</summary>
@@ -19067,7 +21586,7 @@ internal sealed class RegisterEventInterestParams
 }
 
 /// <summary>Indicates whether the operation succeeded.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class EventLogReleaseInterestResult
 {
     /// <summary>Whether the operation succeeded.</summary>
@@ -19076,7 +21595,7 @@ public sealed class EventLogReleaseInterestResult
 }
 
 /// <summary>Opaque handle previously returned by `registerInterest` to release.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ReleaseEventInterestParams
 {
     /// <summary>Handle returned by a previous `registerInterest` call. Idempotent: releasing an unknown or already-released handle is a no-op (returns success). When the last outstanding handle for an event type is released, the runtime reverts to its 'no consumer' code path for that event type.</summary>
@@ -19089,7 +21608,7 @@ internal sealed class ReleaseEventInterestParams
 }
 
 /// <summary>Request count and cost metrics for this model.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UsageMetricsModelMetricRequests
 {
     /// <summary>User-initiated premium request cost (with multiplier applied).</summary>
@@ -19102,7 +21621,7 @@ public sealed class UsageMetricsModelMetricRequests
 }
 
 /// <summary>Per-model token-detail entry containing the accumulated token count for one token type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UsageMetricsModelMetricTokenDetail
 {
     /// <summary>Accumulated token count for this token type.</summary>
@@ -19111,7 +21630,7 @@ public sealed class UsageMetricsModelMetricTokenDetail
 }
 
 /// <summary>Token usage metrics for this model.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UsageMetricsModelMetricUsage
 {
     /// <summary>Total tokens read from prompt cache.</summary>
@@ -19136,7 +21655,7 @@ public sealed class UsageMetricsModelMetricUsage
 }
 
 /// <summary>Per-model usage metrics, including request counts/costs, token usage, nano-AI units, and per-token-type details.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UsageMetricsModelMetric
 {
     /// <summary>Latest known prompt-cache expiration for this model. A timestamp in the past indicates that the observed cache has expired.</summary>
@@ -19161,7 +21680,7 @@ public sealed class UsageMetricsModelMetric
 }
 
 /// <summary>Usage attributed to one agent instance, including its identity, API duration, AI units, and per-model breakdown.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UsageMetricsAgentMetric
 {
     /// <summary>Human-readable label for this subagent invocation, copied from the originating `subagent.started` event. For task-tool subagents this is the invocation's task description rather than the agent's configured display name, so group by `agentName` for stable per-agent labels.</summary>
@@ -19187,7 +21706,7 @@ public sealed class UsageMetricsAgentMetric
 }
 
 /// <summary>Aggregated code change metrics.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UsageMetricsCodeChanges
 {
     /// <summary>Distinct file paths modified during the session.</summary>
@@ -19208,7 +21727,7 @@ public sealed class UsageMetricsCodeChanges
 }
 
 /// <summary>Session-wide token-detail entry containing the accumulated token count for one token type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UsageMetricsTokenDetail
 {
     /// <summary>Accumulated token count for this token type.</summary>
@@ -19217,7 +21736,7 @@ public sealed class UsageMetricsTokenDetail
 }
 
 /// <summary>Accumulated session usage metrics, including premium request cost, token counts, model breakdown, and code-change totals.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UsageGetMetricsResult
 {
     /// <summary>Per-agent usage metrics, keyed by agent instance identifier. The main conversation uses the stable key `main`.</summary>
@@ -19271,7 +21790,7 @@ public sealed class UsageGetMetricsResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionUsageGetMetricsRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -19281,7 +21800,7 @@ internal sealed class SessionUsageGetMetricsRequest
 
 /// <summary>Prediction result. Available results include prediction details; unavailable results include an explicit reason.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -19296,7 +21815,7 @@ public partial class SessionLimitPredictionResult
 
 
 /// <summary>Baseline data provenance for a prediction.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionLimitPredictionBaselineData
 {
     /// <summary>End of the baseline data slice.</summary>
@@ -19309,7 +21828,7 @@ public sealed class SessionLimitPredictionBaselineData
 }
 
 /// <summary>Semantic usage tier and its AI-credit cap.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionLimitPredictionTierOption
 {
     /// <summary>AI-credit cap for this tier.</summary>
@@ -19322,7 +21841,7 @@ public sealed class SessionLimitPredictionTierOption
 }
 
 /// <summary>Explainable AI-credit session-limit prediction.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionLimitPredictionDetails
 {
     /// <summary>Baseline data provenance.</summary>
@@ -19363,7 +21882,7 @@ public sealed class SessionLimitPredictionDetails
 }
 
 /// <summary>The <c>available</c> variant of <see cref="SessionLimitPredictionResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SessionLimitPredictionResultAvailable : SessionLimitPredictionResult
 {
     /// <inheritdoc />
@@ -19376,7 +21895,7 @@ public partial class SessionLimitPredictionResultAvailable : SessionLimitPredict
 }
 
 /// <summary>The <c>unavailable</c> variant of <see cref="SessionLimitPredictionResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class SessionLimitPredictionResultUnavailable : SessionLimitPredictionResult
 {
     /// <inheritdoc />
@@ -19389,7 +21908,7 @@ public partial class SessionLimitPredictionResultUnavailable : SessionLimitPredi
 }
 
 /// <summary>RPC data type for SessionLimitPredictionPredict operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionLimitPredictionPredictRequest
 {
     /// <summary>Client type to size for. Defaults to `cli-interactive`.</summary>
@@ -19402,7 +21921,7 @@ public sealed class SessionLimitPredictionPredictRequest
 }
 
 /// <summary>RPC data type for SessionLimitPredictionPredictRequestWithSession operations.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionLimitPredictionPredictRequestWithSession
 {
     /// <summary>Client type to size for. Defaults to `cli-interactive`.</summary>
@@ -19419,7 +21938,7 @@ internal sealed class SessionLimitPredictionPredictRequestWithSession
 }
 
 /// <summary>GitHub URL for the session and a flag indicating whether remote steering is enabled.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteEnableResult
 {
     /// <summary>Whether remote steering is enabled.</summary>
@@ -19434,7 +21953,7 @@ public sealed class RemoteEnableResult
 }
 
 /// <summary>Optional remote session mode ("off", "export", or "on"); defaults to enabling both export and remote steering.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class RemoteEnableRequest
 {
     /// <summary>Per-session remote mode. "off" disables remote, "export" exports session events to GitHub without enabling remote steering, "on" enables both export and remote steering.</summary>
@@ -19447,7 +21966,7 @@ internal sealed class RemoteEnableRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionRemoteDisableRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -19456,13 +21975,13 @@ internal sealed class SessionRemoteDisableRequest
 }
 
 /// <summary>Persist a steerability change as a `session.remote_steerable_changed` event. Used by the host (CLI / SDK consumer) when it has just finished enabling or disabling steering on a remote exporter that the runtime does not directly own.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteNotifySteerableChangedResult
 {
 }
 
 /// <summary>New remote-steerability state to persist as a `session.remote_steerable_changed` event.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class RemoteNotifySteerableChangedRequest
 {
     /// <summary>Whether the session now supports remote steering via GitHub. The runtime persists this as a `session.remote_steerable_changed` event so resume/replay sees the up-to-date capability.</summary>
@@ -19475,7 +21994,7 @@ internal sealed class RemoteNotifySteerableChangedRequest
 }
 
 /// <summary>Current sharing status and shareable GitHub URL for a session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class VisibilityGetResult
 {
     /// <summary>Shareable GitHub URL for the session. Present when the session is synced and the URL can be resolved.</summary>
@@ -19494,7 +22013,7 @@ public sealed class VisibilityGetResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionVisibilityGetRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -19503,7 +22022,7 @@ internal sealed class SessionVisibilityGetRequest
 }
 
 /// <summary>Effective sharing status and shareable GitHub URL after updating session visibility.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class VisibilitySetResult
 {
     /// <summary>Shareable GitHub URL for the session. Present when the session is synced and the URL can be resolved.</summary>
@@ -19522,7 +22041,7 @@ public sealed class VisibilitySetResult
 }
 
 /// <summary>Desired sharing status for the session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class VisibilitySetRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -19535,7 +22054,7 @@ internal sealed class VisibilitySetRequest
 }
 
 /// <summary>Scheduled prompt entry with ID, timing (`intervalMs`, `cron`, or `at`), prompt text, recurrence, and next run time.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ScheduleEntry
 {
     /// <summary>Absolute fire time (epoch milliseconds) for a one-shot calendar schedule.</summary>
@@ -19581,7 +22100,7 @@ public sealed class ScheduleEntry
 }
 
 /// <summary>Snapshot of the currently active recurring prompts for this session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ScheduleList
 {
     /// <summary>Active scheduled prompts, ordered by id.</summary>
@@ -19590,7 +22109,7 @@ public sealed class ScheduleList
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionScheduleListRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -19599,7 +22118,7 @@ internal sealed class SessionScheduleListRequest
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionScheduleHydrateRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -19608,7 +22127,7 @@ internal sealed class SessionScheduleHydrateRequest
 }
 
 /// <summary>Whether the session currently has an active self-paced schedule.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ScheduleHasSelfPacedResult
 {
     /// <summary>True when at least one active schedule is self-paced.</summary>
@@ -19617,7 +22136,7 @@ internal sealed class ScheduleHasSelfPacedResult
 }
 
 /// <summary>Identifies the target session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class SessionScheduleHasSelfPacedRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -19626,7 +22145,7 @@ internal sealed class SessionScheduleHasSelfPacedRequest
 }
 
 /// <summary>Result of registering or re-arming a scheduled prompt.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ScheduleAddResult
 {
     /// <summary>The registered or updated schedule entry.</summary>
@@ -19639,7 +22158,7 @@ internal sealed class ScheduleAddResult
 }
 
 /// <summary>Register a relative-interval scheduled prompt.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ScheduleAddRequest
 {
     /// <summary>Optional display-only prompt label.</summary>
@@ -19664,7 +22183,7 @@ internal sealed class ScheduleAddRequest
 }
 
 /// <summary>Register a cron scheduled prompt.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ScheduleAddCronRequest
 {
     /// <summary>5-field cron expression.</summary>
@@ -19693,7 +22212,7 @@ internal sealed class ScheduleAddCronRequest
 }
 
 /// <summary>Register an absolute-time scheduled prompt.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ScheduleAddAtRequest
 {
     /// <summary>Epoch milliseconds when the prompt should fire.</summary>
@@ -19718,7 +22237,7 @@ internal sealed class ScheduleAddAtRequest
 }
 
 /// <summary>Register a self-paced scheduled prompt.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ScheduleAddSelfPacedRequest
 {
     /// <summary>Optional display-only prompt label.</summary>
@@ -19735,7 +22254,7 @@ internal sealed class ScheduleAddSelfPacedRequest
 }
 
 /// <summary>Re-arm a self-paced scheduled prompt.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ScheduleRearmSelfPacedRequest
 {
     /// <summary>Epoch milliseconds when the prompt should next fire.</summary>
@@ -19752,7 +22271,7 @@ internal sealed class ScheduleRearmSelfPacedRequest
 }
 
 /// <summary>Remove a scheduled prompt by id. The result entry is omitted if the id was unknown.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ScheduleStopResult
 {
     /// <summary>The removed entry, or omitted if no entry matched.</summary>
@@ -19761,7 +22280,7 @@ public sealed class ScheduleStopResult
 }
 
 /// <summary>Identifier of the scheduled prompt to remove.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 internal sealed class ScheduleStopRequest
 {
     /// <summary>Id of the scheduled prompt to remove.</summary>
@@ -19774,7 +22293,7 @@ internal sealed class ScheduleStopRequest
 }
 
 /// <summary>A bearer token supplied by the SDK client for a BYOK provider. The runtime sets it as `Authorization: Bearer &lt;token&gt;` on the outbound request and does no caching; the SDK consumer owns token caching and refresh.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProviderTokenAcquireResult
 {
     /// <summary>The bearer token value (without the `Bearer ` prefix).</summary>
@@ -19783,7 +22302,7 @@ public sealed class ProviderTokenAcquireResult
 }
 
 /// <summary>Asks the SDK client to acquire a bearer token for a BYOK provider whose config set `hasBearerTokenProvider: true`. Issued by the runtime before each outbound model request; the runtime does no caching, so this is sent once per request.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProviderTokenAcquireRequest
 {
     /// <summary>Name of the BYOK provider needing a token. For the legacy whole-session provider this is the implicit provider name; for named providers it is the configured provider name.</summary>
@@ -19796,7 +22315,7 @@ public sealed class ProviderTokenAcquireRequest
 }
 
 /// <summary>Result returned by an extension factory closure.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryExecuteResult
 {
     /// <summary>Factory result value.</summary>
@@ -19805,7 +22324,7 @@ public sealed class FactoryExecuteResult
 }
 
 /// <summary>Parameters sent to the owning extension to execute a factory closure.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryExecuteRequest
 {
     /// <summary>Factory input value.</summary>
@@ -19830,7 +22349,7 @@ public sealed class FactoryExecuteRequest
 }
 
 /// <summary>Parameters for cooperatively aborting a factory body.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryAbortRequest
 {
     /// <summary>Opaque token identifying the execution attempt to abort.</summary>
@@ -19846,8 +22365,59 @@ public sealed class FactoryAbortRequest
     public string SessionId { get; set; } = string.Empty;
 }
 
+/// <summary>Result returned by an extension workflow closure.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowExecuteResult
+{
+    /// <summary>Workflow result value.</summary>
+    [JsonPropertyName("result")]
+    public JsonElement? Result { get; set; }
+}
+
+/// <summary>Parameters sent to the owning extension to execute a workflow closure.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowExecuteRequest
+{
+    /// <summary>Workflow input value.</summary>
+    [JsonPropertyName("args")]
+    public JsonElement Args { get; set; }
+
+    /// <summary>Opaque token identifying this workflow execution attempt.</summary>
+    [JsonPropertyName("executionToken")]
+    public string ExecutionToken { get; set; } = string.Empty;
+
+    /// <summary>Registered workflow name.</summary>
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
+/// <summary>Parameters for cooperatively aborting a workflow body.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowAbortRequest
+{
+    /// <summary>Opaque token identifying the execution attempt to abort.</summary>
+    [JsonPropertyName("executionToken")]
+    public string ExecutionToken { get; set; } = string.Empty;
+
+    /// <summary>Workflow run identifier.</summary>
+    [JsonPropertyName("runId")]
+    public string RunId { get; set; } = string.Empty;
+
+    /// <summary>Target session identifier.</summary>
+    [JsonPropertyName("sessionId")]
+    public string SessionId { get; set; } = string.Empty;
+}
+
 /// <summary>Whether the client authoritatively confirmed its external work stopped.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ClientTaskCancelResult
 {
     /// <summary>True only when the owner confirms that external work stopped before responding.</summary>
@@ -19856,7 +22426,7 @@ public sealed class ClientTaskCancelResult
 }
 
 /// <summary>Runtime-to-owner cancellation request for a client-owned task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ClientTaskCancelRequest
 {
     /// <summary>Opaque identifier shared by coalesced cancellation callers.</summary>
@@ -19881,7 +22451,7 @@ public sealed class ClientTaskCancelRequest
 }
 
 /// <summary>Describes a filesystem error.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsError
 {
     /// <summary>Error classification.</summary>
@@ -19894,7 +22464,7 @@ public sealed class SessionFsError
 }
 
 /// <summary>File content as a UTF-8 string, or a filesystem error if the read failed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsReadFileResult
 {
     /// <summary>File content as UTF-8 string.</summary>
@@ -19907,7 +22477,7 @@ public sealed class SessionFsReadFileResult
 }
 
 /// <summary>Path of the file to read from the client-provided session filesystem.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsReadFileRequest
 {
     /// <summary>Path using SessionFs conventions.</summary>
@@ -19920,7 +22490,7 @@ public sealed class SessionFsReadFileRequest
 }
 
 /// <summary>File path, content to write, and optional mode for the client-provided session filesystem.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsWriteFileRequest
 {
     /// <summary>Content to write.</summary>
@@ -19941,7 +22511,7 @@ public sealed class SessionFsWriteFileRequest
 }
 
 /// <summary>File path, content to append, and optional mode for the client-provided session filesystem. Implementations create parent directories as needed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsAppendFileRequest
 {
     /// <summary>Content to append.</summary>
@@ -19962,7 +22532,7 @@ public sealed class SessionFsAppendFileRequest
 }
 
 /// <summary>Indicates whether the requested path exists in the client-provided session filesystem.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsExistsResult
 {
     /// <summary>Whether the path exists.</summary>
@@ -19971,7 +22541,7 @@ public sealed class SessionFsExistsResult
 }
 
 /// <summary>Path to test for existence in the client-provided session filesystem.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsExistsRequest
 {
     /// <summary>Path using SessionFs conventions.</summary>
@@ -19984,7 +22554,7 @@ public sealed class SessionFsExistsRequest
 }
 
 /// <summary>Filesystem metadata for the requested path, or a filesystem error if the stat failed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsStatResult
 {
     /// <summary>ISO 8601 timestamp of creation.</summary>
@@ -20013,7 +22583,7 @@ public sealed class SessionFsStatResult
 }
 
 /// <summary>Path whose metadata should be returned from the client-provided session filesystem.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsStatRequest
 {
     /// <summary>Path using SessionFs conventions.</summary>
@@ -20026,7 +22596,7 @@ public sealed class SessionFsStatRequest
 }
 
 /// <summary>Directory path to create in the client-provided session filesystem, with options for recursive creation and POSIX mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsMkdirRequest
 {
     /// <summary>Optional POSIX-style mode for newly created directories.</summary>
@@ -20047,7 +22617,7 @@ public sealed class SessionFsMkdirRequest
 }
 
 /// <summary>Names of entries in the requested directory, or a filesystem error if the read failed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsReaddirResult
 {
     /// <summary>Entry names in the directory.</summary>
@@ -20060,7 +22630,7 @@ public sealed class SessionFsReaddirResult
 }
 
 /// <summary>Directory path whose entries should be listed from the client-provided session filesystem.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsReaddirRequest
 {
     /// <summary>Path using SessionFs conventions.</summary>
@@ -20073,7 +22643,7 @@ public sealed class SessionFsReaddirRequest
 }
 
 /// <summary>Directory entry returned by session filesystem `readdirWithTypes`, with name and entry type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsReaddirWithTypesEntry
 {
     /// <summary>Entry name.</summary>
@@ -20086,7 +22656,7 @@ public sealed class SessionFsReaddirWithTypesEntry
 }
 
 /// <summary>Entries in the requested directory paired with file/directory type information, or a filesystem error if the read failed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsReaddirWithTypesResult
 {
     /// <summary>Directory entries with type information.</summary>
@@ -20099,7 +22669,7 @@ public sealed class SessionFsReaddirWithTypesResult
 }
 
 /// <summary>Directory path whose entries (with type information) should be listed from the client-provided session filesystem.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsReaddirWithTypesRequest
 {
     /// <summary>Path using SessionFs conventions.</summary>
@@ -20112,7 +22682,7 @@ public sealed class SessionFsReaddirWithTypesRequest
 }
 
 /// <summary>Path to remove from the client-provided session filesystem, with options for recursive removal and force.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsRmRequest
 {
     /// <summary>Ignore errors if the path does not exist.</summary>
@@ -20133,7 +22703,7 @@ public sealed class SessionFsRmRequest
 }
 
 /// <summary>Source and destination paths for renaming or moving an entry in the client-provided session filesystem.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsRenameRequest
 {
     /// <summary>Destination path using SessionFs conventions.</summary>
@@ -20150,7 +22720,7 @@ public sealed class SessionFsRenameRequest
 }
 
 /// <summary>Query results including rows, columns, and rows affected, or a filesystem error if execution failed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsSqliteQueryResult
 {
     /// <summary>Column names from the result set.</summary>
@@ -20175,7 +22745,7 @@ public sealed class SessionFsSqliteQueryResult
 }
 
 /// <summary>SQL query, query type, and optional bind parameters for executing a SQLite query against the per-session database. The provider applies its SQLite busy timeout for every call.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsSqliteQueryRequest
 {
     /// <summary>Optional named bind parameters.</summary>
@@ -20196,7 +22766,7 @@ public sealed class SessionFsSqliteQueryRequest
 }
 
 /// <summary>Classified SQLite transaction failure. busyOrLocked guarantees rollback; postCommitAmbiguous must never be retried.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsSqliteTransactionError
 {
     /// <summary>Machine-readable classification of the transaction failure.</summary>
@@ -20209,7 +22779,7 @@ public sealed class SessionFsSqliteTransactionError
 }
 
 /// <summary>Per-statement results, or a classified transaction error.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsSqliteTransactionResult
 {
     /// <summary>Classified transaction failure, when execution did not succeed.</summary>
@@ -20222,7 +22792,7 @@ public sealed class SessionFsSqliteTransactionResult
 }
 
 /// <summary>One statement in an atomic SQLite transaction.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsSqliteTransactionStatement
 {
     /// <summary>Optional named bind parameters.</summary>
@@ -20239,7 +22809,7 @@ public sealed class SessionFsSqliteTransactionStatement
 }
 
 /// <summary>Statements to execute atomically. Providers apply busy handling for every call.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsSqliteTransactionRequest
 {
     /// <summary>Target session identifier.</summary>
@@ -20252,7 +22822,7 @@ public sealed class SessionFsSqliteTransactionRequest
 }
 
 /// <summary>Indicates whether the per-session SQLite database already exists.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SessionFsSqliteExistsResult
 {
     /// <summary>Whether the session database already exists.</summary>
@@ -20269,7 +22839,7 @@ public sealed class SessionFsSqliteExistsRequest
 }
 
 /// <summary>Canvas open result returned by the provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasProviderOpenResult
 {
     /// <summary>Provider-supplied status text.</summary>
@@ -20286,7 +22856,7 @@ public sealed class CanvasProviderOpenResult
 }
 
 /// <summary>Host capabilities.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasHostContextCapabilities
 {
     /// <summary>Whether canvas rendering is supported.</summary>
@@ -20295,7 +22865,7 @@ public sealed class CanvasHostContextCapabilities
 }
 
 /// <summary>Host context supplied by the runtime.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasHostContext
 {
     /// <summary>Host capabilities.</summary>
@@ -20304,7 +22874,7 @@ public sealed class CanvasHostContext
 }
 
 /// <summary>Session context supplied by the runtime.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasSessionContext
 {
     /// <summary>Active session working directory, when known.</summary>
@@ -20313,7 +22883,7 @@ public sealed class CanvasSessionContext
 }
 
 /// <summary>Canvas open parameters sent to the provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasProviderOpenRequest
 {
     /// <summary>Provider-local canvas identifier.</summary>
@@ -20346,7 +22916,7 @@ public sealed class CanvasProviderOpenRequest
 }
 
 /// <summary>Canvas close parameters sent to the provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasProviderCloseRequest
 {
     /// <summary>Provider-local canvas identifier.</summary>
@@ -20375,7 +22945,7 @@ public sealed class CanvasProviderCloseRequest
 }
 
 /// <summary>Canvas action invocation parameters sent to the provider.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasProviderInvokeActionRequest
 {
     /// <summary>Action name to invoke.</summary>
@@ -20412,7 +22982,7 @@ public sealed class CanvasProviderInvokeActionRequest
 }
 
 /// <summary>Opaque integrator-owned process launch profile for one extension entrypoint.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ExtensionLaunchProfile
 {
     /// <summary>Opaque integrator-defined arguments passed to the executable. The runtime does not append the extension entrypoint.</summary>
@@ -20431,7 +23001,7 @@ public sealed class ExtensionLaunchProfile
 }
 
 /// <summary>The launch profile for a supported entrypoint. Omit launch when the provider does not support the entrypoint.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ExtensionLaunchProviderResolveResult
 {
     /// <summary>Opaque launch profile, omitted when this provider does not support the entrypoint.</summary>
@@ -20440,7 +23010,7 @@ public sealed class ExtensionLaunchProviderResolveResult
 }
 
 /// <summary>A discovered extension entrypoint that the registered integrator may classify and resolve to an opaque launch profile.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ExtensionLaunchProviderResolveRequest
 {
     /// <summary>Source-qualified extension identifier.</summary>
@@ -20461,13 +23031,13 @@ public sealed class ExtensionLaunchProviderResolveRequest
 }
 
 /// <summary>Acknowledgement. Returning successfully simply means the SDK accepted the start frame; it does not imply the request will succeed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LlmInferenceHttpRequestStartResult
 {
 }
 
 /// <summary>The head of an outbound model-layer HTTP request.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LlmInferenceHttpRequestStartRequest
 {
     /// <summary>Stable identity of the agent trajectory that issued this request. Present when the request originates from an agent turn; absent for requests outside any agent context. This is the same identity used by lifecycle and bridged session events and remains constant across turns and retries.</summary>
@@ -20512,13 +23082,13 @@ public sealed class LlmInferenceHttpRequestStartRequest
 }
 
 /// <summary>Acknowledgement. The SDK is free to ignore the ack and treat chunk delivery as fire-and-forget.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LlmInferenceHttpRequestChunkResult
 {
 }
 
 /// <summary>A request body chunk or cancellation signal.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LlmInferenceHttpRequestChunkRequest
 {
     /// <summary>Identity of the agent invocation (one agentic loop) this body chunk belongs to, matching the `agentInvocationId` semantics on httpRequestStart. Carried per chunk so a persistent transport can attribute successive turns correctly: when a WebSocket connection is reused across turns, the httpRequestStart identity reflects only the turn that opened the connection, so each later turn stamps its own invocation id here. Absent when the runtime has no invocation context for the request, or on the plain-HTTP transport where every request has its own httpRequestStart.</summary>
@@ -20551,7 +23121,7 @@ public sealed class LlmInferenceHttpRequestChunkRequest
 }
 
 /// <summary>Client environment metadata describing the process that produced a telemetry event.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class GitHubTelemetryClientInfo
 {
     /// <summary>Copilot CLI version string.</summary>
@@ -20604,7 +23174,7 @@ public sealed class GitHubTelemetryClientInfo
 }
 
 /// <summary>A single telemetry event in the runtime's native GitHub-shaped telemetry format, forwarded verbatim to opted-in hosts. The `restricted` flag on the enclosing GitHubTelemetryNotification distinguishes standard from restricted events; the payload shape is identical for both.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class GitHubTelemetryEvent
 {
     /// <summary>Client environment metadata.</summary>
@@ -20649,7 +23219,7 @@ public sealed class GitHubTelemetryEvent
 }
 
 /// <summary>Payload for a `gitHubTelemetry.event` notification: a single GitHub telemetry event the runtime forwards to a host connection that opted into telemetry forwarding during the `server.connect` handshake.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class GitHubTelemetryNotification
 {
     /// <summary>The telemetry event, in the runtime's native GitHub-shaped telemetry format.</summary>
@@ -20667,7 +23237,7 @@ public sealed class GitHubTelemetryNotification
 
 /// <summary>SDK host response to a GitHub credential request.</summary>
 /// <remarks>Polymorphic base type discriminated by <c>kind</c>.</remarks>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonPolymorphic(
     TypeDiscriminatorPropertyName = "kind",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
@@ -20682,7 +23252,7 @@ public partial class GitHubTokenAcquireResult
 
 
 /// <summary>The <c>token</c> variant of <see cref="GitHubTokenAcquireResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class GitHubTokenAcquireResultToken : GitHubTokenAcquireResult
 {
     /// <inheritdoc />
@@ -20704,7 +23274,7 @@ public partial class GitHubTokenAcquireResultToken : GitHubTokenAcquireResult
 }
 
 /// <summary>The <c>cancelled</c> variant of <see cref="GitHubTokenAcquireResult"/>.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public partial class GitHubTokenAcquireResultCancelled : GitHubTokenAcquireResult
 {
     /// <inheritdoc />
@@ -20713,7 +23283,7 @@ public partial class GitHubTokenAcquireResultCancelled : GitHubTokenAcquireResul
 }
 
 /// <summary>Asks the SDK client to acquire a GitHub access token from an opaque callback registration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class GitHubTokenAcquireRequest
 {
     /// <summary>Effective GitHub host for which the callback must return a token.</summary>
@@ -20734,7 +23304,7 @@ public sealed class GitHubTokenAcquireRequest
 }
 
 /// <summary>Closed set of public task kinds a connection can negotiate.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskKind : IEquatable<TaskKind>
@@ -20800,7 +23370,7 @@ public readonly struct TaskKind : IEquatable<TaskKind>
 
 
 /// <summary>Hook event name. Discovery emits the file-configurable subset; SDK callbacks additionally support callback-only events.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct HookType : IEquatable<HookType>
@@ -20908,7 +23478,7 @@ public readonly struct HookType : IEquatable<HookType>
 
 
 /// <summary>Configuration tier that contributed a discovered hook action.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct HookOrigin : IEquatable<HookOrigin>
@@ -20977,7 +23547,7 @@ public readonly struct HookOrigin : IEquatable<HookOrigin>
 
 
 /// <summary>Resolved Anthropic adaptive-thinking capability for a model.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AdaptiveThinkingSupport : IEquatable<AdaptiveThinkingSupport>
@@ -21046,7 +23616,7 @@ public readonly struct AdaptiveThinkingSupport : IEquatable<AdaptiveThinkingSupp
 
 
 /// <summary>Model capability category for grouping in the model picker.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ModelPickerCategory : IEquatable<ModelPickerCategory>
@@ -21112,7 +23682,7 @@ public readonly struct ModelPickerCategory : IEquatable<ModelPickerCategory>
 
 
 /// <summary>Relative cost tier for token-based billing users.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ModelPickerPriceCategory : IEquatable<ModelPickerPriceCategory>
@@ -21181,7 +23751,7 @@ public readonly struct ModelPickerPriceCategory : IEquatable<ModelPickerPriceCat
 
 
 /// <summary>Current policy state for this model.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ModelPolicyState : IEquatable<ModelPolicyState>
@@ -21247,7 +23817,7 @@ public readonly struct ModelPolicyState : IEquatable<ModelPolicyState>
 
 
 /// <summary>Server transport type: stdio, http, sse (deprecated), or memory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct DiscoveredMcpServerType : IEquatable<DiscoveredMcpServerType>
@@ -21316,7 +23886,7 @@ public readonly struct DiscoveredMcpServerType : IEquatable<DiscoveredMcpServerT
 
 
 /// <summary>A wire feature a caller can require of the catalog surface, negotiated per request. A grant means the runtime understands the feature's contract, not that the deployment has enabled the operation; typed unavailable results report availability separately.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogCapability : IEquatable<CatalogCapability>
@@ -21344,14 +23914,26 @@ public readonly struct CatalogCapability : IEquatable<CatalogCapability>
     /// <summary>Understands `application/ai-skill` candidates as discovery-only and typed non-installable.</summary>
     public static CatalogCapability AiSkillDiscovery { get; } = new("ai-skill-discovery");
 
+    /// <summary>Understands opt-in `application/vnd.github.copilot-plugin` candidates and their typed identity, version, source, and compatibility fields.</summary>
+    public static CatalogCapability AgentPluginDiscovery { get; } = new("agent-plugin-discovery");
+
     /// <summary>Understands side-effect-free MCP install-plan requests, results, and plan handles; `planning-unavailable` separately reports that planning is not enabled.</summary>
     public static CatalogCapability McpInstallPlanning { get; } = new("mcp-install-planning");
 
     /// <summary>Understands plans that enumerate every eligible transport rather than a single preferred one.</summary>
     public static CatalogCapability MultipleTransportChoice { get; } = new("multiple-transport-choice");
 
+    /// <summary>Understands explicit numbered navigation and authority-reported pagination metadata with opaque tokens. Advertised and granted only when requested.</summary>
+    public static CatalogCapability CatalogSearchPagination { get; } = new("catalog-search-pagination");
+
     /// <summary>Understands versioned candidate trust snapshots. Protocol-3 callers must require this capability before the runtime adds the optional snapshot field.</summary>
     public static CatalogCapability TrustSnapshot { get; } = new("trust-snapshot");
+
+    /// <summary>Understands exact candidate selection through model-safe opaque references and host-only candidate-handle hand-off.</summary>
+    public static CatalogCapability CatalogSelection { get; } = new("catalog-selection");
+
+    /// <summary>Requires an eligible credential for the selected GitHub.com account before search egress and prohibits client-side anonymous retry, including after HTTP 401 or 403. The credential is scoped to the fixed catalog authority without redirect forwarding. Neither a grant nor successful response proves that the authority accepted the identity or selected a particular backend. Preserve this requirement on every page and retry; callers omitting it retain optional authentication.</summary>
+    public static CatalogCapability CatalogSearchCredentialRequired { get; } = new("catalog-search-credential-required");
 
     /// <summary>Returns a value indicating whether two <see cref="CatalogCapability"/> instances are equivalent.</summary>
     public static bool operator ==(CatalogCapability left, CatalogCapability right) => left.Equals(right);
@@ -21391,7 +23973,7 @@ public readonly struct CatalogCapability : IEquatable<CatalogCapability>
 
 
 /// <summary>Whether a planned configuration change would create or modify an entry.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpPlanConfigurationOperation : IEquatable<McpPlanConfigurationOperation>
@@ -21454,7 +24036,7 @@ public readonly struct McpPlanConfigurationOperation : IEquatable<McpPlanConfigu
 
 
 /// <summary>Configuration scope an MCP install plan targets.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpPlanScope : IEquatable<McpPlanScope>
@@ -21514,7 +24096,7 @@ public readonly struct McpPlanScope : IEquatable<McpPlanScope>
 
 
 /// <summary>What policy decided for a planned server.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpPlanPolicyDecision : IEquatable<McpPlanPolicyDecision>
@@ -21580,7 +24162,7 @@ public readonly struct McpPlanPolicyDecision : IEquatable<McpPlanPolicyDecision>
 
 
 /// <summary>Which authority produced a policy decision.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpPlanPolicySource : IEquatable<McpPlanPolicySource>
@@ -21649,7 +24231,7 @@ public readonly struct McpPlanPolicySource : IEquatable<McpPlanPolicySource>
 
 
 /// <summary>Canonical digest algorithm for a validated MCP card.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CardDigestAlgorithm : IEquatable<CardDigestAlgorithm>
@@ -21709,7 +24291,7 @@ public readonly struct CardDigestAlgorithm : IEquatable<CardDigestAlgorithm>
 
 
 /// <summary>JSON MCP card media type accepted for install planning.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpServerCardMediaType : IEquatable<McpServerCardMediaType>
@@ -21772,7 +24354,7 @@ public readonly struct McpServerCardMediaType : IEquatable<McpServerCardMediaTyp
 
 
 /// <summary>Where a required value is applied when the planned server is launched.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpPlanValueCategory : IEquatable<McpPlanValueCategory>
@@ -21844,7 +24426,7 @@ public readonly struct McpPlanValueCategory : IEquatable<McpPlanValueCategory>
 
 
 /// <summary>Scalar type a required value must conform to.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpPlanScalarValueType : IEquatable<McpPlanScalarValueType>
@@ -21913,7 +24495,7 @@ public readonly struct McpPlanScalarValueType : IEquatable<McpPlanScalarValueTyp
 
 
 /// <summary>Discriminator for an enumerated required value.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpPlanEnumValueType : IEquatable<McpPlanEnumValueType>
@@ -21973,7 +24555,7 @@ public readonly struct McpPlanEnumValueType : IEquatable<McpPlanEnumValueType>
 
 
 /// <summary>Transport exposed by a locally launched package.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpPlanPackageTransport : IEquatable<McpPlanPackageTransport>
@@ -22033,7 +24615,7 @@ public readonly struct McpPlanPackageTransport : IEquatable<McpPlanPackageTransp
 
 
 /// <summary>Transport exposed by a remote endpoint.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpPlanRemoteTransport : IEquatable<McpPlanRemoteTransport>
@@ -22099,7 +24681,7 @@ public readonly struct McpPlanRemoteTransport : IEquatable<McpPlanRemoteTranspor
 
 
 /// <summary>Why capability and protocol-version negotiation refused a caller.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogNegotiationRefusedReason : IEquatable<CatalogNegotiationRefusedReason>
@@ -22162,7 +24744,7 @@ public readonly struct CatalogNegotiationRefusedReason : IEquatable<CatalogNegot
 
 
 /// <summary>Which kind of opaque handle was presented.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogHandleType : IEquatable<CatalogHandleType>
@@ -22186,6 +24768,9 @@ public readonly struct CatalogHandleType : IEquatable<CatalogHandleType>
 
     /// <summary>An install plan handle.</summary>
     public static CatalogHandleType Plan { get; } = new("plan");
+
+    /// <summary>A model-safe reference to one retained search candidate.</summary>
+    public static CatalogHandleType Selection { get; } = new("selection");
 
     /// <summary>Returns a value indicating whether two <see cref="CatalogHandleType"/> instances are equivalent.</summary>
     public static bool operator ==(CatalogHandleType left, CatalogHandleType right) => left.Equals(right);
@@ -22225,7 +24810,7 @@ public readonly struct CatalogHandleType : IEquatable<CatalogHandleType>
 
 
 /// <summary>Why a presented handle was rejected.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogHandleRejectionReason : IEquatable<CatalogHandleRejectionReason>
@@ -22244,7 +24829,7 @@ public readonly struct CatalogHandleRejectionReason : IEquatable<CatalogHandleRe
     /// <summary>Gets the value associated with this <see cref="CatalogHandleRejectionReason"/>.</summary>
     public string Value => _value ?? string.Empty;
 
-    /// <summary>The handle is unparseable, unknown, or was issued for a different operation.</summary>
+    /// <summary>The handle is unparseable or unknown.</summary>
     public static CatalogHandleRejectionReason Invalid { get; } = new("invalid");
 
     /// <summary>The handle's time to live has elapsed.</summary>
@@ -22253,8 +24838,14 @@ public readonly struct CatalogHandleRejectionReason : IEquatable<CatalogHandleRe
     /// <summary>The handle has already been used, and handles are single-use.</summary>
     public static CatalogHandleRejectionReason Replayed { get; } = new("replayed");
 
-    /// <summary>The handle was issued by a different runtime instance.</summary>
+    /// <summary>The handle was issued by a different runtime instance or session.</summary>
     public static CatalogHandleRejectionReason Foreign { get; } = new("foreign");
+
+    /// <summary>The handle was issued for another catalog operation.</summary>
+    public static CatalogHandleRejectionReason WrongKind { get; } = new("wrong-kind");
+
+    /// <summary>The supplied search identifier does not match the retained candidate.</summary>
+    public static CatalogHandleRejectionReason SearchMismatch { get; } = new("search-mismatch");
 
     /// <summary>Returns a value indicating whether two <see cref="CatalogHandleRejectionReason"/> instances are equivalent.</summary>
     public static bool operator ==(CatalogHandleRejectionReason left, CatalogHandleRejectionReason right) => left.Equals(right);
@@ -22293,8 +24884,8 @@ public readonly struct CatalogHandleRejectionReason : IEquatable<CatalogHandleRe
 }
 
 
-/// <summary>Which request field was rejected before any work was done.</summary>
-[Experimental(Diagnostics.Experimental)]
+/// <summary>Which request field was rejected locally or by the catalog authority.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogInvalidRequestField : IEquatable<CatalogInvalidRequestField>
@@ -22334,6 +24925,18 @@ public readonly struct CatalogInvalidRequestField : IEquatable<CatalogInvalidReq
     /// <summary>The requested configuration scope is not one this runtime writes.</summary>
     public static CatalogInvalidRequestField Scope { get; } = new("scope");
 
+    /// <summary>The pagination token or target was invalid, or the authority rejected the continuation. Repeat the search without page.</summary>
+    public static CatalogInvalidRequestField Page { get; } = new("page");
+
+    /// <summary>The locally owned session identifier was missing or malformed.</summary>
+    public static CatalogInvalidRequestField SessionId { get; } = new("sessionId");
+
+    /// <summary>The opaque selection reference was missing or malformed.</summary>
+    public static CatalogInvalidRequestField SelectionRef { get; } = new("selectionRef");
+
+    /// <summary>The terminal selection outcome was missing or unsupported.</summary>
+    public static CatalogInvalidRequestField Outcome { get; } = new("outcome");
+
     /// <summary>Returns a value indicating whether two <see cref="CatalogInvalidRequestField"/> instances are equivalent.</summary>
     public static bool operator ==(CatalogInvalidRequestField left, CatalogInvalidRequestField right) => left.Equals(right);
 
@@ -22372,7 +24975,7 @@ public readonly struct CatalogInvalidRequestField : IEquatable<CatalogInvalidReq
 
 
 /// <summary>Why the catalog authority did not accept the caller's identity.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogAuthenticationRequiredReason : IEquatable<CatalogAuthenticationRequiredReason>
@@ -22438,7 +25041,7 @@ public readonly struct CatalogAuthenticationRequiredReason : IEquatable<CatalogA
 
 
 /// <summary>Categorised network failure, low cardinality so it can be aggregated without carrying a URL.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogNetworkFailureReason : IEquatable<CatalogNetworkFailureReason>
@@ -22528,7 +25131,7 @@ public readonly struct CatalogNetworkFailureReason : IEquatable<CatalogNetworkFa
 
 
 /// <summary>Which hardened-fetch control refused a retrieval.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogUnsafeRetrievalReason : IEquatable<CatalogUnsafeRetrievalReason>
@@ -22603,7 +25206,7 @@ public readonly struct CatalogUnsafeRetrievalReason : IEquatable<CatalogUnsafeRe
 
 
 /// <summary>Media type a catalog card is interpreted as.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogMediaType : IEquatable<CatalogMediaType>
@@ -22630,6 +25233,9 @@ public readonly struct CatalogMediaType : IEquatable<CatalogMediaType>
 
     /// <summary>An AI skill card. Representable and searchable, but typed non-installable.</summary>
     public static CatalogMediaType ApplicationAiSkill { get; } = new("application/ai-skill");
+
+    /// <summary>An inert Agent Plugin descriptor.</summary>
+    public static CatalogMediaType ApplicationVndGitHubCopilotPlugin { get; } = new("application/vnd.github.copilot-plugin");
 
     /// <summary>Returns a value indicating whether two <see cref="CatalogMediaType"/> instances are equivalent.</summary>
     public static bool operator ==(CatalogMediaType left, CatalogMediaType right) => left.Equals(right);
@@ -22669,7 +25275,7 @@ public readonly struct CatalogMediaType : IEquatable<CatalogMediaType>
 
 
 /// <summary>How a card failed validation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogMalformedCardReason : IEquatable<CatalogMalformedCardReason>
@@ -22741,7 +25347,7 @@ public readonly struct CatalogMalformedCardReason : IEquatable<CatalogMalformedC
 
 
 /// <summary>Which wire-contract rule an upstream response broke.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogContractViolationReason : IEquatable<CatalogContractViolationReason>
@@ -22766,7 +25372,7 @@ public readonly struct CatalogContractViolationReason : IEquatable<CatalogContra
     /// <summary>A result carried neither a URL nor embedded data, when exactly one is required.</summary>
     public static CatalogContractViolationReason NeitherUrlNorData { get; } = new("neither-url-nor-data");
 
-    /// <summary>Two results claimed the same normalised identity.</summary>
+    /// <summary>Two results claimed the same collision key: normalised identity for existing kinds, or normalised identity and declared version for Agent Plugins.</summary>
     public static CatalogContractViolationReason DuplicateIdentity { get; } = new("duplicate-identity");
 
     /// <summary>A result declared no media type, or one this contract does not model.</summary>
@@ -22810,7 +25416,7 @@ public readonly struct CatalogContractViolationReason : IEquatable<CatalogContra
 
 
 /// <summary>Why no usable transport could be offered.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogUnavailableTransportReason : IEquatable<CatalogUnavailableTransportReason>
@@ -22876,7 +25482,7 @@ public readonly struct CatalogUnavailableTransportReason : IEquatable<CatalogUna
 
 
 /// <summary>Why a discoverable candidate cannot be installed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogNotInstallableReason : IEquatable<CatalogNotInstallableReason>
@@ -22942,7 +25548,7 @@ public readonly struct CatalogNotInstallableReason : IEquatable<CatalogNotInstal
 
 
 /// <summary>Why a catalog operation is not available on this runtime.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogUnavailableReason : IEquatable<CatalogUnavailableReason>
@@ -22966,6 +25572,9 @@ public readonly struct CatalogUnavailableReason : IEquatable<CatalogUnavailableR
 
     /// <summary>Install planning is not wired up on this runtime build.</summary>
     public static CatalogUnavailableReason PlanningUnavailable { get; } = new("planning-unavailable");
+
+    /// <summary>Exact candidate selection is not available in this session or runtime.</summary>
+    public static CatalogUnavailableReason SelectionUnavailable { get; } = new("selection-unavailable");
 
     /// <summary>No catalog authority is configured for this runtime.</summary>
     public static CatalogUnavailableReason AuthorityNotConfigured { get; } = new("authority-not-configured");
@@ -23011,7 +25620,7 @@ public readonly struct CatalogUnavailableReason : IEquatable<CatalogUnavailableR
 
 
 /// <summary>Persisted extension discovery source.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct DiscoveredExtensionSource : IEquatable<DiscoveredExtensionSource>
@@ -23074,7 +25683,7 @@ public readonly struct DiscoveredExtensionSource : IEquatable<DiscoveredExtensio
 
 
 /// <summary>Effective extension loading and agent-management mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct DiscoveredExtensionMode : IEquatable<DiscoveredExtensionMode>
@@ -23140,7 +25749,7 @@ public readonly struct DiscoveredExtensionMode : IEquatable<DiscoveredExtensionM
 
 
 /// <summary>Whether an MCP server candidate can be planned for installation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogMcpServerInstallability : IEquatable<CatalogMcpServerInstallability>
@@ -23203,7 +25812,7 @@ public readonly struct CatalogMcpServerInstallability : IEquatable<CatalogMcpSer
 
 
 /// <summary>Authority-computed exposure eligibility, kept separate from tier. The current tier-only Agent Finder response maps to `unknown`, never to a locally inferred eligibility.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogTrustEligibility : IEquatable<CatalogTrustEligibility>
@@ -23272,7 +25881,7 @@ public readonly struct CatalogTrustEligibility : IEquatable<CatalogTrustEligibil
 
 
 /// <summary>Bounded authority that supplied a catalogue trust observation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogTrustSource : IEquatable<CatalogTrustSource>
@@ -23332,7 +25941,7 @@ public readonly struct CatalogTrustSource : IEquatable<CatalogTrustSource>
 
 
 /// <summary>Schema version of the catalogue trust snapshot envelope.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogTrustSnapshotSchemaVersion : IEquatable<CatalogTrustSnapshotSchemaVersion>
@@ -23392,7 +26001,7 @@ public readonly struct CatalogTrustSnapshotSchemaVersion : IEquatable<CatalogTru
 
 
 /// <summary>Service-computed trust tier currently emitted by Agent Finder. It is independent of search score, popularity, and client-side ranking.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogTrustTier : IEquatable<CatalogTrustTier>
@@ -23454,8 +26063,314 @@ public readonly struct CatalogTrustTier : IEquatable<CatalogTrustTier>
 }
 
 
+/// <summary>Typed non-installable state for an AI skill candidate.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct CatalogAiSkillInstallability : IEquatable<CatalogAiSkillInstallability>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="CatalogAiSkillInstallability"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="CatalogAiSkillInstallability"/>.</param>
+    [JsonConstructor]
+    public CatalogAiSkillInstallability(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="CatalogAiSkillInstallability"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>AI skills are discovery-only on this surface.</summary>
+    public static CatalogAiSkillInstallability NotInstallableKind { get; } = new("not-installable-kind");
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogAiSkillInstallability"/> instances are equivalent.</summary>
+    public static bool operator ==(CatalogAiSkillInstallability left, CatalogAiSkillInstallability right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogAiSkillInstallability"/> instances are not equivalent.</summary>
+    public static bool operator !=(CatalogAiSkillInstallability left, CatalogAiSkillInstallability right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is CatalogAiSkillInstallability other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(CatalogAiSkillInstallability other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{CatalogAiSkillInstallability}"/> for serializing <see cref="CatalogAiSkillInstallability"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<CatalogAiSkillInstallability>
+    {
+        /// <inheritdoc />
+        public override CatalogAiSkillInstallability Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, CatalogAiSkillInstallability value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(CatalogAiSkillInstallability));
+        }
+    }
+}
+
+
+/// <summary>Canonical AI skill media type.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct CatalogAiSkillMediaType : IEquatable<CatalogAiSkillMediaType>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="CatalogAiSkillMediaType"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="CatalogAiSkillMediaType"/>.</param>
+    [JsonConstructor]
+    public CatalogAiSkillMediaType(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="CatalogAiSkillMediaType"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>An AI skill card.</summary>
+    public static CatalogAiSkillMediaType ApplicationAiSkill { get; } = new("application/ai-skill");
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogAiSkillMediaType"/> instances are equivalent.</summary>
+    public static bool operator ==(CatalogAiSkillMediaType left, CatalogAiSkillMediaType right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogAiSkillMediaType"/> instances are not equivalent.</summary>
+    public static bool operator !=(CatalogAiSkillMediaType left, CatalogAiSkillMediaType right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is CatalogAiSkillMediaType other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(CatalogAiSkillMediaType other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{CatalogAiSkillMediaType}"/> for serializing <see cref="CatalogAiSkillMediaType"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<CatalogAiSkillMediaType>
+    {
+        /// <inheritdoc />
+        public override CatalogAiSkillMediaType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, CatalogAiSkillMediaType value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(CatalogAiSkillMediaType));
+        }
+    }
+}
+
+
+/// <summary>Explicit Agent Plugin compatibility declared by exact catalog tags. Clients must not infer these values from display text or other metadata.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct CatalogAgentPluginCompatibilityTag : IEquatable<CatalogAgentPluginCompatibilityTag>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="CatalogAgentPluginCompatibilityTag"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="CatalogAgentPluginCompatibilityTag"/>.</param>
+    [JsonConstructor]
+    public CatalogAgentPluginCompatibilityTag(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="CatalogAgentPluginCompatibilityTag"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>The plugin contributes at least one GitHub Copilot Canvas.</summary>
+    public static CatalogAgentPluginCompatibilityTag Canvas { get; } = new("canvas");
+
+    /// <summary>The plugin depends on Canvas for its intended functionality.</summary>
+    public static CatalogAgentPluginCompatibilityTag CanvasOnly { get; } = new("canvas-only");
+
+    /// <summary>The plugin targets GitHub Copilot.</summary>
+    public static CatalogAgentPluginCompatibilityTag GitHubCopilot { get; } = new("github-copilot");
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogAgentPluginCompatibilityTag"/> instances are equivalent.</summary>
+    public static bool operator ==(CatalogAgentPluginCompatibilityTag left, CatalogAgentPluginCompatibilityTag right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogAgentPluginCompatibilityTag"/> instances are not equivalent.</summary>
+    public static bool operator !=(CatalogAgentPluginCompatibilityTag left, CatalogAgentPluginCompatibilityTag right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is CatalogAgentPluginCompatibilityTag other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(CatalogAgentPluginCompatibilityTag other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{CatalogAgentPluginCompatibilityTag}"/> for serializing <see cref="CatalogAgentPluginCompatibilityTag"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<CatalogAgentPluginCompatibilityTag>
+    {
+        /// <inheritdoc />
+        public override CatalogAgentPluginCompatibilityTag Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, CatalogAgentPluginCompatibilityTag value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(CatalogAgentPluginCompatibilityTag));
+        }
+    }
+}
+
+
+/// <summary>Canonical Agent Plugin media type.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct CatalogAgentPluginMediaType : IEquatable<CatalogAgentPluginMediaType>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="CatalogAgentPluginMediaType"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="CatalogAgentPluginMediaType"/>.</param>
+    [JsonConstructor]
+    public CatalogAgentPluginMediaType(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="CatalogAgentPluginMediaType"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>A GitHub Copilot Agent Plugin descriptor.</summary>
+    public static CatalogAgentPluginMediaType ApplicationVndGitHubCopilotPlugin { get; } = new("application/vnd.github.copilot-plugin");
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogAgentPluginMediaType"/> instances are equivalent.</summary>
+    public static bool operator ==(CatalogAgentPluginMediaType left, CatalogAgentPluginMediaType right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogAgentPluginMediaType"/> instances are not equivalent.</summary>
+    public static bool operator !=(CatalogAgentPluginMediaType left, CatalogAgentPluginMediaType right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is CatalogAgentPluginMediaType other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(CatalogAgentPluginMediaType other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{CatalogAgentPluginMediaType}"/> for serializing <see cref="CatalogAgentPluginMediaType"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<CatalogAgentPluginMediaType>
+    {
+        /// <inheritdoc />
+        public override CatalogAgentPluginMediaType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, CatalogAgentPluginMediaType value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(CatalogAgentPluginMediaType));
+        }
+    }
+}
+
+
+/// <summary>Relationship of the backend-reported count to the complete query result set.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct CatalogSearchTotalCountRelation : IEquatable<CatalogSearchTotalCountRelation>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="CatalogSearchTotalCountRelation"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="CatalogSearchTotalCountRelation"/>.</param>
+    [JsonConstructor]
+    public CatalogSearchTotalCountRelation(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="CatalogSearchTotalCountRelation"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>No exact/full-query or lower-bound guarantee is available.</summary>
+    public static CatalogSearchTotalCountRelation Unknown { get; } = new("unknown");
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogSearchTotalCountRelation"/> instances are equivalent.</summary>
+    public static bool operator ==(CatalogSearchTotalCountRelation left, CatalogSearchTotalCountRelation right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogSearchTotalCountRelation"/> instances are not equivalent.</summary>
+    public static bool operator !=(CatalogSearchTotalCountRelation left, CatalogSearchTotalCountRelation right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is CatalogSearchTotalCountRelation other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(CatalogSearchTotalCountRelation other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{CatalogSearchTotalCountRelation}"/> for serializing <see cref="CatalogSearchTotalCountRelation"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<CatalogSearchTotalCountRelation>
+    {
+        /// <inheritdoc />
+        public override CatalogSearchTotalCountRelation Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, CatalogSearchTotalCountRelation value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(CatalogSearchTotalCountRelation));
+        }
+    }
+}
+
+
 /// <summary>What kind of resource a catalog candidate describes.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CatalogCandidateKind : IEquatable<CatalogCandidateKind>
@@ -23479,6 +26394,9 @@ public readonly struct CatalogCandidateKind : IEquatable<CatalogCandidateKind>
 
     /// <summary>An AI skill, which is discoverable but not installable through this surface.</summary>
     public static CatalogCandidateKind AiSkill { get; } = new("ai-skill");
+
+    /// <summary>An inert Agent Plugin candidate, available only when explicitly requested.</summary>
+    public static CatalogCandidateKind Plugin { get; } = new("plugin");
 
     /// <summary>Returns a value indicating whether two <see cref="CatalogCandidateKind"/> instances are equivalent.</summary>
     public static bool operator ==(CatalogCandidateKind left, CatalogCandidateKind right) => left.Equals(right);
@@ -23517,8 +26435,77 @@ public readonly struct CatalogCandidateKind : IEquatable<CatalogCandidateKind>
 }
 
 
+/// <summary>Terminal outcome declared for a retained catalog selection group.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct CatalogSelectionDecision : IEquatable<CatalogSelectionDecision>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="CatalogSelectionDecision"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="CatalogSelectionDecision"/>.</param>
+    [JsonConstructor]
+    public CatalogSelectionDecision(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="CatalogSelectionDecision"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>Choose the candidate named by selectionRef.</summary>
+    public static CatalogSelectionDecision Selected { get; } = new("selected");
+
+    /// <summary>Explicitly decline every candidate in the search.</summary>
+    public static CatalogSelectionDecision Declined { get; } = new("declined");
+
+    /// <summary>Cancel the selection interaction without choosing a candidate.</summary>
+    public static CatalogSelectionDecision Cancelled { get; } = new("cancelled");
+
+    /// <summary>Declare that the host's live interaction deadline elapsed while the reference remained valid.</summary>
+    public static CatalogSelectionDecision TimedOut { get; } = new("timed-out");
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogSelectionDecision"/> instances are equivalent.</summary>
+    public static bool operator ==(CatalogSelectionDecision left, CatalogSelectionDecision right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="CatalogSelectionDecision"/> instances are not equivalent.</summary>
+    public static bool operator !=(CatalogSelectionDecision left, CatalogSelectionDecision right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is CatalogSelectionDecision other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(CatalogSelectionDecision other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{CatalogSelectionDecision}"/> for serializing <see cref="CatalogSelectionDecision"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<CatalogSelectionDecision>
+    {
+        /// <inheritdoc />
+        public override CatalogSelectionDecision Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, CatalogSelectionDecision value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(CatalogSelectionDecision));
+        }
+    }
+}
+
+
 /// <summary>Where completed plugin content was staged before atomic promotion.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PluginInstallStagingMode : IEquatable<PluginInstallStagingMode>
@@ -23581,7 +26568,7 @@ public readonly struct PluginInstallStagingMode : IEquatable<PluginInstallStagin
 
 
 /// <summary>Which tier this directory belongs to.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SkillDiscoveryScope : IEquatable<SkillDiscoveryScope>
@@ -23650,7 +26637,7 @@ public readonly struct SkillDiscoveryScope : IEquatable<SkillDiscoveryScope>
 
 
 /// <summary>Where the agent definition was loaded from.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentInfoSource : IEquatable<AgentInfoSource>
@@ -23725,7 +26712,7 @@ public readonly struct AgentInfoSource : IEquatable<AgentInfoSource>
 
 
 /// <summary>Which tier this directory belongs to.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentDiscoveryPathScope : IEquatable<AgentDiscoveryPathScope>
@@ -23788,7 +26775,7 @@ public readonly struct AgentDiscoveryPathScope : IEquatable<AgentDiscoveryPathSc
 
 
 /// <summary>Where this source lives — used for UI grouping.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct InstructionSourceLocation : IEquatable<InstructionSourceLocation>
@@ -23857,7 +26844,7 @@ public readonly struct InstructionSourceLocation : IEquatable<InstructionSourceL
 
 
 /// <summary>Category of instruction source — used for merge logic.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct InstructionSourceType : IEquatable<InstructionSourceType>
@@ -23935,7 +26922,7 @@ public readonly struct InstructionSourceType : IEquatable<InstructionSourceType>
 
 
 /// <summary>Whether the target is a single file or a directory of instruction files.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct InstructionDiscoveryPathKind : IEquatable<InstructionDiscoveryPathKind>
@@ -23998,7 +26985,7 @@ public readonly struct InstructionDiscoveryPathKind : IEquatable<InstructionDisc
 
 
 /// <summary>Which tier this target belongs to.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct InstructionDiscoveryPathLocation : IEquatable<InstructionDiscoveryPathLocation>
@@ -24067,7 +27054,7 @@ public readonly struct InstructionDiscoveryPathLocation : IEquatable<Instruction
 
 
 /// <summary>Optional completion hint for the input (e.g. 'directory' for filesystem path completion).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SlashCommandInputCompletion : IEquatable<SlashCommandInputCompletion>
@@ -24127,7 +27114,7 @@ public readonly struct SlashCommandInputCompletion : IEquatable<SlashCommandInpu
 
 
 /// <summary>Coarse command category for grouping and behavior: runtime built-in, skill-backed command, or SDK/client-owned command.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SlashCommandKind : IEquatable<SlashCommandKind>
@@ -24193,7 +27180,7 @@ public readonly struct SlashCommandKind : IEquatable<SlashCommandKind>
 
 
 /// <summary>Path conventions used by this filesystem.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionFsSetProviderConventions : IEquatable<SessionFsSetProviderConventions>
@@ -24256,7 +27243,7 @@ public readonly struct SessionFsSetProviderConventions : IEquatable<SessionFsSet
 
 
 /// <summary>Repository host type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionContextHostType : IEquatable<SessionContextHostType>
@@ -24319,7 +27306,7 @@ public readonly struct SessionContextHostType : IEquatable<SessionContextHostTyp
 
 
 /// <summary>What a remote host says one of its sessions is doing right now. Deliberately coarse: this is what a host can report for EVERY session in a catalogue listing, without a client subscribing to each one. AHP's `SessionSummary.status` is the source today; `input-needed` covers both a permission prompt and an `ask_user` question, since the summary does not say which.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct RemoteSessionHostStatus : IEquatable<RemoteSessionHostStatus>
@@ -24388,7 +27375,7 @@ public readonly struct RemoteSessionHostStatus : IEquatable<RemoteSessionHostSta
 
 
 /// <summary>Whether the remote task originated from CCA or CLI `--remote`.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct RemoteSessionMetadataTaskType : IEquatable<RemoteSessionMetadataTaskType>
@@ -24451,7 +27438,7 @@ public readonly struct RemoteSessionMetadataTaskType : IEquatable<RemoteSessionM
 
 
 /// <summary>Step status.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionsOpenProgressStatus : IEquatable<SessionsOpenProgressStatus>
@@ -24514,7 +27501,7 @@ public readonly struct SessionsOpenProgressStatus : IEquatable<SessionsOpenProgr
 
 
 /// <summary>Handoff step.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionsOpenProgressStep : IEquatable<SessionsOpenProgressStep>
@@ -24589,7 +27576,7 @@ public readonly struct SessionsOpenProgressStep : IEquatable<SessionsOpenProgres
 
 
 /// <summary>Outcome of the open request.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionsOpenStatus : IEquatable<SessionsOpenStatus>
@@ -24661,7 +27648,7 @@ public readonly struct SessionsOpenStatus : IEquatable<SessionsOpenStatus>
 
 
 /// <summary>Neutral SDK discriminator for the connected remote session kind.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ConnectedRemoteSessionMetadataKind : IEquatable<ConnectedRemoteSessionMetadataKind>
@@ -24724,7 +27711,7 @@ public readonly struct ConnectedRemoteSessionMetadataKind : IEquatable<Connected
 
 
 /// <summary>Which session sources to include. Defaults to `local` for backward compatibility.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionSource : IEquatable<SessionSource>
@@ -24790,7 +27777,7 @@ public readonly struct SessionSource : IEquatable<SessionSource>
 
 
 /// <summary>Cursor status: 'ok' means the read succeeded against the requested history; 'expired' means the requested continuation is unavailable. Recovery is endpoint-specific: session.eventLog.read returns a boundary window of remaining active history that may overlap prior pages, while sessions.readPersistedEvents returns an empty terminal page and never switches journal generations. An expired persisted read is not successful completion; a complete persisted snapshot requires cursorStatus 'ok' and hasMore false.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct EventsCursorStatus : IEquatable<EventsCursorStatus>
@@ -24853,7 +27840,7 @@ public readonly struct EventsCursorStatus : IEquatable<EventsCursorStatus>
 
 
 /// <summary>Direction to page through the session's persisted event history. 'forward' pages from the cursor toward newer events; 'backward' returns the newest window first (tail-first) and pages toward older events. Events within a returned batch are always chronological (oldest-to-newest), even for a backward read.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct EventsReadDirection : IEquatable<EventsReadDirection>
@@ -24916,7 +27903,7 @@ public readonly struct EventsReadDirection : IEquatable<EventsReadDirection>
 
 
 /// <summary>Kind of attention required when status === "attention". Meaningful only when status === "attention".</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentRegistryLiveTargetEntryAttentionKind : IEquatable<AgentRegistryLiveTargetEntryAttentionKind>
@@ -24988,7 +27975,7 @@ public readonly struct AgentRegistryLiveTargetEntryAttentionKind : IEquatable<Ag
 
 
 /// <summary>Process kind tag for the registry entry.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentRegistryLiveTargetEntryKind : IEquatable<AgentRegistryLiveTargetEntryKind>
@@ -25051,7 +28038,7 @@ public readonly struct AgentRegistryLiveTargetEntryKind : IEquatable<AgentRegist
 
 
 /// <summary>How the most recent turn ended (clean vs aborted). Lets the renderer distinguish done from done_cancelled.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentRegistryLiveTargetEntryLastTerminalEvent : IEquatable<AgentRegistryLiveTargetEntryLastTerminalEvent>
@@ -25114,7 +28101,7 @@ public readonly struct AgentRegistryLiveTargetEntryLastTerminalEvent : IEquatabl
 
 
 /// <summary>Coarse lifecycle status of the foreground session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentRegistryLiveTargetEntryStatus : IEquatable<AgentRegistryLiveTargetEntryStatus>
@@ -25182,8 +28169,8 @@ public readonly struct AgentRegistryLiveTargetEntryStatus : IEquatable<AgentRegi
 }
 
 
-/// <summary>Categorized reason for log-open failure.</summary>
-[Experimental(Diagnostics.Experimental)]
+/// <summary>Categorized reason no canonical process log could be opened.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentRegistryLogCaptureOpenErrorReason : IEquatable<AgentRegistryLogCaptureOpenErrorReason>
@@ -25249,7 +28236,7 @@ public readonly struct AgentRegistryLogCaptureOpenErrorReason : IEquatable<Agent
 
 
 /// <summary>Which parameter field was invalid. Omitted when the rejection is not field-specific.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentRegistrySpawnValidationErrorField : IEquatable<AgentRegistrySpawnValidationErrorField>
@@ -25321,7 +28308,7 @@ public readonly struct AgentRegistrySpawnValidationErrorField : IEquatable<Agent
 
 
 /// <summary>Categorized reason for the rejection. Low-cardinality enum so telemetry can aggregate by reason without leaking raw paths or agent/model names.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentRegistrySpawnValidationErrorReason : IEquatable<AgentRegistrySpawnValidationErrorReason>
@@ -25396,7 +28383,7 @@ public readonly struct AgentRegistrySpawnValidationErrorReason : IEquatable<Agen
 
 
 /// <summary>Permission posture for the new session. 'yolo' requires the controller-local session to currently be in allow-all mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AgentRegistrySpawnPermissionMode : IEquatable<AgentRegistrySpawnPermissionMode>
@@ -25459,7 +28446,7 @@ public readonly struct AgentRegistrySpawnPermissionMode : IEquatable<AgentRegist
 
 
 /// <summary>The UI mode the agent was in when this message was sent. Defaults to the session's current mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SendAgentMode : IEquatable<SendAgentMode>
@@ -25528,7 +28515,7 @@ public readonly struct SendAgentMode : IEquatable<SendAgentMode>
 
 
 /// <summary>How to deliver the message. `enqueue` (default) appends to the message queue. `immediate` interjects during an in-progress turn.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SendMode : IEquatable<SendMode>
@@ -25591,7 +28578,7 @@ public readonly struct SendMode : IEquatable<SendMode>
 
 
 /// <summary>Log severity level. Determines how the message is displayed in the timeline. Defaults to "info".</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionLogLevel : IEquatable<SessionLogLevel>
@@ -25657,7 +28644,7 @@ public readonly struct SessionLogLevel : IEquatable<SessionLogLevel>
 
 
 /// <summary>Disposition of a permission request as observed by the responding client.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PermissionDecisionOutcome : IEquatable<PermissionDecisionOutcome>
@@ -25723,7 +28710,7 @@ public readonly struct PermissionDecisionOutcome : IEquatable<PermissionDecision
 
 
 /// <summary>Response capability available to the client when it settled a permission request.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PermissionResponseCapability : IEquatable<PermissionResponseCapability>
@@ -25789,7 +28776,7 @@ public readonly struct PermissionResponseCapability : IEquatable<PermissionRespo
 
 
 /// <summary>Client surface that submitted a permission response.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PermissionDecisionSurface : IEquatable<PermissionDecisionSurface>
@@ -25861,7 +28848,7 @@ public readonly struct PermissionDecisionSurface : IEquatable<PermissionDecision
 
 
 /// <summary>Authentication type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AuthInfoType : IEquatable<AuthInfoType>
@@ -25942,7 +28929,7 @@ public readonly struct AuthInfoType : IEquatable<AuthInfoType>
 
 
 /// <summary>Source category for a collected debug bundle entry.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct DebugCollectLogsSource : IEquatable<DebugCollectLogsSource>
@@ -26011,7 +28998,7 @@ public readonly struct DebugCollectLogsSource : IEquatable<DebugCollectLogsSourc
 
 
 /// <summary>Destination kind that was written.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct DebugCollectLogsResultKind : IEquatable<DebugCollectLogsResultKind>
@@ -26074,7 +29061,7 @@ public readonly struct DebugCollectLogsResultKind : IEquatable<DebugCollectLogsR
 
 
 /// <summary>Kind of caller-provided debug log entry.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct DebugCollectLogsEntryKind : IEquatable<DebugCollectLogsEntryKind>
@@ -26137,7 +29124,7 @@ public readonly struct DebugCollectLogsEntryKind : IEquatable<DebugCollectLogsEn
 
 
 /// <summary>How a collected debug entry should be redacted before being staged.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct DebugCollectLogsRedaction : IEquatable<DebugCollectLogsRedaction>
@@ -26203,7 +29190,7 @@ public readonly struct DebugCollectLogsRedaction : IEquatable<DebugCollectLogsRe
 
 
 /// <summary>Cumulative resource ceiling that stopped a factory run.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct FactoryRunFailureKind : IEquatable<FactoryRunFailureKind>
@@ -26269,7 +29256,7 @@ public readonly struct FactoryRunFailureKind : IEquatable<FactoryRunFailureKind>
 
 
 /// <summary>Execution-critical factory storage operation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct FactoryDurableOperation : IEquatable<FactoryDurableOperation>
@@ -26359,7 +29346,7 @@ public readonly struct FactoryDurableOperation : IEquatable<FactoryDurableOperat
 
 
 /// <summary>Current or terminal state of a factory run.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct FactoryRunStatus : IEquatable<FactoryRunStatus>
@@ -26437,7 +29424,7 @@ public readonly struct FactoryRunStatus : IEquatable<FactoryRunStatus>
 
 
 /// <summary>Derived lifecycle state of a factory phase.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct FactoryPhaseStatus : IEquatable<FactoryPhaseStatus>
@@ -26506,7 +29493,7 @@ public readonly struct FactoryPhaseStatus : IEquatable<FactoryPhaseStatus>
 
 
 /// <summary>Kind of factory progress line.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct FactoryLogLineKind : IEquatable<FactoryLogLineKind>
@@ -26569,7 +29556,7 @@ public readonly struct FactoryLogLineKind : IEquatable<FactoryLogLineKind>
 
 
 /// <summary>Action the runtime selected for a durable factory pause checkpoint.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct FactoryPauseCheckpointAction : IEquatable<FactoryPauseCheckpointAction>
@@ -26631,8 +29618,437 @@ public readonly struct FactoryPauseCheckpointAction : IEquatable<FactoryPauseChe
 }
 
 
+/// <summary>Cumulative resource ceiling that stopped a workflow run.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct WorkflowRunFailureKind : IEquatable<WorkflowRunFailureKind>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="WorkflowRunFailureKind"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="WorkflowRunFailureKind"/>.</param>
+    [JsonConstructor]
+    public WorkflowRunFailureKind(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="WorkflowRunFailureKind"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>The run admitted the approved maximum total number of subagents.</summary>
+    public static WorkflowRunFailureKind MaxTotalSubagents { get; } = new("maxTotalSubagents");
+
+    /// <summary>The run reached the approved accumulated active-execution time in seconds.</summary>
+    public static WorkflowRunFailureKind TimeoutSeconds { get; } = new("timeoutSeconds");
+
+    /// <summary>The run's settled subagent model usage exceeded the approved AI-credit ceiling, or no headroom remained for another subagent.</summary>
+    public static WorkflowRunFailureKind MaxAiCredits { get; } = new("maxAiCredits");
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowRunFailureKind"/> instances are equivalent.</summary>
+    public static bool operator ==(WorkflowRunFailureKind left, WorkflowRunFailureKind right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowRunFailureKind"/> instances are not equivalent.</summary>
+    public static bool operator !=(WorkflowRunFailureKind left, WorkflowRunFailureKind right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is WorkflowRunFailureKind other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(WorkflowRunFailureKind other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{WorkflowRunFailureKind}"/> for serializing <see cref="WorkflowRunFailureKind"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<WorkflowRunFailureKind>
+    {
+        /// <inheritdoc />
+        public override WorkflowRunFailureKind Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, WorkflowRunFailureKind value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(WorkflowRunFailureKind));
+        }
+    }
+}
+
+
+/// <summary>Execution-critical workflow storage operation.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct WorkflowDurableOperation : IEquatable<WorkflowDurableOperation>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="WorkflowDurableOperation"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="WorkflowDurableOperation"/>.</param>
+    [JsonConstructor]
+    public WorkflowDurableOperation(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="WorkflowDurableOperation"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>Creating the durable run and declared phases.</summary>
+    public static WorkflowDurableOperation CreateRun { get; } = new("createRun");
+
+    /// <summary>Persisting the transition to running.</summary>
+    public static WorkflowDurableOperation MarkRunStarted { get; } = new("markRunStarted");
+
+    /// <summary>Persisting the terminal run envelope.</summary>
+    public static WorkflowDurableOperation FinishRun { get; } = new("finishRun");
+
+    /// <summary>Persisting subagent admission accounting.</summary>
+    public static WorkflowDurableOperation ReserveAgent { get; } = new("reserveAgent");
+
+    /// <summary>Rolling back an uncommitted subagent admission.</summary>
+    public static WorkflowDurableOperation ReleaseAgent { get; } = new("releaseAgent");
+
+    /// <summary>Persisting an idempotent model-usage charge.</summary>
+    public static WorkflowDurableOperation ChargeCredit { get; } = new("chargeCredit");
+
+    /// <summary>Persisting active execution time.</summary>
+    public static WorkflowDurableOperation AddElapsed { get; } = new("addElapsed");
+
+    /// <summary>Reading the authoritative AI-credit total.</summary>
+    public static WorkflowDurableOperation ReconcileCreditTotal { get; } = new("reconcileCreditTotal");
+
+    /// <summary>Reading a journal entry without treating storage failure as a cache miss.</summary>
+    public static WorkflowDurableOperation JournalGet { get; } = new("journalGet");
+
+    /// <summary>Persisting a journal entry before reporting success.</summary>
+    public static WorkflowDurableOperation JournalPut { get; } = new("journalPut");
+
+    /// <summary>Renewing the durable owner lease that proves this process still owns the run.</summary>
+    public static WorkflowDurableOperation RefreshLease { get; } = new("refreshLease");
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowDurableOperation"/> instances are equivalent.</summary>
+    public static bool operator ==(WorkflowDurableOperation left, WorkflowDurableOperation right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowDurableOperation"/> instances are not equivalent.</summary>
+    public static bool operator !=(WorkflowDurableOperation left, WorkflowDurableOperation right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is WorkflowDurableOperation other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(WorkflowDurableOperation other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{WorkflowDurableOperation}"/> for serializing <see cref="WorkflowDurableOperation"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<WorkflowDurableOperation>
+    {
+        /// <inheritdoc />
+        public override WorkflowDurableOperation Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, WorkflowDurableOperation value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(WorkflowDurableOperation));
+        }
+    }
+}
+
+
+/// <summary>Current or terminal state of a workflow run.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct WorkflowRunStatus : IEquatable<WorkflowRunStatus>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="WorkflowRunStatus"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="WorkflowRunStatus"/>.</param>
+    [JsonConstructor]
+    public WorkflowRunStatus(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="WorkflowRunStatus"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>The run was minted and is awaiting approval.</summary>
+    public static WorkflowRunStatus Pending { get; } = new("pending");
+
+    /// <summary>The run is executing.</summary>
+    public static WorkflowRunStatus Running { get; } = new("running");
+
+    /// <summary>The run completed successfully.</summary>
+    public static WorkflowRunStatus Completed { get; } = new("completed");
+
+    /// <summary>The run was interrupted while resource budget remained.</summary>
+    public static WorkflowRunStatus Halted { get; } = new("halted");
+
+    /// <summary>The current attempt stopped intentionally and the run may be resumed.</summary>
+    public static WorkflowRunStatus Paused { get; } = new("paused");
+
+    /// <summary>The run was cancelled before completion.</summary>
+    public static WorkflowRunStatus Cancelled { get; } = new("cancelled");
+
+    /// <summary>The workflow body failed or reached a cumulative resource ceiling.</summary>
+    public static WorkflowRunStatus Error { get; } = new("error");
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowRunStatus"/> instances are equivalent.</summary>
+    public static bool operator ==(WorkflowRunStatus left, WorkflowRunStatus right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowRunStatus"/> instances are not equivalent.</summary>
+    public static bool operator !=(WorkflowRunStatus left, WorkflowRunStatus right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is WorkflowRunStatus other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(WorkflowRunStatus other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{WorkflowRunStatus}"/> for serializing <see cref="WorkflowRunStatus"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<WorkflowRunStatus>
+    {
+        /// <inheritdoc />
+        public override WorkflowRunStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, WorkflowRunStatus value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(WorkflowRunStatus));
+        }
+    }
+}
+
+
+/// <summary>Derived lifecycle state of a workflow phase.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct WorkflowPhaseStatus : IEquatable<WorkflowPhaseStatus>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="WorkflowPhaseStatus"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="WorkflowPhaseStatus"/>.</param>
+    [JsonConstructor]
+    public WorkflowPhaseStatus(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="WorkflowPhaseStatus"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>The phase has not been entered yet.</summary>
+    public static WorkflowPhaseStatus Pending { get; } = new("pending");
+
+    /// <summary>The phase is currently entered and accumulating active time.</summary>
+    public static WorkflowPhaseStatus Active { get; } = new("active");
+
+    /// <summary>The phase was entered and has since been closed.</summary>
+    public static WorkflowPhaseStatus Completed { get; } = new("completed");
+
+    /// <summary>The phase was never entered because a later phase was entered or the run reached a terminal state.</summary>
+    public static WorkflowPhaseStatus Skipped { get; } = new("skipped");
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowPhaseStatus"/> instances are equivalent.</summary>
+    public static bool operator ==(WorkflowPhaseStatus left, WorkflowPhaseStatus right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowPhaseStatus"/> instances are not equivalent.</summary>
+    public static bool operator !=(WorkflowPhaseStatus left, WorkflowPhaseStatus right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is WorkflowPhaseStatus other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(WorkflowPhaseStatus other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{WorkflowPhaseStatus}"/> for serializing <see cref="WorkflowPhaseStatus"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<WorkflowPhaseStatus>
+    {
+        /// <inheritdoc />
+        public override WorkflowPhaseStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, WorkflowPhaseStatus value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(WorkflowPhaseStatus));
+        }
+    }
+}
+
+
+/// <summary>Kind of workflow progress line.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct WorkflowLogLineKind : IEquatable<WorkflowLogLineKind>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="WorkflowLogLineKind"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="WorkflowLogLineKind"/>.</param>
+    [JsonConstructor]
+    public WorkflowLogLineKind(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="WorkflowLogLineKind"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>A narrator log line.</summary>
+    public static WorkflowLogLineKind Log { get; } = new("log");
+
+    /// <summary>A named workflow phase marker.</summary>
+    public static WorkflowLogLineKind Phase { get; } = new("phase");
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowLogLineKind"/> instances are equivalent.</summary>
+    public static bool operator ==(WorkflowLogLineKind left, WorkflowLogLineKind right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowLogLineKind"/> instances are not equivalent.</summary>
+    public static bool operator !=(WorkflowLogLineKind left, WorkflowLogLineKind right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is WorkflowLogLineKind other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(WorkflowLogLineKind other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{WorkflowLogLineKind}"/> for serializing <see cref="WorkflowLogLineKind"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<WorkflowLogLineKind>
+    {
+        /// <inheritdoc />
+        public override WorkflowLogLineKind Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, WorkflowLogLineKind value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(WorkflowLogLineKind));
+        }
+    }
+}
+
+
+/// <summary>Action the runtime selected for a durable workflow pause checkpoint.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct WorkflowPauseCheckpointAction : IEquatable<WorkflowPauseCheckpointAction>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="WorkflowPauseCheckpointAction"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="WorkflowPauseCheckpointAction"/>.</param>
+    [JsonConstructor]
+    public WorkflowPauseCheckpointAction(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="WorkflowPauseCheckpointAction"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>The checkpoint was committed by a prior paused attempt, so execution may continue.</summary>
+    public static WorkflowPauseCheckpointAction Continue { get; } = new("continue");
+
+    /// <summary>This attempt claimed the checkpoint and must cooperatively stop.</summary>
+    public static WorkflowPauseCheckpointAction Pause { get; } = new("pause");
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowPauseCheckpointAction"/> instances are equivalent.</summary>
+    public static bool operator ==(WorkflowPauseCheckpointAction left, WorkflowPauseCheckpointAction right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="WorkflowPauseCheckpointAction"/> instances are not equivalent.</summary>
+    public static bool operator !=(WorkflowPauseCheckpointAction left, WorkflowPauseCheckpointAction right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is WorkflowPauseCheckpointAction other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(WorkflowPauseCheckpointAction other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{WorkflowPauseCheckpointAction}"/> for serializing <see cref="WorkflowPauseCheckpointAction"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<WorkflowPauseCheckpointAction>
+    {
+        /// <inheritdoc />
+        public override WorkflowPauseCheckpointAction Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, WorkflowPauseCheckpointAction value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(WorkflowPauseCheckpointAction));
+        }
+    }
+}
+
+
 /// <summary>Whether the requested preference was already effective or was accepted for later transactional activation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ModelSwitchAutoTierStatus : IEquatable<ModelSwitchAutoTierStatus>
@@ -26695,7 +30111,7 @@ public readonly struct ModelSwitchAutoTierStatus : IEquatable<ModelSwitchAutoTie
 
 
 /// <summary>Allowed values for the `WorkspacesWorkspaceDetailsHostType` enumeration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct WorkspacesWorkspaceDetailsHostType : IEquatable<WorkspacesWorkspaceDetailsHostType>
@@ -26758,7 +30174,7 @@ public readonly struct WorkspacesWorkspaceDetailsHostType : IEquatable<Workspace
 
 
 /// <summary>Type of change represented by this file diff.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct WorkspaceDiffFileChangeType : IEquatable<WorkspaceDiffFileChangeType>
@@ -26827,7 +30243,7 @@ public readonly struct WorkspaceDiffFileChangeType : IEquatable<WorkspaceDiffFil
 
 
 /// <summary>Diff mode requested by the client.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct WorkspaceDiffMode : IEquatable<WorkspaceDiffMode>
@@ -26893,7 +30309,7 @@ public readonly struct WorkspaceDiffMode : IEquatable<WorkspaceDiffMode>
 
 
 /// <summary>Reason a rewind read (rewind points, file-restore preview, or session diff) could not be answered from the session's file-change captures.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct HistoryRewindUnavailableReason : IEquatable<HistoryRewindUnavailableReason>
@@ -26959,7 +30375,7 @@ public readonly struct HistoryRewindUnavailableReason : IEquatable<HistoryRewind
 
 
 /// <summary>Current normalized autopilot objective lifecycle status.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct AutopilotObjectiveStatus : IEquatable<AutopilotObjectiveStatus>
@@ -27025,7 +30441,7 @@ public readonly struct AutopilotObjectiveStatus : IEquatable<AutopilotObjectiveS
 
 
 /// <summary>Whether task execution is synchronously awaited or managed in the background.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskExecutionMode : IEquatable<TaskExecutionMode>
@@ -27088,7 +30504,7 @@ public readonly struct TaskExecutionMode : IEquatable<TaskExecutionMode>
 
 
 /// <summary>Current lifecycle status of the task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskStatus : IEquatable<TaskStatus>
@@ -27160,7 +30576,7 @@ public readonly struct TaskStatus : IEquatable<TaskStatus>
 
 
 /// <summary>Client-owned tasks always execute outside the runtime in background mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskClientExecutionMode : IEquatable<TaskClientExecutionMode>
@@ -27220,7 +30636,7 @@ public readonly struct TaskClientExecutionMode : IEquatable<TaskClientExecutionM
 
 
 /// <summary>Connection class owning a client task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskClientOwnerKind : IEquatable<TaskClientOwnerKind>
@@ -27283,7 +30699,7 @@ public readonly struct TaskClientOwnerKind : IEquatable<TaskClientOwnerKind>
 
 
 /// <summary>Presence of the task's bound join.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskClientOwnerPresence : IEquatable<TaskClientOwnerPresence>
@@ -27346,7 +30762,7 @@ public readonly struct TaskClientOwnerPresence : IEquatable<TaskClientOwnerPrese
 
 
 /// <summary>Lifecycle status of a client-owned task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskClientStatus : IEquatable<TaskClientStatus>
@@ -27421,7 +30837,7 @@ public readonly struct TaskClientStatus : IEquatable<TaskClientStatus>
 
 
 /// <summary>Whether the shell runs inside a managed PTY session or as an independent background process.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskShellInfoAttachmentMode : IEquatable<TaskShellInfoAttachmentMode>
@@ -27484,7 +30900,7 @@ public readonly struct TaskShellInfoAttachmentMode : IEquatable<TaskShellInfoAtt
 
 
 /// <summary>Discriminator for a client-owned task.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskClientType : IEquatable<TaskClientType>
@@ -27544,7 +30960,7 @@ public readonly struct TaskClientType : IEquatable<TaskClientType>
 
 
 /// <summary>Active status a client owner may publish with a progress update.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct TaskClientActiveStatus : IEquatable<TaskClientActiveStatus>
@@ -27607,7 +31023,7 @@ public readonly struct TaskClientActiveStatus : IEquatable<TaskClientActiveStatu
 
 
 /// <summary>Consumer allowed to call an MCP tool.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpToolUiVisibility : IEquatable<McpToolUiVisibility>
@@ -27670,7 +31086,7 @@ public readonly struct McpToolUiVisibility : IEquatable<McpToolUiVisibility>
 
 
 /// <summary>Outcome of the sampling inference. 'success' produced a response; 'failure' encountered an error (including agent-side rejection by content filter or criteria); 'cancelled' the caller cancelled this execution via cancelSamplingExecution.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpSamplingExecutionAction : IEquatable<McpSamplingExecutionAction>
@@ -27736,7 +31152,7 @@ public readonly struct McpSamplingExecutionAction : IEquatable<McpSamplingExecut
 
 
 /// <summary>How environment-variable values supplied to MCP servers are resolved. "direct" passes literal string values; "indirect" treats values as references (e.g. names of environment variables on the host) that the runtime resolves before launch. Defaults to the runtime's startup mode; clients that intentionally launch MCP servers with literal values (e.g. CLI prompt mode and ACP) set this to "direct".</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpSetEnvValueModeDetails : IEquatable<McpSetEnvValueModeDetails>
@@ -27799,7 +31215,7 @@ public readonly struct McpSetEnvValueModeDetails : IEquatable<McpSetEnvValueMode
 
 
 /// <summary>OAuth grant type override for this login.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpOauthLoginGrantType : IEquatable<McpOauthLoginGrantType>
@@ -27862,7 +31278,7 @@ public readonly struct McpOauthLoginGrantType : IEquatable<McpOauthLoginGrantTyp
 
 
 /// <summary>Why a passive MCP OAuth probe determined authentication is needed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpOauthProbeNeedsAuthReason : IEquatable<McpOauthProbeNeedsAuthReason>
@@ -27928,7 +31344,7 @@ public readonly struct McpOauthProbeNeedsAuthReason : IEquatable<McpOauthProbeNe
 
 
 /// <summary>Allowed values for the `McpAppsSetHostContextDetailsAvailableDisplayMode` enumeration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpAppsSetHostContextDetailsAvailableDisplayMode : IEquatable<McpAppsSetHostContextDetailsAvailableDisplayMode>
@@ -27994,7 +31410,7 @@ public readonly struct McpAppsSetHostContextDetailsAvailableDisplayMode : IEquat
 
 
 /// <summary>Current display mode (SEP-1865).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpAppsSetHostContextDetailsDisplayMode : IEquatable<McpAppsSetHostContextDetailsDisplayMode>
@@ -28060,7 +31476,7 @@ public readonly struct McpAppsSetHostContextDetailsDisplayMode : IEquatable<McpA
 
 
 /// <summary>Platform type for responsive design.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpAppsSetHostContextDetailsPlatform : IEquatable<McpAppsSetHostContextDetailsPlatform>
@@ -28126,7 +31542,7 @@ public readonly struct McpAppsSetHostContextDetailsPlatform : IEquatable<McpApps
 
 
 /// <summary>UI theme preference per SEP-1865.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpAppsSetHostContextDetailsTheme : IEquatable<McpAppsSetHostContextDetailsTheme>
@@ -28189,7 +31605,7 @@ public readonly struct McpAppsSetHostContextDetailsTheme : IEquatable<McpAppsSet
 
 
 /// <summary>Allowed values for the `McpAppsHostContextDetailsAvailableDisplayMode` enumeration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpAppsHostContextDetailsAvailableDisplayMode : IEquatable<McpAppsHostContextDetailsAvailableDisplayMode>
@@ -28255,7 +31671,7 @@ public readonly struct McpAppsHostContextDetailsAvailableDisplayMode : IEquatabl
 
 
 /// <summary>Current display mode (SEP-1865).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpAppsHostContextDetailsDisplayMode : IEquatable<McpAppsHostContextDetailsDisplayMode>
@@ -28321,7 +31737,7 @@ public readonly struct McpAppsHostContextDetailsDisplayMode : IEquatable<McpApps
 
 
 /// <summary>Platform type for responsive design.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpAppsHostContextDetailsPlatform : IEquatable<McpAppsHostContextDetailsPlatform>
@@ -28387,7 +31803,7 @@ public readonly struct McpAppsHostContextDetailsPlatform : IEquatable<McpAppsHos
 
 
 /// <summary>UI theme preference per SEP-1865.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpAppsHostContextDetailsTheme : IEquatable<McpAppsHostContextDetailsTheme>
@@ -28449,8 +31865,686 @@ public readonly struct McpAppsHostContextDetailsTheme : IEquatable<McpAppsHostCo
 }
 
 
+/// <summary>Session-scoped diagnostic threshold. Capture is disabled by default and is never persisted with the session.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct DiagnosticLogLevel : IEquatable<DiagnosticLogLevel>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="DiagnosticLogLevel"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="DiagnosticLogLevel"/>.</param>
+    [JsonConstructor]
+    public DiagnosticLogLevel(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="DiagnosticLogLevel"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>Disable capture and clear retained diagnostics.</summary>
+    public static DiagnosticLogLevel Off { get; } = new("off");
+
+    /// <summary>Capture failures only.</summary>
+    public static DiagnosticLogLevel Error { get; } = new("error");
+
+    /// <summary>Capture failures, warnings, and stderr.</summary>
+    public static DiagnosticLogLevel Warning { get; } = new("warning");
+
+    /// <summary>Capture lifecycle diagnostics.</summary>
+    public static DiagnosticLogLevel Info { get; } = new("info");
+
+    /// <summary>Capture protocol frames and launch diagnostics.</summary>
+    public static DiagnosticLogLevel Debug { get; } = new("debug");
+
+    /// <summary>Capture HTTP metadata in addition to debug diagnostics.</summary>
+    public static DiagnosticLogLevel Trace { get; } = new("trace");
+
+    /// <summary>Returns a value indicating whether two <see cref="DiagnosticLogLevel"/> instances are equivalent.</summary>
+    public static bool operator ==(DiagnosticLogLevel left, DiagnosticLogLevel right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="DiagnosticLogLevel"/> instances are not equivalent.</summary>
+    public static bool operator !=(DiagnosticLogLevel left, DiagnosticLogLevel right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is DiagnosticLogLevel other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(DiagnosticLogLevel other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{DiagnosticLogLevel}"/> for serializing <see cref="DiagnosticLogLevel"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<DiagnosticLogLevel>
+    {
+        /// <inheritdoc />
+        public override DiagnosticLogLevel Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, DiagnosticLogLevel value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(DiagnosticLogLevel));
+        }
+    }
+}
+
+
+/// <summary>Whether the supplied diagnostic cursor remained within the retained buffer window.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct DiagnosticCursorStatus : IEquatable<DiagnosticCursorStatus>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="DiagnosticCursorStatus"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="DiagnosticCursorStatus"/>.</param>
+    [JsonConstructor]
+    public DiagnosticCursorStatus(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="DiagnosticCursorStatus"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>The cursor is valid for the current retained window.</summary>
+    public static DiagnosticCursorStatus Ok { get; } = new("ok");
+
+    /// <summary>The cursor no longer addresses retained records; reading resumes at the oldest retained record.</summary>
+    public static DiagnosticCursorStatus Expired { get; } = new("expired");
+
+    /// <summary>Returns a value indicating whether two <see cref="DiagnosticCursorStatus"/> instances are equivalent.</summary>
+    public static bool operator ==(DiagnosticCursorStatus left, DiagnosticCursorStatus right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="DiagnosticCursorStatus"/> instances are not equivalent.</summary>
+    public static bool operator !=(DiagnosticCursorStatus left, DiagnosticCursorStatus right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is DiagnosticCursorStatus other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(DiagnosticCursorStatus other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{DiagnosticCursorStatus}"/> for serializing <see cref="DiagnosticCursorStatus"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<DiagnosticCursorStatus>
+    {
+        /// <inheritdoc />
+        public override DiagnosticCursorStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, DiagnosticCursorStatus value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(DiagnosticCursorStatus));
+        }
+    }
+}
+
+
+/// <summary>Direction of an observed MCP protocol frame.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct McpDiagnosticDirection : IEquatable<McpDiagnosticDirection>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="McpDiagnosticDirection"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="McpDiagnosticDirection"/>.</param>
+    [JsonConstructor]
+    public McpDiagnosticDirection(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="McpDiagnosticDirection"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>Frame emitted by the Copilot MCP client.</summary>
+    public static McpDiagnosticDirection ClientToServer { get; } = new("client-to-server");
+
+    /// <summary>Frame received from the MCP server.</summary>
+    public static McpDiagnosticDirection ServerToClient { get; } = new("server-to-client");
+
+    /// <summary>Returns a value indicating whether two <see cref="McpDiagnosticDirection"/> instances are equivalent.</summary>
+    public static bool operator ==(McpDiagnosticDirection left, McpDiagnosticDirection right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="McpDiagnosticDirection"/> instances are not equivalent.</summary>
+    public static bool operator !=(McpDiagnosticDirection left, McpDiagnosticDirection right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is McpDiagnosticDirection other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(McpDiagnosticDirection other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{McpDiagnosticDirection}"/> for serializing <see cref="McpDiagnosticDirection"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<McpDiagnosticDirection>
+    {
+        /// <inheritdoc />
+        public override McpDiagnosticDirection Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, McpDiagnosticDirection value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(McpDiagnosticDirection));
+        }
+    }
+}
+
+
+/// <summary>Category for an MCP diagnostic record.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct McpDiagnosticKind : IEquatable<McpDiagnosticKind>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="McpDiagnosticKind"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="McpDiagnosticKind"/>.</param>
+    [JsonConstructor]
+    public McpDiagnosticKind(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="McpDiagnosticKind"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>Connection lifecycle transition or failure.</summary>
+    public static McpDiagnosticKind Lifecycle { get; } = new("lifecycle");
+
+    /// <summary>JSON-RPC protocol frame.</summary>
+    public static McpDiagnosticKind Protocol { get; } = new("protocol");
+
+    /// <summary>HTTP request or response metadata.</summary>
+    public static McpDiagnosticKind Http { get; } = new("http");
+
+    /// <summary>Local MCP server standard-error output.</summary>
+    public static McpDiagnosticKind Stderr { get; } = new("stderr");
+
+    /// <summary>Returns a value indicating whether two <see cref="McpDiagnosticKind"/> instances are equivalent.</summary>
+    public static bool operator ==(McpDiagnosticKind left, McpDiagnosticKind right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="McpDiagnosticKind"/> instances are not equivalent.</summary>
+    public static bool operator !=(McpDiagnosticKind left, McpDiagnosticKind right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is McpDiagnosticKind other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(McpDiagnosticKind other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{McpDiagnosticKind}"/> for serializing <see cref="McpDiagnosticKind"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<McpDiagnosticKind>
+    {
+        /// <inheritdoc />
+        public override McpDiagnosticKind Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, McpDiagnosticKind value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(McpDiagnosticKind));
+        }
+    }
+}
+
+
+/// <summary>Severity of an emitted diagnostic record.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct DiagnosticSeverity : IEquatable<DiagnosticSeverity>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="DiagnosticSeverity"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="DiagnosticSeverity"/>.</param>
+    [JsonConstructor]
+    public DiagnosticSeverity(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="DiagnosticSeverity"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>Failure that prevented or interrupted communication.</summary>
+    public static DiagnosticSeverity Error { get; } = new("error");
+
+    /// <summary>A recoverable warning or server standard-error output.</summary>
+    public static DiagnosticSeverity Warning { get; } = new("warning");
+
+    /// <summary>Lifecycle transition.</summary>
+    public static DiagnosticSeverity Info { get; } = new("info");
+
+    /// <summary>Protocol-frame or launch diagnostic.</summary>
+    public static DiagnosticSeverity Debug { get; } = new("debug");
+
+    /// <summary>HTTP metadata diagnostic.</summary>
+    public static DiagnosticSeverity Trace { get; } = new("trace");
+
+    /// <summary>Returns a value indicating whether two <see cref="DiagnosticSeverity"/> instances are equivalent.</summary>
+    public static bool operator ==(DiagnosticSeverity left, DiagnosticSeverity right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="DiagnosticSeverity"/> instances are not equivalent.</summary>
+    public static bool operator !=(DiagnosticSeverity left, DiagnosticSeverity right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is DiagnosticSeverity other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(DiagnosticSeverity other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{DiagnosticSeverity}"/> for serializing <see cref="DiagnosticSeverity"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<DiagnosticSeverity>
+    {
+        /// <inheritdoc />
+        public override DiagnosticSeverity Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, DiagnosticSeverity value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(DiagnosticSeverity));
+        }
+    }
+}
+
+
+/// <summary>A supported diagnostic source.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct DiagnosticSource : IEquatable<DiagnosticSource>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="DiagnosticSource"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="DiagnosticSource"/>.</param>
+    [JsonConstructor]
+    public DiagnosticSource(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="DiagnosticSource"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>Gets the <c>mcp</c> value.</summary>
+    public static DiagnosticSource Mcp { get; } = new("mcp");
+
+    /// <summary>Returns a value indicating whether two <see cref="DiagnosticSource"/> instances are equivalent.</summary>
+    public static bool operator ==(DiagnosticSource left, DiagnosticSource right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="DiagnosticSource"/> instances are not equivalent.</summary>
+    public static bool operator !=(DiagnosticSource left, DiagnosticSource right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is DiagnosticSource other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(DiagnosticSource other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{DiagnosticSource}"/> for serializing <see cref="DiagnosticSource"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<DiagnosticSource>
+    {
+        /// <inheritdoc />
+        public override DiagnosticSource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, DiagnosticSource value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(DiagnosticSource));
+        }
+    }
+}
+
+
+/// <summary>Availability of the EXPERIMENTAL session connector API.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct ConnectorAvailability : IEquatable<ConnectorAvailability>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="ConnectorAvailability"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="ConnectorAvailability"/>.</param>
+    [JsonConstructor]
+    public ConnectorAvailability(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="ConnectorAvailability"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>The resolved Connector feature is enabled and Connector requests are permitted.</summary>
+    public static ConnectorAvailability Enabled { get; } = new("enabled");
+
+    /// <summary>The resolved Connector feature is off. No Connector service request is made while disabled.</summary>
+    public static ConnectorAvailability Disabled { get; } = new("disabled");
+
+    /// <summary>The session has no eligible host-owned GitHub account or does not support local Connector projection.</summary>
+    public static ConnectorAvailability Unavailable { get; } = new("unavailable");
+
+    /// <summary>Returns a value indicating whether two <see cref="ConnectorAvailability"/> instances are equivalent.</summary>
+    public static bool operator ==(ConnectorAvailability left, ConnectorAvailability right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="ConnectorAvailability"/> instances are not equivalent.</summary>
+    public static bool operator !=(ConnectorAvailability left, ConnectorAvailability right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is ConnectorAvailability other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(ConnectorAvailability other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{ConnectorAvailability}"/> for serializing <see cref="ConnectorAvailability"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<ConnectorAvailability>
+    {
+        /// <inheritdoc />
+        public override ConnectorAvailability Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, ConnectorAvailability value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(ConnectorAvailability));
+        }
+    }
+}
+
+
+/// <summary>Stable OAuth scope whose absence prevents Connector management.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct ConnectorAuthorizationScope : IEquatable<ConnectorAuthorizationScope>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="ConnectorAuthorizationScope"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="ConnectorAuthorizationScope"/>.</param>
+    [JsonConstructor]
+    public ConnectorAuthorizationScope(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="ConnectorAuthorizationScope"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>Allows Copilot to manage Connector connections and use their tools.</summary>
+    public static ConnectorAuthorizationScope WritePluginGatewayConnections { get; } = new("write_plugin_gateway_connections");
+
+    /// <summary>Returns a value indicating whether two <see cref="ConnectorAuthorizationScope"/> instances are equivalent.</summary>
+    public static bool operator ==(ConnectorAuthorizationScope left, ConnectorAuthorizationScope right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="ConnectorAuthorizationScope"/> instances are not equivalent.</summary>
+    public static bool operator !=(ConnectorAuthorizationScope left, ConnectorAuthorizationScope right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is ConnectorAuthorizationScope other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(ConnectorAuthorizationScope other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{ConnectorAuthorizationScope}"/> for serializing <see cref="ConnectorAuthorizationScope"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<ConnectorAuthorizationScope>
+    {
+        /// <inheritdoc />
+        public override ConnectorAuthorizationScope Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, ConnectorAuthorizationScope value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(ConnectorAuthorizationScope));
+        }
+    }
+}
+
+
+/// <summary>Authoritative service connection state for one Connector.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct ConnectorCatalogStatus : IEquatable<ConnectorCatalogStatus>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="ConnectorCatalogStatus"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="ConnectorCatalogStatus"/>.</param>
+    [JsonConstructor]
+    public ConnectorCatalogStatus(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="ConnectorCatalogStatus"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>The Connector is available but not connected.</summary>
+    public static ConnectorCatalogStatus NotConnected { get; } = new("not_connected");
+
+    /// <summary>The Connector service is still completing connection or consent.</summary>
+    public static ConnectorCatalogStatus Pending { get; } = new("pending");
+
+    /// <summary>The Connector is connected and may contribute MCP servers.</summary>
+    public static ConnectorCatalogStatus Connected { get; } = new("connected");
+
+    /// <summary>The Connector service reports an unusable connection.</summary>
+    public static ConnectorCatalogStatus Error { get; } = new("error");
+
+    /// <summary>The service returned a future or unrecognized state.</summary>
+    public static ConnectorCatalogStatus Unknown { get; } = new("unknown");
+
+    /// <summary>Returns a value indicating whether two <see cref="ConnectorCatalogStatus"/> instances are equivalent.</summary>
+    public static bool operator ==(ConnectorCatalogStatus left, ConnectorCatalogStatus right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="ConnectorCatalogStatus"/> instances are not equivalent.</summary>
+    public static bool operator !=(ConnectorCatalogStatus left, ConnectorCatalogStatus right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is ConnectorCatalogStatus other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(ConnectorCatalogStatus other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{ConnectorCatalogStatus}"/> for serializing <see cref="ConnectorCatalogStatus"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<ConnectorCatalogStatus>
+    {
+        /// <inheritdoc />
+        public override ConnectorCatalogStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, ConnectorCatalogStatus value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(ConnectorCatalogStatus));
+        }
+    }
+}
+
+
+/// <summary>Live MCP status of one Connector-owned runtime server.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+[JsonConverter(typeof(Converter))]
+[DebuggerDisplay("{Value,nq}")]
+public readonly struct ConnectorMcpStatus : IEquatable<ConnectorMcpStatus>
+{
+    private readonly string? _value;
+
+    /// <summary>Initializes a new instance of the <see cref="ConnectorMcpStatus"/> struct.</summary>
+    /// <param name="value">The value to associate with this <see cref="ConnectorMcpStatus"/>.</param>
+    [JsonConstructor]
+    public ConnectorMcpStatus(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        _value = value;
+    }
+
+    /// <summary>Gets the value associated with this <see cref="ConnectorMcpStatus"/>.</summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <summary>The server is connected and its tools are available.</summary>
+    public static ConnectorMcpStatus Connected { get; } = new("connected");
+
+    /// <summary>The server connection is still being established.</summary>
+    public static ConnectorMcpStatus Pending { get; } = new("pending");
+
+    /// <summary>The server requires refreshed GitHub authorization.</summary>
+    public static ConnectorMcpStatus NeedsAuth { get; } = new("needs_auth");
+
+    /// <summary>The server failed to connect or initialize.</summary>
+    public static ConnectorMcpStatus Failed { get; } = new("failed");
+
+    /// <summary>The server is intentionally stopped, including when managed policy blocks it.</summary>
+    public static ConnectorMcpStatus Stopped { get; } = new("stopped");
+
+    /// <summary>The server is configured but explicitly disabled.</summary>
+    public static ConnectorMcpStatus Disabled { get; } = new("disabled");
+
+    /// <summary>The Connector currently has no live server configuration.</summary>
+    public static ConnectorMcpStatus NotConfigured { get; } = new("not_configured");
+
+    /// <summary>Returns a value indicating whether two <see cref="ConnectorMcpStatus"/> instances are equivalent.</summary>
+    public static bool operator ==(ConnectorMcpStatus left, ConnectorMcpStatus right) => left.Equals(right);
+
+    /// <summary>Returns a value indicating whether two <see cref="ConnectorMcpStatus"/> instances are not equivalent.</summary>
+    public static bool operator !=(ConnectorMcpStatus left, ConnectorMcpStatus right) => !(left == right);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is ConnectorMcpStatus other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(ConnectorMcpStatus other) => string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
+
+    /// <summary>Provides a <see cref="JsonConverter{ConnectorMcpStatus}"/> for serializing <see cref="ConnectorMcpStatus"/> instances.</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public sealed class Converter : JsonConverter<ConnectorMcpStatus>
+    {
+        /// <inheritdoc />
+        public override ConnectorMcpStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new(GeneratedStringEnumJson.ReadValue(ref reader, typeToConvert));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, ConnectorMcpStatus value, JsonSerializerOptions options)
+        {
+            GeneratedStringEnumJson.WriteValue(writer, value.Value, typeof(ConnectorMcpStatus));
+        }
+    }
+}
+
+
 /// <summary>Transport to be used for provider requests.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProviderEndpointTransport : IEquatable<ProviderEndpointTransport>
@@ -28513,7 +32607,7 @@ public readonly struct ProviderEndpointTransport : IEquatable<ProviderEndpointTr
 
 
 /// <summary>Provider family. Matches the `type` field of a BYOK provider config.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProviderEndpointType : IEquatable<ProviderEndpointType>
@@ -28579,7 +32673,7 @@ public readonly struct ProviderEndpointType : IEquatable<ProviderEndpointType>
 
 
 /// <summary>Wire API to be used, when required for the provider type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProviderEndpointWireApi : IEquatable<ProviderEndpointWireApi>
@@ -28642,7 +32736,7 @@ public readonly struct ProviderEndpointWireApi : IEquatable<ProviderEndpointWire
 
 
 /// <summary>Defines the allowed values.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProtocolAppendMode : IEquatable<ProtocolAppendMode>
@@ -28702,7 +32796,7 @@ public readonly struct ProtocolAppendMode : IEquatable<ProtocolAppendMode>
 
 
 /// <summary>Defines the allowed values.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProtocolReplaceMode : IEquatable<ProtocolReplaceMode>
@@ -28762,7 +32856,7 @@ public readonly struct ProtocolReplaceMode : IEquatable<ProtocolReplaceMode>
 
 
 /// <summary>Defines the allowed values.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProtocolCustomizeMode : IEquatable<ProtocolCustomizeMode>
@@ -28822,7 +32916,7 @@ public readonly struct ProtocolCustomizeMode : IEquatable<ProtocolCustomizeMode>
 
 
 /// <summary>Defines the allowed values.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProtocolStaticSectionAction : IEquatable<ProtocolStaticSectionAction>
@@ -28891,7 +32985,7 @@ public readonly struct ProtocolStaticSectionAction : IEquatable<ProtocolStaticSe
 
 
 /// <summary>Provider transport. Defaults to "http".</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProviderConfigTransport : IEquatable<ProviderConfigTransport>
@@ -28954,7 +33048,7 @@ public readonly struct ProviderConfigTransport : IEquatable<ProviderConfigTransp
 
 
 /// <summary>Provider type. Defaults to "openai" for generic OpenAI-compatible APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProviderConfigType : IEquatable<ProviderConfigType>
@@ -29020,7 +33114,7 @@ public readonly struct ProviderConfigType : IEquatable<ProviderConfigType>
 
 
 /// <summary>Wire API format (openai/azure only). Defaults to "completions".</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProviderConfigWireApi : IEquatable<ProviderConfigWireApi>
@@ -29083,7 +33177,7 @@ public readonly struct ProviderConfigWireApi : IEquatable<ProviderConfigWireApi>
 
 
 /// <summary>Allowed values for the `OptionsUpdateAdditionalContentExclusionPolicyScope` enumeration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct OptionsUpdateAdditionalContentExclusionPolicyScope : IEquatable<OptionsUpdateAdditionalContentExclusionPolicyScope>
@@ -29146,7 +33240,7 @@ public readonly struct OptionsUpdateAdditionalContentExclusionPolicyScope : IEqu
 
 
 /// <summary>Context tier for models with tiered pricing. The session uses this to derive effective `modelCapabilitiesOverrides` so compaction, truncation, token display, and request limits honor the selected tier.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct OptionsUpdateContextTier : IEquatable<OptionsUpdateContextTier>
@@ -29209,7 +33303,7 @@ public readonly struct OptionsUpdateContextTier : IEquatable<OptionsUpdateContex
 
 
 /// <summary>How env values are passed to MCP servers (`direct` inlines literal values; `indirect` resolves at launch).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct OptionsUpdateEnvValueMode : IEquatable<OptionsUpdateEnvValueMode>
@@ -29272,7 +33366,7 @@ public readonly struct OptionsUpdateEnvValueMode : IEquatable<OptionsUpdateEnvVa
 
 
 /// <summary>Reasoning summary mode for supported model clients.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct OptionsUpdateReasoningSummary : IEquatable<OptionsUpdateReasoningSummary>
@@ -29338,7 +33432,7 @@ public readonly struct OptionsUpdateReasoningSummary : IEquatable<OptionsUpdateR
 
 
 /// <summary>Origin of the sandbox choice supplied by an internal client.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SandboxConfigSource : IEquatable<SandboxConfigSource>
@@ -29416,7 +33510,7 @@ public readonly struct SandboxConfigSource : IEquatable<SandboxConfigSource>
 
 
 /// <summary>Session capability enabled for this session.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionCapability : IEquatable<SessionCapability>
@@ -29506,7 +33600,7 @@ public readonly struct SessionCapability : IEquatable<SessionCapability>
 
 
 /// <summary>Controls automatic non-interactive profile loading where supported. Explicit initScripts are unaffected.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ShellInitProfile : IEquatable<ShellInitProfile>
@@ -29569,7 +33663,7 @@ public readonly struct ShellInitProfile : IEquatable<ShellInitProfile>
 
 
 /// <summary>Supported built-in shells for initialization scripts.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ShellInitScriptShell : IEquatable<ShellInitScriptShell>
@@ -29632,7 +33726,7 @@ public readonly struct ShellInitScriptShell : IEquatable<ShellInitScriptShell>
 
 
 /// <summary>Controls how availableTools (allowlist) and excludedTools (denylist) combine when both are set.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct OptionsUpdateToolFilterPrecedence : IEquatable<OptionsUpdateToolFilterPrecedence>
@@ -29695,7 +33789,7 @@ public readonly struct OptionsUpdateToolFilterPrecedence : IEquatable<OptionsUpd
 
 
 /// <summary>Discovery source: project (.github/extensions/), user (~/.copilot/extensions/), plugin (installed plugin), or session (session-state/&lt;id&gt;/extensions/).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ExtensionSource : IEquatable<ExtensionSource>
@@ -29764,7 +33858,7 @@ public readonly struct ExtensionSource : IEquatable<ExtensionSource>
 
 
 /// <summary>Current status: running, disabled, failed, or starting.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ExtensionStatus : IEquatable<ExtensionStatus>
@@ -29833,7 +33927,7 @@ public readonly struct ExtensionStatus : IEquatable<ExtensionStatus>
 
 
 /// <summary>Type of GitHub reference.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PushAttachmentGitHubReferenceType : IEquatable<PushAttachmentGitHubReferenceType>
@@ -29899,7 +33993,7 @@ public readonly struct PushAttachmentGitHubReferenceType : IEquatable<PushAttach
 
 
 /// <summary>Custom input-format kind.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct BuiltinToolFormatType : IEquatable<BuiltinToolFormatType>
@@ -29959,7 +34053,7 @@ public readonly struct BuiltinToolFormatType : IEquatable<BuiltinToolFormatType>
 
 
 /// <summary>Root JSON Schema type for a built-in tool input.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct BuiltinToolInputSchemaType : IEquatable<BuiltinToolInputSchemaType>
@@ -30019,7 +34113,7 @@ public readonly struct BuiltinToolInputSchemaType : IEquatable<BuiltinToolInputS
 
 
 /// <summary>Binary result type discriminator. Use "image" for images and "resource" for other binary data.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ExternalToolTextResultForLlmBinaryResultsForLlmType : IEquatable<ExternalToolTextResultForLlmBinaryResultsForLlmType>
@@ -30082,7 +34176,7 @@ public readonly struct ExternalToolTextResultForLlmBinaryResultsForLlmType : IEq
 
 
 /// <summary>Theme variant this icon is intended for.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ExternalToolTextResultForLlmContentResourceLinkIconTheme : IEquatable<ExternalToolTextResultForLlmContentResourceLinkIconTheme>
@@ -30145,7 +34239,7 @@ public readonly struct ExternalToolTextResultForLlmContentResourceLinkIconTheme 
 
 
 /// <summary>Execution outcome classification.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ToolResultType : IEquatable<ToolResultType>
@@ -30217,7 +34311,7 @@ public readonly struct ToolResultType : IEquatable<ToolResultType>
 
 
 /// <summary>Controls whether the runtime may defer loading an external tool definition.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ProtocolExternalToolDefer : IEquatable<ProtocolExternalToolDefer>
@@ -30280,7 +34374,7 @@ public readonly struct ProtocolExternalToolDefer : IEquatable<ProtocolExternalTo
 
 
 /// <summary>Context tier override for matching subagents.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SubagentSettingsEntryContextTier : IEquatable<SubagentSettingsEntryContextTier>
@@ -30346,7 +34440,7 @@ public readonly struct SubagentSettingsEntryContextTier : IEquatable<SubagentSet
 
 
 /// <summary>A session-scoped sandbox transition applied while handling a slash command.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SandboxSessionChange : IEquatable<SandboxSessionChange>
@@ -30409,7 +34503,7 @@ public readonly struct SandboxSessionChange : IEquatable<SandboxSessionChange>
 
 
 /// <summary>Defines the allowed values.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CommandsInvocationOrigin : IEquatable<CommandsInvocationOrigin>
@@ -30469,7 +34563,7 @@ public readonly struct CommandsInvocationOrigin : IEquatable<CommandsInvocationO
 
 
 /// <summary>Whether a pending slash-command invocation effect was applied or cancelled by the host.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct CommandsInvocationEffectOutcome : IEquatable<CommandsInvocationEffectOutcome>
@@ -30532,7 +34626,7 @@ public readonly struct CommandsInvocationEffectOutcome : IEquatable<CommandsInvo
 
 
 /// <summary>The user's response: accept (submitted), decline (rejected), or cancel (dismissed).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct UIElicitationResponseAction : IEquatable<UIElicitationResponseAction>
@@ -30598,7 +34692,7 @@ public readonly struct UIElicitationResponseAction : IEquatable<UIElicitationRes
 
 
 /// <summary>Structured MCP elicitation mode.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct McpElicitationFormMode : IEquatable<McpElicitationFormMode>
@@ -30658,7 +34752,7 @@ public readonly struct McpElicitationFormMode : IEquatable<McpElicitationFormMod
 
 
 /// <summary>User's choice for auto-mode switching: yes (allow this turn), yes_always (allow + persist as setting), or no (decline).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct UIAutoModeSwitchResponse : IEquatable<UIAutoModeSwitchResponse>
@@ -30724,7 +34818,7 @@ public readonly struct UIAutoModeSwitchResponse : IEquatable<UIAutoModeSwitchRes
 
 
 /// <summary>User action selected for an exhausted session limit.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct UISessionLimitsExhaustedResponseAction : IEquatable<UISessionLimitsExhaustedResponseAction>
@@ -30793,7 +34887,7 @@ public readonly struct UISessionLimitsExhaustedResponseAction : IEquatable<UISes
 
 
 /// <summary>The action the user selected. Defaults to 'autopilot' when autoApproveEdits is true, otherwise 'interactive'.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct UIExitPlanModeAction : IEquatable<UIExitPlanModeAction>
@@ -30862,7 +34956,7 @@ public readonly struct UIExitPlanModeAction : IEquatable<UIExitPlanModeAction>
 
 
 /// <summary>Allowed values for the `PermissionsConfigureAdditionalContentExclusionPolicyScope` enumeration.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PermissionsConfigureAdditionalContentExclusionPolicyScope : IEquatable<PermissionsConfigureAdditionalContentExclusionPolicyScope>
@@ -30925,7 +35019,7 @@ public readonly struct PermissionsConfigureAdditionalContentExclusionPolicyScope
 
 
 /// <summary>Optional source for allow-all telemetry. Defaults to `rpc` when omitted for SDK callers.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PermissionsSetApproveAllSource : IEquatable<PermissionsSetApproveAllSource>
@@ -30997,7 +35091,7 @@ public readonly struct PermissionsSetApproveAllSource : IEquatable<PermissionsSe
 
 
 /// <summary>Optional source for permission-mode telemetry. Defaults to `rpc` when omitted for SDK callers.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PermissionModeSource : IEquatable<PermissionModeSource>
@@ -31072,7 +35166,7 @@ public readonly struct PermissionModeSource : IEquatable<PermissionModeSource>
 
 
 /// <summary>Whether the change applies to ephemeral session-scoped rules (cleared at session end) or to location-scoped rules persisted via the location-permissions config file.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PermissionsModifyRulesScope : IEquatable<PermissionsModifyRulesScope>
@@ -31135,7 +35229,7 @@ public readonly struct PermissionsModifyRulesScope : IEquatable<PermissionsModif
 
 
 /// <summary>Whether the location is a git repo or directory.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct PermissionLocationType : IEquatable<PermissionLocationType>
@@ -31198,7 +35292,7 @@ public readonly struct PermissionLocationType : IEquatable<PermissionLocationTyp
 
 
 /// <summary>The current agent mode for this session (e.g., 'interactive', 'plan', 'autopilot').</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct MetadataSnapshotCurrentMode : IEquatable<MetadataSnapshotCurrentMode>
@@ -31264,7 +35358,7 @@ public readonly struct MetadataSnapshotCurrentMode : IEquatable<MetadataSnapshot
 
 
 /// <summary>Whether the remote task originated from Copilot Coding Agent (cca) or a CLI `--remote` invocation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct MetadataSnapshotRemoteMetadataTaskType : IEquatable<MetadataSnapshotRemoteMetadataTaskType>
@@ -31327,7 +35421,7 @@ public readonly struct MetadataSnapshotRemoteMetadataTaskType : IEquatable<Metad
 
 
 /// <summary>Repository host type, if known.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct WorkspaceSummaryHostType : IEquatable<WorkspaceSummaryHostType>
@@ -31390,7 +35484,7 @@ public readonly struct WorkspaceSummaryHostType : IEquatable<WorkspaceSummaryHos
 
 
 /// <summary>Hosting platform type of the repository.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionWorkingDirectoryContextHostType : IEquatable<SessionWorkingDirectoryContextHostType>
@@ -31453,7 +35547,7 @@ public readonly struct SessionWorkingDirectoryContextHostType : IEquatable<Sessi
 
 
 /// <summary>Rust-owned settings predicates exposed across the SDK boundary. Raw feature-flag names are intentionally not part of the contract.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionSettingsPredicateName : IEquatable<SessionSettingsPredicateName>
@@ -31567,7 +35661,7 @@ public readonly struct SessionSettingsPredicateName : IEquatable<SessionSettings
 
 
 /// <summary>Signal to send (default: SIGTERM).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ShellKillSignal : IEquatable<ShellKillSignal>
@@ -31695,7 +35789,7 @@ public readonly struct SessionHistoryCompactRequestTrigger : IEquatable<SessionH
 
 
 /// <summary>Aggregate file change represented by a rewind preview.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct HistoryRewindChangeType : IEquatable<HistoryRewindChangeType>
@@ -31761,7 +35855,7 @@ public readonly struct HistoryRewindChangeType : IEquatable<HistoryRewindChangeT
 
 
 /// <summary>Outcome of a rewind request.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct HistoryRewindOutcome : IEquatable<HistoryRewindOutcome>
@@ -31845,7 +35939,7 @@ public readonly struct HistoryRewindOutcome : IEquatable<HistoryRewindOutcome>
 
 
 /// <summary>Reason a captured file was not restored.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct HistoryFileRestoreSkipReason : IEquatable<HistoryFileRestoreSkipReason>
@@ -31908,7 +36002,7 @@ public readonly struct HistoryFileRestoreSkipReason : IEquatable<HistoryFileRest
 
 
 /// <summary>Scope of a rewind operation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct HistoryRewindMode : IEquatable<HistoryRewindMode>
@@ -31971,7 +36065,7 @@ public readonly struct HistoryRewindMode : IEquatable<HistoryRewindMode>
 
 
 /// <summary>Whether this item is a queued user message or a queued slash command / model change.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct QueuePendingItemsKind : IEquatable<QueuePendingItemsKind>
@@ -32034,7 +36128,7 @@ public readonly struct QueuePendingItemsKind : IEquatable<QueuePendingItemsKind>
 
 
 /// <summary>Agent-scope filter: 'primary' returns only main-agent events plus events whose type starts with 'subagent.' (matching the typed-subscription default behavior); 'all' returns events from all agents (matching wildcard-subscription behavior). Default is 'all' to preserve wildcard semantics for catch-up callers.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct EventsAgentScope : IEquatable<EventsAgentScope>
@@ -32097,7 +36191,7 @@ public readonly struct EventsAgentScope : IEquatable<EventsAgentScope>
 
 
 /// <summary>Client population used for the prediction baseline.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionLimitPredictionClientType : IEquatable<SessionLimitPredictionClientType>
@@ -32160,7 +36254,7 @@ public readonly struct SessionLimitPredictionClientType : IEquatable<SessionLimi
 
 
 /// <summary>Semantic usage tier used for a recommended cap or additional headroom.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionLimitPredictionTier : IEquatable<SessionLimitPredictionTier>
@@ -32229,7 +36323,7 @@ public readonly struct SessionLimitPredictionTier : IEquatable<SessionLimitPredi
 
 
 /// <summary>Baseline fallback level used to create the prediction.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionLimitPredictionSource : IEquatable<SessionLimitPredictionSource>
@@ -32295,7 +36389,7 @@ public readonly struct SessionLimitPredictionSource : IEquatable<SessionLimitPre
 
 
 /// <summary>Reason a prediction could not be computed.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionLimitPredictionUnavailableReason : IEquatable<SessionLimitPredictionUnavailableReason>
@@ -32358,7 +36452,7 @@ public readonly struct SessionLimitPredictionUnavailableReason : IEquatable<Sess
 
 
 /// <summary>Per-session remote mode. "off" disables remote, "export" exports session events to GitHub without enabling remote steering, "on" enables both export and remote steering.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct RemoteSessionMode : IEquatable<RemoteSessionMode>
@@ -32424,7 +36518,7 @@ public readonly struct RemoteSessionMode : IEquatable<RemoteSessionMode>
 
 
 /// <summary>Sharing status for a synced session. "repo" makes the session visible to anyone with read access to the repository; "unshared" restricts it to the creator and collaborators.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionVisibilityStatus : IEquatable<SessionVisibilityStatus>
@@ -32487,7 +36581,7 @@ public readonly struct SessionVisibilityStatus : IEquatable<SessionVisibilitySta
 
 
 /// <summary>Why the runtime requests client-task cancellation.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct ClientTaskCancelReason : IEquatable<ClientTaskCancelReason>
@@ -32550,7 +36644,7 @@ public readonly struct ClientTaskCancelReason : IEquatable<ClientTaskCancelReaso
 
 
 /// <summary>Error classification.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionFsErrorCode : IEquatable<SessionFsErrorCode>
@@ -32613,7 +36707,7 @@ public readonly struct SessionFsErrorCode : IEquatable<SessionFsErrorCode>
 
 
 /// <summary>Entry type.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionFsReaddirWithTypesEntryType : IEquatable<SessionFsReaddirWithTypesEntryType>
@@ -32676,7 +36770,7 @@ public readonly struct SessionFsReaddirWithTypesEntryType : IEquatable<SessionFs
 
 
 /// <summary>How to execute the query: 'exec' for DDL/multi-statement (no results), 'query' for SELECT (returns rows), 'run' for INSERT/UPDATE/DELETE (returns rowsAffected).</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionFsSqliteQueryType : IEquatable<SessionFsSqliteQueryType>
@@ -32742,7 +36836,7 @@ public readonly struct SessionFsSqliteQueryType : IEquatable<SessionFsSqliteQuer
 
 
 /// <summary>SQLite transaction failure classification.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct SessionFsSqliteTransactionErrorClass : IEquatable<SessionFsSqliteTransactionErrorClass>
@@ -32808,7 +36902,7 @@ public readonly struct SessionFsSqliteTransactionErrorClass : IEquatable<Session
 
 
 /// <summary>Transport the runtime would otherwise use for this request. `http` (the default when absent) covers plain HTTP and SSE responses; `websocket` indicates a full-duplex message channel where each body chunk maps to one WebSocket message and the `binary` flag distinguishes text from binary frames. The SDK consumer uses this to decide whether to service the request with an HTTP client or a WebSocket client. It is the one piece of request metadata the consumer cannot reliably infer from the URL or headers alone.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct LlmInferenceHttpRequestStartTransport : IEquatable<LlmInferenceHttpRequestStartTransport>
@@ -32871,7 +36965,7 @@ public readonly struct LlmInferenceHttpRequestStartTransport : IEquatable<LlmInf
 
 
 /// <summary>Why the runtime is requesting a GitHub credential.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 [JsonConverter(typeof(Converter))]
 [DebuggerDisplay("{Value,nq}")]
 public readonly struct GitHubTokenAcquireReason : IEquatable<GitHubTokenAcquireReason>
@@ -32947,7 +37041,7 @@ public sealed class ServerRpc
     /// <param name="message">Optional message to echo back.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Server liveness response, including the echoed message, current server timestamp, and protocol version.</returns>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task<PingResult> PingAsync(string? message = null, CancellationToken cancellationToken = default)
     {
         var request = new PingRequest { Message = message };
@@ -32955,13 +37049,13 @@ public sealed class ServerRpc
     }
 
     /// <summary>Performs the SDK server connection handshake and validates the optional connection token. Marked internal because this is JSON-RPC transport plumbing invoked automatically by an SDK client's own `connect()` wrapper, not a user-facing method. Stays internal as long as the SDK client owns the handshake; would only become public if the SDK ever exposed the raw schema surface to consumers without a connection wrapper.</summary>
-    /// <param name="enableGitHubTelemetryForwarding">Opt this connection in to GitHub telemetry forwarding for its lifetime. When set, the runtime forwards every internal telemetry event it emits — across all sessions, plus sessionless events — to this connection over the `gitHubTelemetry.event` notification. Regular events are also written to the runtime's normal GitHub/CTS path (dual-write); host-only compatibility events are forward-only and intentionally skip that path. Intended for first-party hosts that re-emit the events into their own telemetry stores. Both unrestricted and restricted events are forwarded, each tagged with a `restricted` discriminator; a backstop drops restricted events when restricted telemetry is disabled — using the process-global gate for ordinary events and an explicit session-scoped decision for host-only events.</param>
+    /// <param name="enableGitHubTelemetryForwarding">Opt this connection in to GitHub telemetry forwarding for its lifetime. When set, the runtime forwards this host's telemetry across all its sessions, its sessionless events, and explicitly process-wide events over the `gitHubTelemetry.event` notification. Connections intentionally sharing one server receive that server's events; independently embedded runtime hosts do not receive each other's host-owned events. Regular events are also written to the runtime's normal GitHub/CTS path (dual-write); host-only compatibility events are forward-only and intentionally skip that path. Intended for first-party hosts that re-emit the events into their own telemetry stores. Both unrestricted and restricted events are forwarded, each tagged with a `restricted` discriminator; a backstop drops restricted events when restricted telemetry is disabled — using the process-global gate for ordinary events and an explicit session-scoped decision for host-only events.</param>
     /// <param name="clientInfo">Identity of the integrating host. Optional; omit it to keep the default attribution.</param>
     /// <param name="supportedTaskKinds">Task kinds this connection can decode when observing session tasks. Omit to retain agent and shell compatibility.</param>
     /// <param name="token">Connection token; required when the server was started with COPILOT_CONNECTION_TOKEN.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Handshake result reporting the server's protocol version and package version on success.</returns>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     internal async Task<ConnectResult> ConnectAsync(bool? enableGitHubTelemetryForwarding = null, ConnectClientInfo? clientInfo = null, IList<TaskKind>? supportedTaskKinds = null, string? token = null, CancellationToken cancellationToken = default)
     {
         var request = new ConnectRequest { EnableGitHubTelemetryForwarding = enableGitHubTelemetryForwarding, ClientInfo = clientInfo, SupportedTaskKinds = supportedTaskKinds, Token = token };
@@ -32970,7 +37064,7 @@ public sealed class ServerRpc
 
     /// <summary>Registers the calling SDK client as the per-entrypoint extension launch provider. Call before creating any sessions. When omitted, the runtime uses its built-in extension launcher.</summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task RegisterExtensionLaunchProviderAsync(CancellationToken cancellationToken = default)
     {
         await CopilotClient.InvokeRpcAsync(_rpc, "registerExtensionLaunchProvider", [], cancellationToken);
@@ -32984,6 +37078,12 @@ public sealed class ServerRpc
 
     /// <summary>Models APIs.</summary>
     public ServerModelsApi Models =>
+        field ??
+        Interlocked.CompareExchange(ref field, new(_rpc), null) ??
+        field;
+
+    /// <summary>Sandbox APIs.</summary>
+    public ServerSandboxApi Sandbox =>
         field ??
         Interlocked.CompareExchange(ref field, new(_rpc), null) ??
         field;
@@ -33098,7 +37198,7 @@ public sealed class ServerRpc
 }
 
 /// <summary>Provides server-scoped Hooks APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerHooksApi
 {
     private readonly JsonRpc _rpc;
@@ -33121,7 +37221,7 @@ public sealed class ServerHooksApi
 }
 
 /// <summary>Provides server-scoped Models APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerModelsApi
 {
     private readonly JsonRpc _rpc;
@@ -33151,8 +37251,28 @@ public sealed class ServerModelsApi
     }
 }
 
+/// <summary>Provides server-scoped Sandbox APIs.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ServerSandboxApi
+{
+    private readonly JsonRpc _rpc;
+
+    internal ServerSandboxApi(JsonRpc rpc)
+    {
+        _rpc = rpc;
+    }
+
+    /// <summary>Reports whether the host running this runtime can run the command sandbox, without starting a session or spawning a sandboxed command.</summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Whether the host running this runtime can run the command sandbox. The runtime checks `supported` once per process. A capability answer can change while the process runs, for example after the user installs a missing package.</returns>
+    public async Task<SandboxHostSupport> GetHostSupportAsync(CancellationToken cancellationToken = default)
+    {
+        return await CopilotClient.InvokeRpcAsync<SandboxHostSupport>(_rpc, "sandbox.getHostSupport", [], cancellationToken);
+    }
+}
+
 /// <summary>Provides server-scoped Tools APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerToolsApi
 {
     private readonly JsonRpc _rpc;
@@ -33174,7 +37294,7 @@ public sealed class ServerToolsApi
 }
 
 /// <summary>Provides server-scoped Account APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerAccountApi
 {
     private readonly JsonRpc _rpc;
@@ -33239,7 +37359,7 @@ public sealed class ServerAccountApi
 }
 
 /// <summary>Provides server-scoped Secrets APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerSecretsApi
 {
     private readonly JsonRpc _rpc;
@@ -33263,7 +37383,7 @@ public sealed class ServerSecretsApi
 }
 
 /// <summary>Provides server-scoped Mcp APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerMcpApi
 {
     private readonly JsonRpc _rpc;
@@ -33307,7 +37427,7 @@ public sealed class ServerMcpApi
 }
 
 /// <summary>Provides server-scoped McpConfig APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerMcpConfigApi
 {
     private readonly JsonRpc _rpc;
@@ -33394,7 +37514,7 @@ public sealed class ServerMcpConfigApi
 }
 
 /// <summary>Provides server-scoped Extensions APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerExtensionsApi
 {
     private readonly JsonRpc _rpc;
@@ -33436,7 +37556,7 @@ public sealed class ServerExtensionsApi
 }
 
 /// <summary>Provides server-scoped Catalog APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerCatalogApi
 {
     private readonly JsonRpc _rpc;
@@ -33450,21 +37570,39 @@ public sealed class ServerCatalogApi
     /// <param name="contract">Protocol version and capabilities the caller requires.</param>
     /// <param name="query">Free-text search query. Persisted as tool input for session continuity, but omitted from telemetry.</param>
     /// <param name="limit">Maximum number of candidates to return. Defaults to 10 when omitted.</param>
-    /// <param name="kinds">Restrict results to these candidate kinds. When omitted, every kind the runtime supports is searched.</param>
+    /// <param name="kinds">Restrict results to these candidate kinds. Agent Plugins are opt-in and require the `agent-plugin-discovery` capability so protocol-v3 clients generated before that variant cannot receive an unknown result; when omitted, the backwards-compatible MCP server and AI skill kinds are searched.</param>
+    /// <param name="page">Numbered navigation using metadata from an earlier response. Requires catalog-search-pagination and the same query, kinds and effective limit. Omit for a fresh first-page search.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Outcome of a catalog.search call: either bounded inert candidates, or one typed refusal. Never a partial success.</returns>
-    public async Task<CatalogSearchResult> SearchAsync(CatalogClientContract contract, string query, int? limit = null, IList<CatalogCandidateKind>? kinds = null, CancellationToken cancellationToken = default)
+    public async Task<CatalogSearchResult> SearchAsync(CatalogClientContract contract, string query, int? limit = null, IList<CatalogCandidateKind>? kinds = null, CatalogSearchPage? page = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(contract);
         ArgumentNullException.ThrowIfNull(query);
 
-        var request = new CatalogSearchRequest { Contract = contract, Query = query, Limit = limit, Kinds = kinds };
+        var request = new CatalogSearchRequest { Contract = contract, Query = query, Limit = limit, Kinds = kinds, Page = page };
         return await CopilotClient.InvokeRpcAsync<CatalogSearchResult>(_rpc, "catalog.search", [request], cancellationToken);
+    }
+
+    /// <summary>Terminates one retained catalog selection group. A selected outcome returns the native host a fresh single-use candidate handle plus the original searchId for a later explicit mcp.planInstall call; non-selected outcomes release the group without producing a planning input. Candidate state, cards, URLs, credentials and private identifiers remain inside the runtime. The model-facing catalog_select tool projects the result separately and never exposes the candidate handle or searchId.</summary>
+    /// <param name="contract">Protocol version and capabilities the caller requires.</param>
+    /// <param name="sessionId">Locally owned root session whose retained search state is being resolved.</param>
+    /// <param name="selectionRef">Opaque runtime-instance scoped reference to one visible candidate. For a non-selected outcome, any candidate reference from the same search closes that search's retained group.</param>
+    /// <param name="outcome">The terminal outcome declared by the caller. Timed-out means the host's live interaction deadline elapsed; a reference whose runtime TTL elapsed is rejected separately as stale.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Typed outcome of catalog.select. Only the selected host result carries a fresh candidate handle; the model-facing projection removes both that handle and searchId.</returns>
+    public async Task<CatalogSelectionResult> SelectAsync(CatalogClientContract contract, string sessionId, string selectionRef, CatalogSelectionDecision outcome, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(contract);
+        ArgumentNullException.ThrowIfNull(sessionId);
+        ArgumentNullException.ThrowIfNull(selectionRef);
+
+        var request = new CatalogSelectionRequest { Contract = contract, SessionId = sessionId, SelectionRef = selectionRef, Outcome = outcome };
+        return await CopilotClient.InvokeRpcAsync<CatalogSelectionResult>(_rpc, "catalog.select", [request], cancellationToken);
     }
 }
 
 /// <summary>Provides server-scoped Plugins APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerPluginsApi
 {
     private readonly JsonRpc _rpc;
@@ -33565,7 +37703,7 @@ public sealed class ServerPluginsApi
 }
 
 /// <summary>Provides server-scoped PluginsBuiltin APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerPluginsBuiltinApi
 {
     private readonly JsonRpc _rpc;
@@ -33588,7 +37726,7 @@ public sealed class ServerPluginsBuiltinApi
 }
 
 /// <summary>Provides server-scoped PluginsMarketplaces APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerPluginsMarketplacesApi
 {
     private readonly JsonRpc _rpc;
@@ -33656,7 +37794,7 @@ public sealed class ServerPluginsMarketplacesApi
 }
 
 /// <summary>Provides server-scoped Skills APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerSkillsApi
 {
     private readonly JsonRpc _rpc;
@@ -33669,23 +37807,25 @@ public sealed class ServerSkillsApi
     /// <summary>Discovers skills across global and project sources.</summary>
     /// <param name="projectPaths">Optional list of project directory paths to scan for project-scoped skills.</param>
     /// <param name="skillDirectories">Optional list of additional skill directory paths to include.</param>
+    /// <param name="ignoredSkillsLocations">Optional skill scan paths to exclude from discovery.</param>
     /// <param name="excludeHostSkills">When true, omit skills from the host's global sources (personal, custom, plugin, and built-in), returning only project-scoped skills. For multitenant deployments.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Skills discovered across global and project sources.</returns>
-    public async Task<ServerSkillList> DiscoverAsync(IList<string>? projectPaths = null, IList<string>? skillDirectories = null, bool? excludeHostSkills = null, CancellationToken cancellationToken = default)
+    public async Task<ServerSkillList> DiscoverAsync(IList<string>? projectPaths = null, IList<string>? skillDirectories = null, IList<string>? ignoredSkillsLocations = null, bool? excludeHostSkills = null, CancellationToken cancellationToken = default)
     {
-        var request = new SkillsDiscoverRequest { ProjectPaths = projectPaths, SkillDirectories = skillDirectories, ExcludeHostSkills = excludeHostSkills };
+        var request = new SkillsDiscoverRequest { ProjectPaths = projectPaths, SkillDirectories = skillDirectories, IgnoredSkillsLocations = ignoredSkillsLocations, ExcludeHostSkills = excludeHostSkills };
         return await CopilotClient.InvokeRpcAsync<ServerSkillList>(_rpc, "skills.discover", [request], cancellationToken);
     }
 
     /// <summary>Returns the canonical directories where a client may create skills that the runtime will recognize, including ones that do not exist yet. Project directories become active once created.</summary>
     /// <param name="projectPaths">Optional list of project directory paths. When omitted or empty, only personal and custom directories are returned.</param>
+    /// <param name="ignoredSkillsLocations">Optional skill scan paths to exclude from discovery.</param>
     /// <param name="excludeHostSkills">When true, omit the host's personal and custom skill directories, leaving only project directories. For multitenant deployments.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Canonical locations where skills can be created so the runtime will recognize them.</returns>
-    public async Task<SkillDiscoveryPathList> GetDiscoveryPathsAsync(IList<string>? projectPaths = null, bool? excludeHostSkills = null, CancellationToken cancellationToken = default)
+    public async Task<SkillDiscoveryPathList> GetDiscoveryPathsAsync(IList<string>? projectPaths = null, IList<string>? ignoredSkillsLocations = null, bool? excludeHostSkills = null, CancellationToken cancellationToken = default)
     {
-        var request = new SkillsGetDiscoveryPathsRequest { ProjectPaths = projectPaths, ExcludeHostSkills = excludeHostSkills };
+        var request = new SkillsGetDiscoveryPathsRequest { ProjectPaths = projectPaths, IgnoredSkillsLocations = ignoredSkillsLocations, ExcludeHostSkills = excludeHostSkills };
         return await CopilotClient.InvokeRpcAsync<SkillDiscoveryPathList>(_rpc, "skills.getDiscoveryPaths", [request], cancellationToken);
     }
 
@@ -33697,7 +37837,7 @@ public sealed class ServerSkillsApi
 }
 
 /// <summary>Provides server-scoped SkillsConfig APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerSkillsConfigApi
 {
     private readonly JsonRpc _rpc;
@@ -33732,7 +37872,7 @@ public sealed class ServerSkillsConfigApi
 }
 
 /// <summary>Provides server-scoped Agents APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerAgentsApi
 {
     private readonly JsonRpc _rpc;
@@ -33766,7 +37906,7 @@ public sealed class ServerAgentsApi
 }
 
 /// <summary>Provides server-scoped Instructions APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerInstructionsApi
 {
     private readonly JsonRpc _rpc;
@@ -33800,7 +37940,7 @@ public sealed class ServerInstructionsApi
 }
 
 /// <summary>Provides server-scoped Commands APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerCommandsApi
 {
     private readonly JsonRpc _rpc;
@@ -33820,7 +37960,7 @@ public sealed class ServerCommandsApi
 }
 
 /// <summary>Provides server-scoped User APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerUserApi
 {
     private readonly JsonRpc _rpc;
@@ -33838,7 +37978,7 @@ public sealed class ServerUserApi
 }
 
 /// <summary>Provides server-scoped UserSettings APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerUserSettingsApi
 {
     private readonly JsonRpc _rpc;
@@ -33877,7 +38017,7 @@ public sealed class ServerUserSettingsApi
 }
 
 /// <summary>Provides server-scoped ManagedSettings APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerManagedSettingsApi
 {
     private readonly JsonRpc _rpc;
@@ -33904,7 +38044,7 @@ public sealed class ServerManagedSettingsApi
 }
 
 /// <summary>Provides server-scoped Runtime APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerRuntimeApi
 {
     private readonly JsonRpc _rpc;
@@ -33923,7 +38063,7 @@ public sealed class ServerRuntimeApi
 }
 
 /// <summary>Provides server-scoped SessionFs APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerSessionFsApi
 {
     private readonly JsonRpc _rpc;
@@ -33934,7 +38074,7 @@ public sealed class ServerSessionFsApi
     }
 
     /// <summary>Registers an SDK client as the session filesystem provider.</summary>
-    /// <param name="initialCwd">Initial working directory for sessions.</param>
+    /// <param name="initialCwd">Absolute initial working directory for sessions. Registering the provider establishes this path as the root of its virtual namespace; the runtime does not require the provider to materialize or stat it before creating a session.</param>
     /// <param name="sessionStatePath">Path within each session's SessionFs where the runtime stores files for that session.</param>
     /// <param name="conventions">Path conventions used by this filesystem.</param>
     /// <param name="capabilities">Optional capabilities declared by the provider.</param>
@@ -33951,7 +38091,7 @@ public sealed class ServerSessionFsApi
 }
 
 /// <summary>Provides server-scoped LlmInference APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerLlmInferenceApi
 {
     private readonly JsonRpc _rpc;
@@ -34004,7 +38144,7 @@ public sealed class ServerLlmInferenceApi
 }
 
 /// <summary>Provides server-scoped Sessions APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerSessionsApi
 {
     private readonly JsonRpc _rpc;
@@ -34393,7 +38533,7 @@ public sealed class ServerSessionsApi
 }
 
 /// <summary>Provides server-scoped AgentRegistry APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ServerAgentRegistryApi
 {
     private readonly JsonRpc _rpc;
@@ -34463,6 +38603,12 @@ public sealed class SessionRpc
         Interlocked.CompareExchange(ref field, new(_session), null) ??
         field;
 
+    /// <summary>Workflow APIs.</summary>
+    public WorkflowApi Workflow =>
+        field ??
+        Interlocked.CompareExchange(ref field, new(_session), null) ??
+        field;
+
     /// <summary>Model APIs.</summary>
     public ModelApi Model =>
         field ??
@@ -34511,6 +38657,12 @@ public sealed class SessionRpc
         Interlocked.CompareExchange(ref field, new(_session), null) ??
         field;
 
+    /// <summary>Customizations APIs.</summary>
+    public CustomizationsApi Customizations =>
+        field ??
+        Interlocked.CompareExchange(ref field, new(_session), null) ??
+        field;
+
     /// <summary>Fleet APIs.</summary>
     public FleetApi Fleet =>
         field ??
@@ -34537,6 +38689,24 @@ public sealed class SessionRpc
 
     /// <summary>Mcp APIs.</summary>
     public McpApi Mcp =>
+        field ??
+        Interlocked.CompareExchange(ref field, new(_session), null) ??
+        field;
+
+    /// <summary>Diagnostics APIs.</summary>
+    public DiagnosticsApi Diagnostics =>
+        field ??
+        Interlocked.CompareExchange(ref field, new(_session), null) ??
+        field;
+
+    /// <summary>Connectors APIs.</summary>
+    public ConnectorsApi Connectors =>
+        field ??
+        Interlocked.CompareExchange(ref field, new(_session), null) ??
+        field;
+
+    /// <summary>ManagedSettings APIs.</summary>
+    public ManagedSettingsApi ManagedSettings =>
         field ??
         Interlocked.CompareExchange(ref field, new(_session), null) ??
         field;
@@ -34675,7 +38845,7 @@ public sealed class SessionRpc
 
     /// <summary>Suspends the session while preserving persisted state for later resume.</summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task SuspendAsync(CancellationToken cancellationToken = default)
     {
         _session.ThrowIfDisposed();
@@ -34701,7 +38871,7 @@ public sealed class SessionRpc
     /// <param name="wait">If true, await completion of the agentic loop for this message before returning. Defaults to false (fire-and-forget). When true, the result still contains the same `messageId`; the caller can rely on the agent having processed the message before the call resolves. Transport-dependent tail semantics: on a LOCAL (in-process) session the wait additionally blocks until the completed turn's event tail has been dispatched to this session's in-process subscribers, so a subsequent read of subscriber state already reflects the turn; on a REMOTE session the wait resolves once the loop completes and mirrored delivery follows over the wire. Callers that need the stronger local guarantee on remote sessions should await the event stream explicitly.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Result of sending a user message.</returns>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task<SendResult> SendAsync(string prompt, string? displayPrompt = null, IList<Attachment>? attachments = null, SendMode? mode = null, bool? prepend = null, bool? billable = null, string? requiredTool = null, string? source = null, SendAgentMode? agentMode = null, IDictionary<string, string>? requestHeaders = null, ResponseFormat? responseFormat = null, string? traceparent = null, string? tracestate = null, bool? wait = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(prompt);
@@ -34723,7 +38893,7 @@ public sealed class SessionRpc
     /// <param name="wait">If true, await completion of the agentic loop for this turn before returning. Defaults to false (fire-and-forget). When true, the result still contains the same `messageIds`; the caller can rely on the agent having processed the messages before the call resolves. Transport-dependent tail semantics: on a LOCAL (in-process) session the wait additionally blocks until the completed turn's event tail has been dispatched to this session's in-process subscribers, so a subsequent read of subscriber state already reflects the turn; on a REMOTE session the wait resolves once the loop completes and mirrored delivery follows over the wire. Callers that need the stronger local guarantee on remote sessions should await the event stream explicitly.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Result of sending zero or more user messages.</returns>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task<SendMessagesResult> SendMessagesAsync(IList<SendMessageItem> messages, SendMode? mode = null, bool? prepend = null, SendAgentMode? agentMode = null, IDictionary<string, string>? requestHeaders = null, ResponseFormat? responseFormat = null, string? traceparent = null, string? tracestate = null, bool? wait = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(messages);
@@ -34738,7 +38908,7 @@ public sealed class SessionRpc
     /// <param name="kind">Optional structured notification kind.</param>
     /// <param name="options">Internal delivery options, including passive policy.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     internal async Task SendSystemNotificationAsync(string message, object? kind = null, object? options = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -34752,7 +38922,7 @@ public sealed class SessionRpc
     /// <param name="reason">Finite reason code describing why the current turn was aborted.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Result of aborting the current turn.</returns>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task<AbortResult> AbortAsync(AbortReason? reason = null, CancellationToken cancellationToken = default)
     {
         _session.ThrowIfDisposed();
@@ -34765,7 +38935,7 @@ public sealed class SessionRpc
     /// <param name="flushQueued">When true, the user's queued prompts are preserved and run as the next turn once the interrupted turn unwinds; when false (the default), the queue is cleared like a plain abort.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Result of interrupting the main agent turn.</returns>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task<InterruptMainTurnResult> InterruptMainTurnAsync(bool? flushQueued = null, CancellationToken cancellationToken = default)
     {
         _session.ThrowIfDisposed();
@@ -34777,7 +38947,7 @@ public sealed class SessionRpc
     /// <summary>Cancels every running background agent (task-registry subagents plus sidekick agents) without interrupting the main agent loop. Promoted attached shells are left running.</summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>The number of running background agents (task-registry agents) that were cancelled.</returns>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task<long> CancelAllBackgroundAgentsAsync(CancellationToken cancellationToken = default)
     {
         _session.ThrowIfDisposed();
@@ -34791,7 +38961,7 @@ public sealed class SessionRpc
     /// <param name="reason">Optional human-readable reason. Typically the message of the error that triggered shutdown when type is 'error'.</param>
     /// <param name="detachSessionEndHooks">Dispatch deferred sessionEnd hooks in the background with their full per-hook timeoutSec instead of awaiting them under the short shared shutdown budget. Set this when the host process keeps running after the session closes (for example the CLI's /clear), so a slow hook neither blocks the close nor is aborted. Hooks still detached when the process later exits are terminated with it. Defaults to false.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task ShutdownAsync(ShutdownType? type = null, string? reason = null, bool? detachSessionEndHooks = null, CancellationToken cancellationToken = default)
     {
         _session.ThrowIfDisposed();
@@ -34809,7 +38979,7 @@ public sealed class SessionRpc
     /// <param name="tip">Optional actionable tip displayed alongside the message. Only honored on `level: "info"`.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Identifier of the session event that was emitted for the log message.</returns>
-    [Experimental(Diagnostics.Experimental)]
+    [Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
     public async Task<LogResult> LogAsync(string message, SessionLogLevel? level = null, string? type = null, bool? ephemeral = null, string? url = null, string? tip = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -34821,7 +38991,7 @@ public sealed class SessionRpc
 }
 
 /// <summary>Provides session-scoped Sandbox APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SandboxApi
 {
     private readonly CopilotSession _session;
@@ -34858,7 +39028,7 @@ public sealed class SandboxApi
 }
 
 /// <summary>Provides session-scoped GitHubAuth APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class GitHubAuthApi
 {
     private readonly CopilotSession _session;
@@ -34992,7 +39162,7 @@ public sealed class GitHubAuthApi
 }
 
 /// <summary>Provides session-scoped Debug APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class DebugApi
 {
     private readonly CopilotSession _session;
@@ -35019,7 +39189,7 @@ public sealed class DebugApi
 }
 
 /// <summary>Provides session-scoped Canvas APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasApi
 {
     private readonly CopilotSession _session;
@@ -35094,7 +39264,7 @@ public sealed class CanvasApi
 }
 
 /// <summary>Provides session-scoped CanvasAction APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasActionApi
 {
     private readonly CopilotSession _session;
@@ -35122,7 +39292,7 @@ public sealed class CanvasActionApi
 }
 
 /// <summary>Provides session-scoped CanvasProvider APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CanvasProviderApi
 {
     private readonly CopilotSession _session;
@@ -35162,7 +39332,7 @@ public sealed class CanvasProviderApi
 }
 
 /// <summary>Provides session-scoped Factory APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryApi
 {
     private readonly CopilotSession _session;
@@ -35379,7 +39549,7 @@ public sealed class FactoryApi
 }
 
 /// <summary>Provides session-scoped FactoryJournal APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FactoryJournalApi
 {
     private readonly CopilotSession _session;
@@ -35426,8 +39596,273 @@ public sealed class FactoryJournalApi
     }
 }
 
+/// <summary>Provides session-scoped Workflow APIs.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowApi
+{
+    private readonly CopilotSession _session;
+
+    internal WorkflowApi(CopilotSession session)
+    {
+        _session = session;
+    }
+
+    /// <summary>Runs a registered dynamic workflow by name at the top level.</summary>
+    /// <param name="name">Registered workflow name.</param>
+    /// <param name="args">Workflow input value.</param>
+    /// <param name="options">Workflow invocation options.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Complete current or terminal workflow run envelope.</returns>
+    public async Task<WorkflowRunResult> RunAsync(string name, object args, WorkflowRunOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(args);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowRunRequest { SessionId = _session.SessionId, Name = name, Args = CopilotClient.ToJsonElementForWire(args)!.Value, Options = options };
+        return await CopilotClient.InvokeRpcAsync<WorkflowRunResult>(_session.Rpc, "session.workflow.run", [request], cancellationToken);
+    }
+
+    /// <summary>Resumes a dynamic workflow run using its persisted name, arguments, journal, and accounting.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="limits">Optional per-invocation resource ceiling overrides.</param>
+    /// <param name="notifyOnComplete">Whether to notify the originating session when the workflow completes.</param>
+    /// <param name="logPhaseNames">Whether to emit workflow phase names to the session transcript.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Resolved persisted workflow identity and resumed run envelope.</returns>
+    public async Task<WorkflowResumeResult> ResumeAsync(string runId, WorkflowRunLimits? limits = null, bool? notifyOnComplete = null, bool? logPhaseNames = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowResumeRequest { SessionId = _session.SessionId, RunId = runId, Limits = limits, NotifyOnComplete = notifyOnComplete, LogPhaseNames = logPhaseNames };
+        return await CopilotClient.InvokeRpcAsync<WorkflowResumeResult>(_session.Rpc, "session.workflow.resume", [request], cancellationToken);
+    }
+
+    /// <summary>Internal tool-originated dynamic workflow invocation.</summary>
+    /// <param name="name">Registered workflow name.</param>
+    /// <param name="args">Workflow input value.</param>
+    /// <param name="options">Tool-originated workflow invocation options.</param>
+    /// <param name="toolCallId">Opaque identifier of the originating tool call.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Complete current or terminal workflow run envelope.</returns>
+    internal async Task<WorkflowRunResult> RunFromToolAsync(string name, object args, WorkflowToolRunOptions? options = null, string? toolCallId = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(args);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowToolRunRequest { SessionId = _session.SessionId, Name = name, Args = CopilotClient.ToJsonElementForWire(args)!.Value, Options = options, ToolCallId = toolCallId };
+        return await CopilotClient.InvokeRpcAsync<WorkflowRunResult>(_session.Rpc, "session.workflow.runFromTool", [request], cancellationToken);
+    }
+
+    /// <summary>Internal tool-originated dynamic workflow resume.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="limits">Optional per-invocation resource ceiling overrides.</param>
+    /// <param name="toolCallId">Opaque identifier of the originating tool call.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Resolved persisted workflow identity and resumed run envelope.</returns>
+    internal async Task<WorkflowResumeResult> ResumeFromToolAsync(string runId, WorkflowRunLimits? limits = null, string? toolCallId = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowToolResumeRequest { SessionId = _session.SessionId, RunId = runId, Limits = limits, ToolCallId = toolCallId };
+        return await CopilotClient.InvokeRpcAsync<WorkflowResumeResult>(_session.Rpc, "session.workflow.resumeFromTool", [request], cancellationToken);
+    }
+
+    /// <summary>Gets the current or settled envelope for a dynamic workflow run.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Complete current or terminal workflow run envelope.</returns>
+    public async Task<WorkflowRunResult> GetRunAsync(string runId, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowGetRunRequest { SessionId = _session.SessionId, RunId = runId };
+        return await CopilotClient.InvokeRpcAsync<WorkflowRunResult>(_session.Rpc, "session.workflow.getRun", [request], cancellationToken);
+    }
+
+    /// <summary>Lists durable dynamic workflow runs for this session in creation order.</summary>
+    /// <param name="afterSeq">Exclusive forward cursor.</param>
+    /// <param name="beforeSeq">Exclusive backward cursor.</param>
+    /// <param name="limit">Maximum terminal runs to return. Defaults to 200 and is capped at 500.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>A page of workflow runs in durable creation order.</returns>
+    public async Task<WorkflowListRunsResult> ListRunsAsync(long? afterSeq = null, long? beforeSeq = null, int? limit = null, CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowListRunsRequest { SessionId = _session.SessionId, AfterSeq = afterSeq, BeforeSeq = beforeSeq, Limit = limit };
+        return await CopilotClient.InvokeRpcAsync<WorkflowListRunsResult>(_session.Rpc, "session.workflow.listRuns", [request], cancellationToken);
+    }
+
+    /// <summary>Gets durable and live observability detail for one dynamic workflow run.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Full workflow run observability detail.</returns>
+    public async Task<WorkflowRunDetail> GetRunDetailAsync(string runId, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowGetRunRequest { SessionId = _session.SessionId, RunId = runId };
+        return await CopilotClient.InvokeRpcAsync<WorkflowRunDetail>(_session.Rpc, "session.workflow.getRunDetail", [request], cancellationToken);
+    }
+
+    /// <summary>Pages durable progress for one dynamic workflow run.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="phaseId">Optional phase identifier used to scope records and cursors.</param>
+    /// <param name="afterSeq">Exclusive forward cursor.</param>
+    /// <param name="beforeSeq">Exclusive backward cursor.</param>
+    /// <param name="limit">Maximum records to return. Defaults to 200 and is capped at 500.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>A bidirectional page of workflow progress.</returns>
+    public async Task<WorkflowProgressPage> GetRunProgressAsync(string runId, string? phaseId = null, long? afterSeq = null, long? beforeSeq = null, int? limit = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowGetRunProgressRequest { SessionId = _session.SessionId, RunId = runId, PhaseId = phaseId, AfterSeq = afterSeq, BeforeSeq = beforeSeq, Limit = limit };
+        return await CopilotClient.InvokeRpcAsync<WorkflowProgressPage>(_session.Rpc, "session.workflow.getRunProgress", [request], cancellationToken);
+    }
+
+    /// <summary>Requests cancellation of a dynamic workflow run and returns its run envelope.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Complete current or terminal workflow run envelope.</returns>
+    public async Task<WorkflowRunResult> CancelAsync(string runId, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowCancelRequest { SessionId = _session.SessionId, RunId = runId };
+        return await CopilotClient.InvokeRpcAsync<WorkflowRunResult>(_session.Rpc, "session.workflow.cancel", [request], cancellationToken);
+    }
+
+    /// <summary>Pauses a running dynamic workflow and returns its settled run envelope.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Complete current or terminal workflow run envelope.</returns>
+    public async Task<WorkflowRunResult> PauseAsync(string runId, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowPauseRequest { SessionId = _session.SessionId, RunId = runId };
+        return await CopilotClient.InvokeRpcAsync<WorkflowRunResult>(_session.Rpc, "session.workflow.pause", [request], cancellationToken);
+    }
+
+    /// <summary>Atomically pauses an owned dynamic workflow attempt at a durable checkpoint.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="executionToken">Opaque token identifying the execution attempt that reached the checkpoint.</param>
+    /// <param name="key">Stable author-defined checkpoint key.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    internal async Task<SessionWorkflowPauseAtCheckpointResult> PauseAtCheckpointAsync(string runId, string executionToken, string key, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        ArgumentNullException.ThrowIfNull(executionToken);
+        ArgumentNullException.ThrowIfNull(key);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowPauseCheckpointRequest { SessionId = _session.SessionId, RunId = runId, ExecutionToken = executionToken, Key = key };
+        return await CopilotClient.InvokeRpcAsync<SessionWorkflowPauseAtCheckpointResult>(_session.Rpc, "session.workflow.pauseAtCheckpoint", [request], cancellationToken);
+    }
+
+    /// <summary>Records a batch of ordered dynamic workflow progress lines.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="executionToken">Opaque token identifying the current workflow execution attempt.</param>
+    /// <param name="lines">Ordered progress lines to append.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Acknowledgement that a workflow request was accepted.</returns>
+    public async Task<WorkflowAckResult> LogAsync(string runId, string executionToken, IList<WorkflowLogLine> lines, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        ArgumentNullException.ThrowIfNull(executionToken);
+        ArgumentNullException.ThrowIfNull(lines);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowLogRequest { SessionId = _session.SessionId, RunId = runId, ExecutionToken = executionToken, Lines = lines };
+        return await CopilotClient.InvokeRpcAsync<WorkflowAckResult>(_session.Rpc, "session.workflow.log", [request], cancellationToken);
+    }
+
+    /// <summary>Runs one dynamic-workflow-scoped subagent and returns its result.</summary>
+    /// <param name="workflowRunId">Workflow run identifier that owns the subagent.</param>
+    /// <param name="executionToken">Opaque token identifying the current workflow execution attempt.</param>
+    /// <param name="prompt">Prompt to send to the subagent.</param>
+    /// <param name="opts">Subagent execution options.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Result of one workflow-scoped subagent call.</returns>
+    public async Task<WorkflowAgentResult> AgentAsync(string workflowRunId, string executionToken, string prompt, WorkflowAgentOptions opts, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(workflowRunId);
+        ArgumentNullException.ThrowIfNull(executionToken);
+        ArgumentNullException.ThrowIfNull(prompt);
+        ArgumentNullException.ThrowIfNull(opts);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowAgentRequest { SessionId = _session.SessionId, WorkflowRunId = workflowRunId, ExecutionToken = executionToken, Prompt = prompt, Opts = opts };
+        return await CopilotClient.InvokeRpcAsync<WorkflowAgentResult>(_session.Rpc, "session.workflow.agent", [request], cancellationToken);
+    }
+
+    /// <summary>Journal APIs.</summary>
+    public WorkflowJournalApi Journal =>
+        field ??
+        Interlocked.CompareExchange(ref field, new(_session), null) ??
+        field;
+}
+
+/// <summary>Provides session-scoped WorkflowJournal APIs.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class WorkflowJournalApi
+{
+    private readonly CopilotSession _session;
+
+    internal WorkflowJournalApi(CopilotSession session)
+    {
+        _session = session;
+    }
+
+    /// <summary>Reads a memoized dynamic workflow journal entry.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="executionToken">Opaque token identifying the current workflow execution attempt.</param>
+    /// <param name="key">Namespaced journal key.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Result of reading a workflow journal entry.</returns>
+    public async Task<WorkflowJournalGetResult> GetAsync(string runId, string executionToken, string key, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        ArgumentNullException.ThrowIfNull(executionToken);
+        ArgumentNullException.ThrowIfNull(key);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowJournalGetRequest { SessionId = _session.SessionId, RunId = runId, ExecutionToken = executionToken, Key = key };
+        return await CopilotClient.InvokeRpcAsync<WorkflowJournalGetResult>(_session.Rpc, "session.workflow.journal.get", [request], cancellationToken);
+    }
+
+    /// <summary>Stores a memoized dynamic workflow journal entry.</summary>
+    /// <param name="runId">Workflow run identifier.</param>
+    /// <param name="executionToken">Opaque token identifying the current workflow execution attempt.</param>
+    /// <param name="key">Namespaced journal key.</param>
+    /// <param name="resultJson">JSON result to memoize.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Acknowledgement that a workflow request was accepted.</returns>
+    public async Task<WorkflowAckResult> PutAsync(string runId, string executionToken, string key, object resultJson, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(runId);
+        ArgumentNullException.ThrowIfNull(executionToken);
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(resultJson);
+        _session.ThrowIfDisposed();
+
+        var request = new WorkflowJournalPutRequest { SessionId = _session.SessionId, RunId = runId, ExecutionToken = executionToken, Key = key, ResultJson = CopilotClient.ToJsonElementForWire(resultJson)!.Value };
+        return await CopilotClient.InvokeRpcAsync<WorkflowAckResult>(_session.Rpc, "session.workflow.journal.put", [request], cancellationToken);
+    }
+}
+
 /// <summary>Provides session-scoped Model APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModelApi
 {
     private readonly CopilotSession _session;
@@ -35451,7 +39886,7 @@ public sealed class ModelApi
     /// <summary>Switches the session to a model and optional reasoning configuration.</summary>
     /// <param name="modelId">Model selection id to switch to, as returned by `list`. A bare id (e.g. `claude-sonnet-4.6`) names a Copilot (CAPI) model; a provider-qualified id (`provider/id`, e.g. `acme/claude-sonnet`) targets a registry BYOK model.</param>
     /// <param name="autoTier">Optional Auto routing preference to stage atomically with selecting `auto`. Pass null to return to provider-default Auto routing. This field is rejected when `modelId` is not `auto`.</param>
-    /// <param name="reasoningEffort">Reasoning effort level to use for the model. CAPI values are model-defined and validated against the selected model; BYOK providers may define additional values. "none" disables reasoning. When omitted, no effort override is applied.</param>
+    /// <param name="reasoningEffort">Reasoning effort level to use for the model. CAPI values are model-defined and validated against the selected model; BYOK providers may define additional values. "none" disables reasoning. Pass null to clear any session effort override and fall back to the model's default. When omitted, the session's current effort is kept.</param>
     /// <param name="reasoningSummary">Reasoning summary mode to request for supported model clients.</param>
     /// <param name="verbosity">Output verbosity level to request for supported models.</param>
     /// <param name="modelCapabilities">Override individual model capabilities resolved by the runtime.</param>
@@ -35492,6 +39927,7 @@ public sealed class ModelApi
     /// <param name="deviceManagedModel">Model required by device-managed policy, when configured.</param>
     /// <param name="serverManagedModel">Model required by server-managed policy, when configured.</param>
     /// <param name="policyHelperModel">Startup default model from the enterprise policy helper, when configured. Weakest of the managed sources: it applies only when neither device nor server policy names a model, and an explicit user selection still wins.</param>
+    /// <param name="autoTier">Effective default Auto routing preference from user and managed settings. Applies only to fresh sessions and never replaces a per-session selection.</param>
     /// <param name="repoModel">Model selected by repository settings, when configured.</param>
     /// <param name="repoReasoningEffort">Reasoning effort selected by repository settings, when configured.</param>
     /// <param name="repoContextTier">Context tier selected by repository settings, when configured.</param>
@@ -35500,11 +39936,11 @@ public sealed class ModelApi
     /// <param name="deferredResume">Whether the overlay is being applied while resuming a deferred session.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>The model identifier active on the session after the switch.</returns>
-    internal async Task<ModelSwitchToResult> ApplyStartupOverlayAsync(string? deviceManagedModel = null, string? serverManagedModel = null, string? policyHelperModel = null, string? repoModel = null, string? repoReasoningEffort = null, string? repoContextTier = null, string? repoAutoTier = null, string? cliModel = null, bool? deferredResume = null, CancellationToken cancellationToken = default)
+    internal async Task<ModelSwitchToResult> ApplyStartupOverlayAsync(string? deviceManagedModel = null, string? serverManagedModel = null, string? policyHelperModel = null, AutoTier? autoTier = null, string? repoModel = null, string? repoReasoningEffort = null, string? repoContextTier = null, string? repoAutoTier = null, string? cliModel = null, bool? deferredResume = null, CancellationToken cancellationToken = default)
     {
         _session.ThrowIfDisposed();
 
-        var request = new ModelApplyStartupOverlayRequest { SessionId = _session.SessionId, DeviceManagedModel = deviceManagedModel, ServerManagedModel = serverManagedModel, PolicyHelperModel = policyHelperModel, RepoModel = repoModel, RepoReasoningEffort = repoReasoningEffort, RepoContextTier = repoContextTier, RepoAutoTier = repoAutoTier, CliModel = cliModel, DeferredResume = deferredResume };
+        var request = new ModelApplyStartupOverlayRequest { SessionId = _session.SessionId, DeviceManagedModel = deviceManagedModel, ServerManagedModel = serverManagedModel, PolicyHelperModel = policyHelperModel, AutoTier = autoTier, RepoModel = repoModel, RepoReasoningEffort = repoReasoningEffort, RepoContextTier = repoContextTier, RepoAutoTier = repoAutoTier, CliModel = cliModel, DeferredResume = deferredResume };
         return await CopilotClient.InvokeRpcAsync<ModelSwitchToResult>(_session.Rpc, "session.model.applyStartupOverlay", [request], cancellationToken);
     }
 
@@ -35547,7 +39983,7 @@ public sealed class ModelApi
 }
 
 /// <summary>Provides session-scoped Mode APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ModeApi
 {
     private readonly CopilotSession _session;
@@ -35593,7 +40029,7 @@ public sealed class ModeApi
 }
 
 /// <summary>Provides session-scoped Name APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class NameApi
 {
     private readonly CopilotSession _session;
@@ -35641,7 +40077,7 @@ public sealed class NameApi
 }
 
 /// <summary>Provides session-scoped Plan APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PlanApi
 {
     private readonly CopilotSession _session;
@@ -35708,7 +40144,7 @@ public sealed class PlanApi
 }
 
 /// <summary>Provides session-scoped Workspaces APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class WorkspacesApi
 {
     private readonly CopilotSession _session;
@@ -35970,7 +40406,7 @@ public sealed class WorkspacesApi
 }
 
 /// <summary>Provides session-scoped AutopilotObjective APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AutopilotObjectiveApi
 {
     private readonly CopilotSession _session;
@@ -35993,7 +40429,7 @@ public sealed class AutopilotObjectiveApi
 }
 
 /// <summary>Provides session-scoped Completions APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CompletionsApi
 {
     private readonly CopilotSession _session;
@@ -36030,7 +40466,7 @@ public sealed class CompletionsApi
 }
 
 /// <summary>Provides session-scoped Instructions APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class InstructionsApi
 {
     private readonly CopilotSession _session;
@@ -36050,10 +40486,43 @@ public sealed class InstructionsApi
         var request = new SessionInstructionsGetSourcesRequest { SessionId = _session.SessionId };
         return await CopilotClient.InvokeRpcAsync<InstructionsGetSourcesResult>(_session.Rpc, "session.instructions.getSources", [request], cancellationToken);
     }
+
+    /// <summary>Invalidates cached custom-instruction discovery so subsequent turns and source reads observe instruction files currently on disk.</summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    public async Task ReloadAsync(CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var request = new SessionInstructionsReloadRequest { SessionId = _session.SessionId };
+        await CopilotClient.InvokeRpcAsync(_session.Rpc, "session.instructions.reload", [request], cancellationToken);
+    }
+}
+
+/// <summary>Provides session-scoped Customizations APIs.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class CustomizationsApi
+{
+    private readonly CopilotSession _session;
+
+    internal CustomizationsApi(CopilotSession session)
+    {
+        _session = session;
+    }
+
+    /// <summary>Reloads all repository and user customizations for the active session: instructions, plugins and their MCP servers and hooks, custom agents, extensions, and skills. Returns diagnostics from the final skill reload.</summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Diagnostics from reloading skill definitions, with warnings and errors as separate lists.</returns>
+    public async Task<SkillsLoadDiagnostics> ReloadAsync(CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var request = new SessionCustomizationsReloadRequest { SessionId = _session.SessionId };
+        return await CopilotClient.InvokeRpcAsync<SkillsLoadDiagnostics>(_session.Rpc, "session.customizations.reload", [request], cancellationToken);
+    }
 }
 
 /// <summary>Provides session-scoped Fleet APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class FleetApi
 {
     private readonly CopilotSession _session;
@@ -36080,7 +40549,7 @@ public sealed class FleetApi
 }
 
 /// <summary>Provides session-scoped Agent APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class AgentApi
 {
     private readonly CopilotSession _session;
@@ -36163,7 +40632,7 @@ public sealed class AgentApi
 }
 
 /// <summary>Provides session-scoped Tasks APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TasksApi
 {
     private readonly CopilotSession _session;
@@ -36352,7 +40821,7 @@ public sealed class TasksApi
 }
 
 /// <summary>Provides session-scoped Skills APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SkillsApi
 {
     private readonly CopilotSession _session;
@@ -36431,7 +40900,7 @@ public sealed class SkillsApi
 }
 
 /// <summary>Provides session-scoped Mcp APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpApi
 {
     private readonly CopilotSession _session;
@@ -36688,7 +41157,7 @@ public sealed class McpApi
 }
 
 /// <summary>Provides session-scoped McpOauth APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpOauthApi
 {
     private readonly CopilotSession _session;
@@ -36773,7 +41242,7 @@ public sealed class McpOauthApi
 }
 
 /// <summary>Provides session-scoped McpHeaders APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpHeadersApi
 {
     private readonly CopilotSession _session;
@@ -36800,7 +41269,7 @@ public sealed class McpHeadersApi
 }
 
 /// <summary>Provides session-scoped McpApps APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpAppsApi
 {
     private readonly CopilotSession _session;
@@ -36896,7 +41365,7 @@ public sealed class McpAppsApi
 }
 
 /// <summary>Provides session-scoped McpResources APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class McpResourcesApi
 {
     private readonly CopilotSession _session;
@@ -36950,8 +41419,231 @@ public sealed class McpResourcesApi
     }
 }
 
+/// <summary>Provides session-scoped Diagnostics APIs.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class DiagnosticsApi
+{
+    private readonly CopilotSession _session;
+
+    internal DiagnosticsApi(CopilotSession session)
+    {
+        _session = session;
+    }
+
+    /// <summary>Patches configured session diagnostic sources without restarting their producers. Setting a source level to off clears its retained diagnostics and invalidates cursors selecting that source.</summary>
+    /// <param name="sources">Sources to configure. At least one supported source must be supplied.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Per-source session diagnostics configuration.</returns>
+    public async Task<DiagnosticsConfiguration> ConfigureAsync(DiagnosticSourcesConfiguration sources, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(sources);
+        _session.ThrowIfDisposed();
+
+        var request = new DiagnosticsConfigureRequest { SessionId = _session.SessionId, Sources = sources };
+        return await CopilotClient.InvokeRpcAsync<DiagnosticsConfiguration>(_session.Rpc, "session.diagnostics.configure", [request], cancellationToken);
+    }
+
+    /// <summary>Reads a bounded batch of retained session diagnostics for the selected sources. Records are never consumed and each reader advances independently through its opaque cursor.</summary>
+    /// <param name="sources">Nonempty selection of sources to read. Each source may be listed once.</param>
+    /// <param name="cursor">Opaque cursor returned by an earlier read. Omit to start at the oldest retained record.</param>
+    /// <param name="max">Maximum number of records to return, from 1 through 500. Omit for 100.</param>
+    /// <param name="waitMs">Maximum time in milliseconds to wait for a new record, from 0 through 30000.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>One cursor-addressed page of retained session diagnostics.</returns>
+    public async Task<DiagnosticsReadResult> ReadAsync(IList<DiagnosticSource> sources, string? cursor = null, long? max = null, int? waitMs = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(sources);
+        _session.ThrowIfDisposed();
+
+        var request = new DiagnosticsReadRequest { SessionId = _session.SessionId, Sources = sources, Cursor = cursor, Max = max, WaitMs = waitMs };
+        return await CopilotClient.InvokeRpcAsync<DiagnosticsReadResult>(_session.Rpc, "session.diagnostics.read", [request], cancellationToken);
+    }
+}
+
+/// <summary>Provides session-scoped Connectors APIs.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ConnectorsApi
+{
+    private readonly CopilotSession _session;
+
+    internal ConnectorsApi(CopilotSession session)
+    {
+        _session = session;
+    }
+
+    /// <summary>Returns feature availability and bounded polling limits for the EXPERIMENTAL session connector API. This method never performs a Connector service request.</summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Feature detection and hard polling limits for the EXPERIMENTAL session connector API.</returns>
+    public async Task<ConnectorCapabilities> GetCapabilitiesAsync(CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var request = new SessionConnectorsGetCapabilitiesRequest { SessionId = _session.SessionId };
+        return await CopilotClient.InvokeRpcAsync<ConnectorCapabilities>(_session.Rpc, "session.connectors.getCapabilities", [request], cancellationToken);
+    }
+
+    /// <summary>Returns authoritative session Connector state from current availability, pinned account selection, cached catalog, and live MCP projection without performing a Connector service request.</summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Authoritative session connector state. Account IDs are opaque routing identifiers and credentials are never included.</returns>
+    public async Task<ConnectorStatus> GetStatusAsync(CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var request = new SessionConnectorsGetStatusRequest { SessionId = _session.SessionId };
+        return await CopilotClient.InvokeRpcAsync<ConnectorStatus>(_session.Rpc, "session.connectors.getStatus", [request], cancellationToken);
+    }
+
+    /// <summary>Returns the cached Connector catalog for the pinned opaque account selection, fetching it only when this session has no cached catalog.</summary>
+    /// <param name="accountId">Opaque account selection ID previously returned by an account discovery API.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Validated Connector catalog snapshot cached by the session.</returns>
+    public async Task<ConnectorCatalogResult> ListAsync(string accountId, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(accountId);
+        _session.ThrowIfDisposed();
+
+        var request = new ConnectorAccountRequest { SessionId = _session.SessionId, AccountId = accountId };
+        return await CopilotClient.InvokeRpcAsync<ConnectorCatalogResult>(_session.Rpc, "session.connectors.list", [request], cancellationToken);
+    }
+
+    /// <summary>Refreshes and validates the Connector catalog for the pinned opaque account selection.</summary>
+    /// <param name="accountId">Opaque account selection ID previously returned by an account discovery API.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Validated Connector catalog snapshot cached by the session.</returns>
+    public async Task<ConnectorCatalogResult> RefreshAsync(string accountId, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(accountId);
+        _session.ThrowIfDisposed();
+
+        var request = new ConnectorAccountRequest { SessionId = _session.SessionId, AccountId = accountId };
+        return await CopilotClient.InvokeRpcAsync<ConnectorCatalogResult>(_session.Rpc, "session.connectors.refresh", [request], cancellationToken);
+    }
+
+    /// <summary>Initiates an idempotent Connector connection request without opening a browser. Returns connected when the service is immediately authoritative, consent_required with a validated URL, or pending with an opaque continuation ID.</summary>
+    /// <param name="accountId">Opaque account selection ID. It must match the account already pinned to the session, if any.</param>
+    /// <param name="connectorName">Canonical Connector name from the current catalog.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Typed result of initiating or continuing a Connector connection.</returns>
+    public async Task<ConnectorConnectResult> ConnectAsync(string accountId, string connectorName, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(accountId);
+        ArgumentNullException.ThrowIfNull(connectorName);
+        _session.ThrowIfDisposed();
+
+        var request = new ConnectorConnectRequest { SessionId = _session.SessionId, AccountId = accountId, ConnectorName = connectorName };
+        return await CopilotClient.InvokeRpcAsync<ConnectorConnectResult>(_session.Rpc, "session.connectors.connect", [request], cancellationToken);
+    }
+
+    /// <summary>Re-initiates an idempotent Connector connection request without browser or UI effects, with the same typed outcomes as connect.</summary>
+    /// <param name="accountId">Opaque account selection ID. It must match the account already pinned to the session, if any.</param>
+    /// <param name="connectorName">Canonical Connector name from the current catalog.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Typed result of initiating or continuing a Connector connection.</returns>
+    public async Task<ConnectorConnectResult> ReconnectAsync(string accountId, string connectorName, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(accountId);
+        ArgumentNullException.ThrowIfNull(connectorName);
+        _session.ThrowIfDisposed();
+
+        var request = new ConnectorConnectRequest { SessionId = _session.SessionId, AccountId = accountId, ConnectorName = connectorName };
+        return await CopilotClient.InvokeRpcAsync<ConnectorConnectResult>(_session.Rpc, "session.connectors.reconnect", [request], cancellationToken);
+    }
+
+    /// <summary>Continues a pending Connector connection with caller-supplied attempt, interval, and deadline bounds. The runtime never opens the returned consent URL.</summary>
+    /// <param name="continuationId">Opaque continuation ID returned by connect, reconnect, or an earlier continuation.</param>
+    /// <param name="maxAttempts">Maximum catalog requests made by this call. Must be between one and the capability limit.</param>
+    /// <param name="pollIntervalMs">Delay in milliseconds between attempts. Must not exceed the capability limit.</param>
+    /// <param name="deadlineMs">Maximum wall-clock duration in milliseconds for this call. Must be between one and the capability limit.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Typed result of initiating or continuing a Connector connection.</returns>
+    public async Task<ConnectorConnectResult> ContinueConnectionAsync(string continuationId, int maxAttempts, int pollIntervalMs, int deadlineMs, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(continuationId);
+        _session.ThrowIfDisposed();
+
+        var request = new ConnectorContinueRequest { SessionId = _session.SessionId, ContinuationId = continuationId, MaxAttempts = maxAttempts, PollIntervalMs = pollIntervalMs, DeadlineMs = deadlineMs };
+        return await CopilotClient.InvokeRpcAsync<ConnectorConnectResult>(_session.Rpc, "session.connectors.continueConnection", [request], cancellationToken);
+    }
+
+    /// <summary>Disconnects one Connector for the pinned opaque account selection, refreshes the authoritative catalog, and removes its session-owned MCP projection.</summary>
+    /// <param name="accountId">Opaque account selection ID. It must match the account already pinned to the session, if any.</param>
+    /// <param name="connectorName">Canonical Connector name from the current catalog.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Authoritative result after disconnect and MCP reconciliation.</returns>
+    public async Task<ConnectorDisconnectResult> DisconnectAsync(string accountId, string connectorName, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(accountId);
+        ArgumentNullException.ThrowIfNull(connectorName);
+        _session.ThrowIfDisposed();
+
+        var request = new ConnectorConnectRequest { SessionId = _session.SessionId, AccountId = accountId, ConnectorName = connectorName };
+        return await CopilotClient.InvokeRpcAsync<ConnectorDisconnectResult>(_session.Rpc, "session.connectors.disconnect", [request], cancellationToken);
+    }
+
+    /// <summary>Reconciles the authoritative cached or freshly requested Connector catalog into the session Connector MCP projection and returns live status.</summary>
+    /// <param name="accountId">Opaque account selection ID. It must match the account already pinned to the session, if any.</param>
+    /// <param name="refreshCatalog">When true, refresh the catalog before reconciling. A disabled Connector API performs no service request.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Authoritative session connector state. Account IDs are opaque routing identifiers and credentials are never included.</returns>
+    public async Task<ConnectorStatus> ReconcileAsync(string accountId, bool? refreshCatalog = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(accountId);
+        _session.ThrowIfDisposed();
+
+        var request = new ConnectorReconcileRequest { SessionId = _session.SessionId, AccountId = accountId, RefreshCatalog = refreshCatalog };
+        return await CopilotClient.InvokeRpcAsync<ConnectorStatus>(_session.Rpc, "session.connectors.reconcile", [request], cancellationToken);
+    }
+
+    /// <summary>Reconciles the authoritative Connector catalog into the session MCP projection during startup with a bounded deadline and fail-closed cleanup.</summary>
+    /// <param name="accountId">Opaque account selection ID previously returned by an account discovery API.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Authoritative session connector state. Account IDs are opaque routing identifiers and credentials are never included.</returns>
+    internal async Task<ConnectorStatus> ReconcileForStartupAsync(string accountId, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(accountId);
+        _session.ThrowIfDisposed();
+
+        var request = new ConnectorAccountRequest { SessionId = _session.SessionId, AccountId = accountId };
+        return await CopilotClient.InvokeRpcAsync<ConnectorStatus>(_session.Rpc, "session.connectors.reconcileForStartup", [request], cancellationToken);
+    }
+
+    /// <summary>Removes the runtime-owned Connector MCP projection without changing service-side connections.</summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Authoritative session connector state. Account IDs are opaque routing identifiers and credentials are never included.</returns>
+    internal async Task<ConnectorStatus> WithdrawProjectionAsync(CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var request = new SessionConnectorsWithdrawProjectionRequest { SessionId = _session.SessionId };
+        return await CopilotClient.InvokeRpcAsync<ConnectorStatus>(_session.Rpc, "session.connectors.withdrawProjection", [request], cancellationToken);
+    }
+}
+
+/// <summary>Provides session-scoped ManagedSettings APIs.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class ManagedSettingsApi
+{
+    private readonly CopilotSession _session;
+
+    internal ManagedSettingsApi(CopilotSession session)
+    {
+        _session = session;
+    }
+
+    /// <summary>Waits for the live session's in-flight managed-settings application, then returns the retained effective snapshot used by runtime enforcement and by `session.managed_settings_resolved`. It does not perform another account, device, or server resolution, and rejects when resolution has not produced a snapshot.</summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Enterprise managed-settings resolution: the effective managed settings the session applied and which channels contributed, so SDK clients can show users what is enterprise-managed. Fires whenever managed policy is (re)applied — at session start, on resume, and on account switch. This is an ephemeral live snapshot (delivered to subscribers but not persisted to the session event log), because at session start it resolves before `session.start` is emitted. Device values take precedence over server values, then the policy helper, per ordinary key, while permissions compose restrictively across device, server, policy-helper, and SDK-client layers. The account-scoped `getManagedSettings()` API does not include session-local client injection. Marked experimental while the managed-settings surface stabilizes.</returns>
+    public async Task<ManagedSettingsResolvedData> GetAsync(CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var request = new SessionManagedSettingsGetRequest { SessionId = _session.SessionId };
+        return await CopilotClient.InvokeRpcAsync<ManagedSettingsResolvedData>(_session.Rpc, "session.managedSettings.get", [request], cancellationToken);
+    }
+}
+
 /// <summary>Provides session-scoped Plugins APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PluginsApi
 {
     private readonly CopilotSession _session;
@@ -36961,7 +41653,7 @@ public sealed class PluginsApi
         _session = session;
     }
 
-    /// <summary>Lists plugins installed for the session.</summary>
+    /// <summary>Lists globally installed, live, built-in, and enterprise-managed desired plugins using the live session's authoritative account, working directory, and retained managed policy.</summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Plugins installed for the session, with their enabled state and version metadata.</returns>
     public async Task<PluginList> ListAsync(CancellationToken cancellationToken = default)
@@ -36970,6 +41662,69 @@ public sealed class PluginsApi
 
         var request = new SessionPluginsListRequest { SessionId = _session.SessionId };
         return await CopilotClient.InvokeRpcAsync<PluginList>(_session.Rpc, "session.plugins.list", [request], cancellationToken);
+    }
+
+    /// <summary>Installs a plugin using the live session's authoritative account, working directory, and retained managed policy.</summary>
+    /// <param name="source">Plugin install spec. Accepts the same forms as the CLI: "plugin@marketplace" (marketplace install), "owner/repo" or "owner/repo:subpath" (GitHub direct), an http/https/ssh URL, or a local path. Direct (non-marketplace) installs are deprecated and will produce a deprecationWarning in the result.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Result of installing a plugin.</returns>
+    public async Task<PluginInstallResult> InstallAsync(string source, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        _session.ThrowIfDisposed();
+
+        var request = new SessionPluginsInstallRequest { SessionId = _session.SessionId, Source = source };
+        return await CopilotClient.InvokeRpcAsync<PluginInstallResult>(_session.Rpc, "session.plugins.install", [request], cancellationToken);
+    }
+
+    /// <summary>Uninstalls a plugin when permitted by the live session's retained managed policy.</summary>
+    /// <param name="name">Plugin name or "plugin@marketplace" spec to uninstall. When ambiguous, prefer the fully-qualified spec.</param>
+    /// <param name="directSourceId">Stable source identity for a direct (non-marketplace) install. Disambiguates uninstall when multiple installed plugins share the same name.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    public async Task UninstallAsync(string name, string? directSourceId = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        _session.ThrowIfDisposed();
+
+        var request = new PluginsUninstallRequestWithSession { SessionId = _session.SessionId, Name = name, DirectSourceId = directSourceId };
+        await CopilotClient.InvokeRpcAsync(_session.Rpc, "session.plugins.uninstall", [request], cancellationToken);
+    }
+
+    /// <summary>Updates an installed plugin using the live session's authoritative account, working directory, and retained managed policy.</summary>
+    /// <param name="name">Plugin name or "plugin@marketplace" spec to update.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Result of updating a single plugin.</returns>
+    public async Task<PluginUpdateResult> UpdateAsync(string name, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        _session.ThrowIfDisposed();
+
+        var request = new PluginsUpdateRequestWithSession { SessionId = _session.SessionId, Name = name };
+        return await CopilotClient.InvokeRpcAsync<PluginUpdateResult>(_session.Rpc, "session.plugins.update", [request], cancellationToken);
+    }
+
+    /// <summary>Enables installed plugins when permitted by the live session's retained managed policy.</summary>
+    /// <param name="names">Plugin names or "plugin@marketplace" specs to enable. Unknown names are ignored. Non-marketplace direct installs are always enabled and cannot be toggled via this API.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    public async Task EnableAsync(IList<string> names, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(names);
+        _session.ThrowIfDisposed();
+
+        var request = new SessionPluginsEnableRequest { SessionId = _session.SessionId, Names = names };
+        await CopilotClient.InvokeRpcAsync(_session.Rpc, "session.plugins.enable", [request], cancellationToken);
+    }
+
+    /// <summary>Disables installed plugins when permitted by the live session's retained managed policy.</summary>
+    /// <param name="names">Plugin names or "plugin@marketplace" specs to disable. Unknown names are ignored. Non-marketplace direct installs cannot be disabled via this API; uninstall them instead. Plugin-owned MCP servers are stopped in active sessions immediately; other plugin contributions remain available until each session reloads plugins.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    public async Task DisableAsync(IList<string> names, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(names);
+        _session.ThrowIfDisposed();
+
+        var request = new SessionPluginsDisableRequest { SessionId = _session.SessionId, Names = names };
+        await CopilotClient.InvokeRpcAsync(_session.Rpc, "session.plugins.disable", [request], cancellationToken);
     }
 
     /// <summary>Reloads the session's plugin set, refreshing MCP servers, custom agents, hooks, and skills cache so SDK-driven changes via `server.plugins.*` take effect immediately.</summary>
@@ -36982,10 +41737,92 @@ public sealed class PluginsApi
         var rpcRequest = new SessionPluginsReloadRequestWithSession { SessionId = _session.SessionId, ReloadMcp = request?.ReloadMcp, ReloadCustomAgents = request?.ReloadCustomAgents, ReloadHooks = request?.ReloadHooks, ReloadExtensions = request?.ReloadExtensions, DeferRepoHooks = request?.DeferRepoHooks };
         await CopilotClient.InvokeRpcAsync(_session.Rpc, "session.plugins.reload", [rpcRequest], cancellationToken);
     }
+
+    /// <summary>Marketplaces APIs.</summary>
+    public PluginsMarketplacesApi Marketplaces =>
+        field ??
+        Interlocked.CompareExchange(ref field, new(_session), null) ??
+        field;
+}
+
+/// <summary>Provides session-scoped PluginsMarketplaces APIs.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public sealed class PluginsMarketplacesApi
+{
+    private readonly CopilotSession _session;
+
+    internal PluginsMarketplacesApi(CopilotSession session)
+    {
+        _session = session;
+    }
+
+    /// <summary>Lists registered and enterprise-managed desired marketplaces using the live session's retained policy.</summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>All registered marketplaces, including built-in defaults.</returns>
+    public async Task<MarketplaceListResult> ListAsync(CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var request = new SessionPluginsMarketplacesListRequest { SessionId = _session.SessionId };
+        return await CopilotClient.InvokeRpcAsync<MarketplaceListResult>(_session.Rpc, "session.plugins.marketplaces.list", [request], cancellationToken);
+    }
+
+    /// <summary>Adds a marketplace when permitted by the live session's retained managed policy.</summary>
+    /// <param name="source">Marketplace source. Accepts the same forms as the CLI: "owner/repo" or "owner/repo#ref" (GitHub), an http/https/ssh URL (optionally with #ref), a git scp-style URL (user@host:path), or a local path. The marketplace's own name (from its manifest) is used as the registration key.</param>
+    /// <param name="workingDirectory">Working directory used to resolve relative local paths in `source`. Defaults to the server's current working directory.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Result of registering a new marketplace.</returns>
+    public async Task<MarketplaceAddResult> AddAsync(string source, string? workingDirectory = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        _session.ThrowIfDisposed();
+
+        var request = new PluginsMarketplacesAddRequestWithSession { SessionId = _session.SessionId, Source = source, WorkingDirectory = workingDirectory };
+        return await CopilotClient.InvokeRpcAsync<MarketplaceAddResult>(_session.Rpc, "session.plugins.marketplaces.add", [request], cancellationToken);
+    }
+
+    /// <summary>Removes a marketplace when permitted by the live session's retained managed policy.</summary>
+    /// <param name="name">Marketplace name to remove.</param>
+    /// <param name="force">When true, also uninstall every plugin sourced from this marketplace. When false (default), removal is a no-op if any plugin from this marketplace is installed and the dependent plugin names are returned in the result.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Outcome of the remove attempt, including dependent-plugin info when applicable.</returns>
+    public async Task<MarketplaceRemoveResult> RemoveAsync(string name, bool? force = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        _session.ThrowIfDisposed();
+
+        var request = new PluginsMarketplacesRemoveRequestWithSession { SessionId = _session.SessionId, Name = name, Force = force };
+        return await CopilotClient.InvokeRpcAsync<MarketplaceRemoveResult>(_session.Rpc, "session.plugins.marketplaces.remove", [request], cancellationToken);
+    }
+
+    /// <summary>Browses a marketplace resolved through the live session's working directory and retained managed policy.</summary>
+    /// <param name="name">Marketplace name to browse.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Plugins advertised by the marketplace.</returns>
+    public async Task<MarketplaceBrowseResult> BrowseAsync(string name, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        _session.ThrowIfDisposed();
+
+        var request = new PluginsMarketplacesBrowseRequestWithSession { SessionId = _session.SessionId, Name = name };
+        return await CopilotClient.InvokeRpcAsync<MarketplaceBrowseResult>(_session.Rpc, "session.plugins.marketplaces.browse", [request], cancellationToken);
+    }
+
+    /// <summary>Refreshes marketplaces resolved through the live session's working directory and retained managed policy.</summary>
+    /// <param name="request">Optional marketplace name; omit to refresh all.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Result of refreshing one or more marketplace catalogs.</returns>
+    public async Task<MarketplaceRefreshResult> RefreshAsync(SessionPluginsMarketplacesRefreshRequest? request = null, CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var rpcRequest = new SessionPluginsMarketplacesRefreshRequestWithSession { SessionId = _session.SessionId, Name = request?.Name };
+        return await CopilotClient.InvokeRpcAsync<MarketplaceRefreshResult>(_session.Rpc, "session.plugins.marketplaces.refresh", [rpcRequest], cancellationToken);
+    }
 }
 
 /// <summary>Provides session-scoped Provider APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ProviderApi
 {
     private readonly CopilotSession _session;
@@ -37019,10 +41856,23 @@ public sealed class ProviderApi
         var request = new ProviderAddRequest { SessionId = _session.SessionId, Providers = providers, Models = models };
         return await CopilotClient.InvokeRpcAsync<ProviderAddResult>(_session.Rpc, "session.provider.add", [request], cancellationToken);
     }
+
+    /// <summary>Atomically updates the session's BYOK provider and model registry by applying the supplied snapshot, replacing existing entries, updating models, or removing entries absent from the snapshot.</summary>
+    /// <param name="providers">Named BYOK provider connection snapshot. Providers absent from this list are removed.</param>
+    /// <param name="models">BYOK model definition snapshot. Models absent from this list are removed.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>The selectable model entries and selection ids synthesized for the synchronized BYOK models.</returns>
+    public async Task<ProviderSyncResult> SyncAsync(IList<NamedProviderConfig>? providers = null, IList<ProviderModelConfig>? models = null, CancellationToken cancellationToken = default)
+    {
+        _session.ThrowIfDisposed();
+
+        var request = new ProviderSyncRequest { SessionId = _session.SessionId, Providers = providers, Models = models };
+        return await CopilotClient.InvokeRpcAsync<ProviderSyncResult>(_session.Rpc, "session.provider.sync", [request], cancellationToken);
+    }
 }
 
 /// <summary>Provides session-scoped Options APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class OptionsApi
 {
     private readonly CopilotSession _session;
@@ -37061,6 +41911,7 @@ public sealed class OptionsApi
     /// <param name="envValueMode">How env values are passed to MCP servers (`direct` inlines literal values; `indirect` resolves at launch).</param>
     /// <param name="allowAllMcpServerInstructions">Whether to include instructions from every MCP server in the system prompt instead of only allowlisted servers.</param>
     /// <param name="skillDirectories">Additional directories to search for skills.</param>
+    /// <param name="ignoredSkillsLocations">Skill scan directories and descendants excluded from discovery. Supports `~`-relative paths.</param>
     /// <param name="includedBuiltinSkills">Built-in skill names to include in this session. When specified, only these runtime-bundled skills are available. Skills from other sources with the same name remain available. Set to null to remove the allowlist restriction.</param>
     /// <param name="disabledSkills">Skill IDs that should be excluded from this session.</param>
     /// <param name="enableOnDemandInstructionDiscovery">Whether to discover custom instructions on demand after successful file views (AGENTS.md / CLAUDE.md / .github/copilot-instructions.md surfacing). Combined with `skipCustomInstructions`.</param>
@@ -37094,17 +41945,17 @@ public sealed class OptionsApi
     /// <param name="sessionLimits">Optional session limits. Pass null to clear the session limits.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Indicates whether the session options patch was applied successfully.</returns>
-    public async Task<SessionUpdateOptionsResult> UpdateAsync(string? model = null, ModelCapabilitiesOverride? modelCapabilitiesOverrides = null, string? reasoningEffort = null, OptionsUpdateReasoningSummary? reasoningSummary = null, Verbosity? verbosity = null, string? clientName = null, string? lspClientName = null, string? integrationId = null, IDictionary<string, bool>? featureFlags = null, bool? isExperimentalMode = null, ProviderConfig? provider = null, CapiSessionOptions? capi = null, string? workingDirectory = null, IList<string>? availableTools = null, IList<string>? excludedTools = null, IList<string>? includedBuiltinAgents = null, IList<string>? excludedBuiltinAgents = null, OptionsUpdateToolFilterPrecedence? toolFilterPrecedence = null, bool? enableScriptSafety = null, ShellOptions? shell = null, string? shellInitProfile = null, IList<string>? shellProcessFlags = null, SandboxConfig? sandboxConfig = null, SandboxConfigSource? sandboxConfigSource = null, bool? logInteractiveShells = null, OptionsUpdateEnvValueMode? envValueMode = null, bool? allowAllMcpServerInstructions = null, IList<string>? skillDirectories = null, IList<string>? includedBuiltinSkills = null, IList<string>? disabledSkills = null, bool? enableOnDemandInstructionDiscovery = null, long? maxInlineBinaryBytes = null, IList<SessionInstalledPlugin>? installedPlugins = null, bool? customAgentsLocalOnly = null, bool? suppressCustomAgentPrompt = null, bool? skipCustomInstructions = null, IList<string>? disabledInstructionSources = null, bool? coauthorEnabled = null, string? trajectoryFile = null, bool? enableStreaming = null, string? copilotUrl = null, bool? askUserDisabled = null, bool? continueOnAutoMode = null, bool? runningInInteractiveMode = null, bool? enableReasoningSummaries = null, string? agentContext = null, string? eventsLogDirectory = null, bool? eventsLogIncludesSubagents = null, IList<OptionsUpdateAdditionalContentExclusionPolicy>? additionalContentExclusionPolicies = null, bool? manageScheduleEnabled = null, IList<SessionCapability>? sessionCapabilities = null, bool? skipEmbeddingRetrieval = null, string? organizationCustomInstructions = null, bool? enableFileHooks = null, bool? enableHostGitOperations = null, bool? enableSessionStore = null, bool? enableSkills = null, OptionsUpdateContextTier? contextTier = null, SessionLimitsConfig? sessionLimits = null, CancellationToken cancellationToken = default)
+    public async Task<SessionUpdateOptionsResult> UpdateAsync(string? model = null, ModelCapabilitiesOverride? modelCapabilitiesOverrides = null, string? reasoningEffort = null, OptionsUpdateReasoningSummary? reasoningSummary = null, Verbosity? verbosity = null, string? clientName = null, string? lspClientName = null, string? integrationId = null, IDictionary<string, bool>? featureFlags = null, bool? isExperimentalMode = null, ProviderConfig? provider = null, CapiSessionOptions? capi = null, string? workingDirectory = null, IList<string>? availableTools = null, IList<string>? excludedTools = null, IList<string>? includedBuiltinAgents = null, IList<string>? excludedBuiltinAgents = null, OptionsUpdateToolFilterPrecedence? toolFilterPrecedence = null, bool? enableScriptSafety = null, ShellOptions? shell = null, string? shellInitProfile = null, IList<string>? shellProcessFlags = null, SandboxConfig? sandboxConfig = null, SandboxConfigSource? sandboxConfigSource = null, bool? logInteractiveShells = null, OptionsUpdateEnvValueMode? envValueMode = null, bool? allowAllMcpServerInstructions = null, IList<string>? skillDirectories = null, IList<string>? ignoredSkillsLocations = null, IList<string>? includedBuiltinSkills = null, IList<string>? disabledSkills = null, bool? enableOnDemandInstructionDiscovery = null, long? maxInlineBinaryBytes = null, IList<SessionInstalledPlugin>? installedPlugins = null, bool? customAgentsLocalOnly = null, bool? suppressCustomAgentPrompt = null, bool? skipCustomInstructions = null, IList<string>? disabledInstructionSources = null, bool? coauthorEnabled = null, string? trajectoryFile = null, bool? enableStreaming = null, string? copilotUrl = null, bool? askUserDisabled = null, bool? continueOnAutoMode = null, bool? runningInInteractiveMode = null, bool? enableReasoningSummaries = null, string? agentContext = null, string? eventsLogDirectory = null, bool? eventsLogIncludesSubagents = null, IList<OptionsUpdateAdditionalContentExclusionPolicy>? additionalContentExclusionPolicies = null, bool? manageScheduleEnabled = null, IList<SessionCapability>? sessionCapabilities = null, bool? skipEmbeddingRetrieval = null, string? organizationCustomInstructions = null, bool? enableFileHooks = null, bool? enableHostGitOperations = null, bool? enableSessionStore = null, bool? enableSkills = null, OptionsUpdateContextTier? contextTier = null, SessionLimitsConfig? sessionLimits = null, CancellationToken cancellationToken = default)
     {
         _session.ThrowIfDisposed();
 
-        var request = new SessionUpdateOptionsParams { SessionId = _session.SessionId, Model = model, ModelCapabilitiesOverrides = modelCapabilitiesOverrides, ReasoningEffort = reasoningEffort, ReasoningSummary = reasoningSummary, Verbosity = verbosity, ClientName = clientName, LspClientName = lspClientName, IntegrationId = integrationId, FeatureFlags = featureFlags, IsExperimentalMode = isExperimentalMode, Provider = provider, Capi = capi, WorkingDirectory = workingDirectory, AvailableTools = availableTools, ExcludedTools = excludedTools, IncludedBuiltinAgents = includedBuiltinAgents, ExcludedBuiltinAgents = excludedBuiltinAgents, ToolFilterPrecedence = toolFilterPrecedence, EnableScriptSafety = enableScriptSafety, Shell = shell, ShellInitProfile = shellInitProfile, ShellProcessFlags = shellProcessFlags, SandboxConfig = sandboxConfig, SandboxConfigSource = sandboxConfigSource, LogInteractiveShells = logInteractiveShells, EnvValueMode = envValueMode, AllowAllMcpServerInstructions = allowAllMcpServerInstructions, SkillDirectories = skillDirectories, IncludedBuiltinSkills = includedBuiltinSkills, DisabledSkills = disabledSkills, EnableOnDemandInstructionDiscovery = enableOnDemandInstructionDiscovery, MaxInlineBinaryBytes = maxInlineBinaryBytes, InstalledPlugins = installedPlugins, CustomAgentsLocalOnly = customAgentsLocalOnly, SuppressCustomAgentPrompt = suppressCustomAgentPrompt, SkipCustomInstructions = skipCustomInstructions, DisabledInstructionSources = disabledInstructionSources, CoauthorEnabled = coauthorEnabled, TrajectoryFile = trajectoryFile, EnableStreaming = enableStreaming, CopilotUrl = copilotUrl, AskUserDisabled = askUserDisabled, ContinueOnAutoMode = continueOnAutoMode, RunningInInteractiveMode = runningInInteractiveMode, EnableReasoningSummaries = enableReasoningSummaries, AgentContext = agentContext, EventsLogDirectory = eventsLogDirectory, EventsLogIncludesSubagents = eventsLogIncludesSubagents, AdditionalContentExclusionPolicies = additionalContentExclusionPolicies, ManageScheduleEnabled = manageScheduleEnabled, SessionCapabilities = sessionCapabilities, SkipEmbeddingRetrieval = skipEmbeddingRetrieval, OrganizationCustomInstructions = organizationCustomInstructions, EnableFileHooks = enableFileHooks, EnableHostGitOperations = enableHostGitOperations, EnableSessionStore = enableSessionStore, EnableSkills = enableSkills, ContextTier = contextTier, SessionLimits = sessionLimits };
+        var request = new SessionUpdateOptionsParams { SessionId = _session.SessionId, Model = model, ModelCapabilitiesOverrides = modelCapabilitiesOverrides, ReasoningEffort = reasoningEffort, ReasoningSummary = reasoningSummary, Verbosity = verbosity, ClientName = clientName, LspClientName = lspClientName, IntegrationId = integrationId, FeatureFlags = featureFlags, IsExperimentalMode = isExperimentalMode, Provider = provider, Capi = capi, WorkingDirectory = workingDirectory, AvailableTools = availableTools, ExcludedTools = excludedTools, IncludedBuiltinAgents = includedBuiltinAgents, ExcludedBuiltinAgents = excludedBuiltinAgents, ToolFilterPrecedence = toolFilterPrecedence, EnableScriptSafety = enableScriptSafety, Shell = shell, ShellInitProfile = shellInitProfile, ShellProcessFlags = shellProcessFlags, SandboxConfig = sandboxConfig, SandboxConfigSource = sandboxConfigSource, LogInteractiveShells = logInteractiveShells, EnvValueMode = envValueMode, AllowAllMcpServerInstructions = allowAllMcpServerInstructions, SkillDirectories = skillDirectories, IgnoredSkillsLocations = ignoredSkillsLocations, IncludedBuiltinSkills = includedBuiltinSkills, DisabledSkills = disabledSkills, EnableOnDemandInstructionDiscovery = enableOnDemandInstructionDiscovery, MaxInlineBinaryBytes = maxInlineBinaryBytes, InstalledPlugins = installedPlugins, CustomAgentsLocalOnly = customAgentsLocalOnly, SuppressCustomAgentPrompt = suppressCustomAgentPrompt, SkipCustomInstructions = skipCustomInstructions, DisabledInstructionSources = disabledInstructionSources, CoauthorEnabled = coauthorEnabled, TrajectoryFile = trajectoryFile, EnableStreaming = enableStreaming, CopilotUrl = copilotUrl, AskUserDisabled = askUserDisabled, ContinueOnAutoMode = continueOnAutoMode, RunningInInteractiveMode = runningInInteractiveMode, EnableReasoningSummaries = enableReasoningSummaries, AgentContext = agentContext, EventsLogDirectory = eventsLogDirectory, EventsLogIncludesSubagents = eventsLogIncludesSubagents, AdditionalContentExclusionPolicies = additionalContentExclusionPolicies, ManageScheduleEnabled = manageScheduleEnabled, SessionCapabilities = sessionCapabilities, SkipEmbeddingRetrieval = skipEmbeddingRetrieval, OrganizationCustomInstructions = organizationCustomInstructions, EnableFileHooks = enableFileHooks, EnableHostGitOperations = enableHostGitOperations, EnableSessionStore = enableSessionStore, EnableSkills = enableSkills, ContextTier = contextTier, SessionLimits = sessionLimits };
         return await CopilotClient.InvokeRpcAsync<SessionUpdateOptionsResult>(_session.Rpc, "session.options.update", [request], cancellationToken);
     }
 }
 
 /// <summary>Provides session-scoped Lsp APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LspApi
 {
     private readonly CopilotSession _session;
@@ -37129,7 +41980,7 @@ public sealed class LspApi
 }
 
 /// <summary>Provides session-scoped Extensions APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ExtensionsApi
 {
     private readonly CopilotSession _session;
@@ -37199,7 +42050,7 @@ public sealed class ExtensionsApi
 }
 
 /// <summary>Provides session-scoped Tools APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ToolsApi
 {
     private readonly CopilotSession _session;
@@ -37322,7 +42173,7 @@ public sealed class ToolsApi
 }
 
 /// <summary>Provides session-scoped Commands APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class CommandsApi
 {
     private readonly CopilotSession _session;
@@ -37433,7 +42284,7 @@ public sealed class CommandsApi
 }
 
 /// <summary>Provides session-scoped Telemetry APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class TelemetryApi
 {
     private readonly CopilotSession _session;
@@ -37468,7 +42319,7 @@ public sealed class TelemetryApi
 }
 
 /// <summary>Provides session-scoped Ui APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UiApi
 {
     private readonly CopilotSession _session;
@@ -37623,7 +42474,7 @@ public sealed class UiApi
 }
 
 /// <summary>Provides session-scoped Permissions APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsApi
 {
     private readonly CopilotSession _session;
@@ -37742,8 +42593,8 @@ public sealed class PermissionsApi
         return await CopilotClient.InvokeRpcAsync<PermissionsSetRequiredResult>(_session.Rpc, "session.permissions.setRequired", [request], cancellationToken);
     }
 
-    /// <summary>Clears session-scoped tool permission approvals.</summary>
-    /// <param name="includeLocation">Whether location-scoped approvals are cleared too. Defaults to `true`.</param>
+    /// <summary>Clears session-scoped tool approvals and, for full resets, exact session-approved paths.</summary>
+    /// <param name="includeLocation">Whether location-scoped approvals and exact session-approved paths are cleared too. Defaults to `true`.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>Indicates whether the operation succeeded.</returns>
     public async Task<PermissionsResetSessionApprovalsResult> ResetSessionApprovalsAsync(bool? includeLocation = null, CancellationToken cancellationToken = default)
@@ -37793,7 +42644,7 @@ public sealed class PermissionsApi
 }
 
 /// <summary>Provides session-scoped PermissionsPaths APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsPathsApi
 {
     private readonly CopilotSession _session;
@@ -37803,9 +42654,9 @@ public sealed class PermissionsPathsApi
         _session = session;
     }
 
-    /// <summary>Returns the session's allowed directories and primary working directory.</summary>
+    /// <summary>Returns the session's recursive directory grants, exact session-approved paths, and primary working directory.</summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
-    /// <returns>Snapshot of the session's allow-listed directories and primary working directory.</returns>
+    /// <returns>Snapshot of the session's recursive directory grants, exact session-approved paths, and primary working directory.</returns>
     public async Task<PermissionPathsList> ListAsync(CancellationToken cancellationToken = default)
     {
         _session.ThrowIfDisposed();
@@ -37868,7 +42719,7 @@ public sealed class PermissionsPathsApi
 }
 
 /// <summary>Provides session-scoped PermissionsLocations APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsLocationsApi
 {
     private readonly CopilotSession _session;
@@ -37921,7 +42772,7 @@ public sealed class PermissionsLocationsApi
 }
 
 /// <summary>Provides session-scoped PermissionsFolderTrust APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsFolderTrustApi
 {
     private readonly CopilotSession _session;
@@ -37959,7 +42810,7 @@ public sealed class PermissionsFolderTrustApi
 }
 
 /// <summary>Provides session-scoped PermissionsUrls APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class PermissionsUrlsApi
 {
     private readonly CopilotSession _session;
@@ -37983,7 +42834,7 @@ public sealed class PermissionsUrlsApi
 }
 
 /// <summary>Provides session-scoped Metadata APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class MetadataApi
 {
     private readonly CopilotSession _session;
@@ -38129,7 +42980,7 @@ public sealed class MetadataApi
 }
 
 /// <summary>Provides session-scoped Settings APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class SettingsApi
 {
     private readonly CopilotSession _session;
@@ -38165,7 +43016,7 @@ public sealed class SettingsApi
 }
 
 /// <summary>Provides session-scoped ContentExclusion APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ContentExclusionApi
 {
     private readonly CopilotSession _session;
@@ -38190,7 +43041,7 @@ public sealed class ContentExclusionApi
 }
 
 /// <summary>Provides session-scoped Shell APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ShellApi
 {
     private readonly CopilotSession _session;
@@ -38259,7 +43110,7 @@ public sealed class ShellApi
 }
 
 /// <summary>Provides session-scoped History APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class HistoryApi
 {
     private readonly CopilotSession _session;
@@ -38380,7 +43231,7 @@ public sealed class HistoryApi
 }
 
 /// <summary>Provides session-scoped Queue APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class QueueApi
 {
     private readonly CopilotSession _session;
@@ -38467,6 +43318,43 @@ public sealed class QueueApi
 
         var request = new QueueUpdateTextRequest { SessionId = _session.SessionId, Id = id, Prompt = prompt, DisplayPrompt = displayPrompt };
         return await CopilotClient.InvokeRpcAsync<QueueUpdateTextResult>(_session.Rpc, "session.queue.updateText", [request], cancellationToken);
+    }
+
+    /// <summary>Atomically withdraws an unchanged user message of a local session: from the queued or steering lane while unconsumed, or from the running turn it started while the model has not answered it and nothing the user sent after it is pending. Withdrawing from the running turn interrupts that turn and removes its events from history. A client retaining the original draft may restore it only when removed is true.</summary>
+    /// <param name="messageId">Message identity returned by send, not the queue item id. Batch messages are not eligible.</param>
+    /// <param name="expectedPrompt">The prompt originally sent. A message edited since submission is not withdrawn, so an obsolete draft cannot replace the edit.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Result of withdrawing a user message.</returns>
+    public async Task<QueueWithdrawMessageResult> WithdrawMessageAsync(string messageId, string expectedPrompt, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(messageId);
+        ArgumentNullException.ThrowIfNull(expectedPrompt);
+        _session.ThrowIfDisposed();
+
+        var request = new QueueWithdrawMessageRequest { SessionId = _session.SessionId, MessageId = messageId, ExpectedPrompt = expectedPrompt };
+        return await CopilotClient.InvokeRpcAsync<QueueWithdrawMessageResult>(_session.Rpc, "session.queue.withdrawMessage", [request], cancellationToken);
+    }
+
+    /// <summary>Atomically appends text and attachments to an unchanged, unconsumed local steering message. Returns updated=false if delivery or withdrawal already claimed the message.</summary>
+    /// <param name="messageId">Message identity returned by send, not the queue item id. Only unclaimed user steering messages are eligible.</param>
+    /// <param name="expectedPrompt">Expected current prompt, including any previous appends. The runtime applies plan-mode normalization before comparing and refuses a changed message.</param>
+    /// <param name="agentMode">Mode captured at submission. Only steering messages in the same mode may be combined.</param>
+    /// <param name="prompt">Text to append after a blank line.</param>
+    /// <param name="displayPrompt">Display text to append to the existing preview after a blank line.</param>
+    /// <param name="attachments">Attachments to add after the message's existing attachments. An empty list preserves the existing attachments.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Result of editing a queued message.</returns>
+    public async Task<QueueUpdateTextResult> AppendSteeringAsync(string messageId, string expectedPrompt, SendAgentMode agentMode, string prompt, string displayPrompt, IList<Attachment> attachments, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(messageId);
+        ArgumentNullException.ThrowIfNull(expectedPrompt);
+        ArgumentNullException.ThrowIfNull(prompt);
+        ArgumentNullException.ThrowIfNull(displayPrompt);
+        ArgumentNullException.ThrowIfNull(attachments);
+        _session.ThrowIfDisposed();
+
+        var request = new QueueAppendSteeringRequest { SessionId = _session.SessionId, MessageId = messageId, ExpectedPrompt = expectedPrompt, AgentMode = agentMode, Prompt = prompt, DisplayPrompt = displayPrompt, Attachments = attachments };
+        return await CopilotClient.InvokeRpcAsync<QueueUpdateTextResult>(_session.Rpc, "session.queue.appendSteering", [request], cancellationToken);
     }
 
     /// <summary>Duplicates an addressable queued item immediately after its source.</summary>
@@ -38610,7 +43498,7 @@ public sealed class QueueApi
 }
 
 /// <summary>Provides session-scoped EventLog APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class EventLogApi
 {
     private readonly CopilotSession _session;
@@ -38678,7 +43566,7 @@ public sealed class EventLogApi
 }
 
 /// <summary>Provides session-scoped Usage APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class UsageApi
 {
     private readonly CopilotSession _session;
@@ -38701,7 +43589,7 @@ public sealed class UsageApi
 }
 
 /// <summary>Provides session-scoped LimitPrediction APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class LimitPredictionApi
 {
     private readonly CopilotSession _session;
@@ -38725,7 +43613,7 @@ public sealed class LimitPredictionApi
 }
 
 /// <summary>Provides session-scoped Remote APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class RemoteApi
 {
     private readonly CopilotSession _session;
@@ -38771,7 +43659,7 @@ public sealed class RemoteApi
 }
 
 /// <summary>Provides session-scoped Visibility APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class VisibilityApi
 {
     private readonly CopilotSession _session;
@@ -38806,7 +43694,7 @@ public sealed class VisibilityApi
 }
 
 /// <summary>Provides session-scoped Schedule APIs.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public sealed class ScheduleApi
 {
     private readonly CopilotSession _session;
@@ -38940,7 +43828,7 @@ public sealed class ScheduleApi
 }
 
 /// <summary>Handles `providerToken` client session API methods.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public interface IProviderTokenHandler
 {
     /// <summary>Asks the SDK client to get a bearer token for a BYOK provider whose config set `hasBearerTokenProvider: true`. Session-scoped: the runtime calls it back on the connection that most recently supplied that provider's config for the session (the creating connection, or a resuming connection if the session was resumed — distinct providers may be owned by different connections), passing the provider name, and uses the returned token as the Authorization header for the outbound model request. The runtime does no caching — it calls this once per outbound request; the SDK consumer owns token acquisition, caching, and refresh.</summary>
@@ -38951,7 +43839,7 @@ public interface IProviderTokenHandler
 }
 
 /// <summary>Handles `factory` client session API methods.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public interface IFactoryHandler
 {
     /// <summary>Asks the owning extension connection to execute a registered factory closure.</summary>
@@ -38966,8 +43854,24 @@ public interface IFactoryHandler
     Task<FactoryAckResult> AbortAsync(FactoryAbortRequest request, CancellationToken cancellationToken = default);
 }
 
+/// <summary>Handles `workflow` client session API methods.</summary>
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
+public interface IWorkflowHandler
+{
+    /// <summary>Asks the owning extension connection to execute a registered dynamic workflow.</summary>
+    /// <param name="request">Parameters sent to the owning extension to execute a workflow closure.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Result returned by an extension workflow closure.</returns>
+    Task<WorkflowExecuteResult> ExecuteAsync(WorkflowExecuteRequest request, CancellationToken cancellationToken = default);
+    /// <summary>Asks the owning extension connection to abort a running dynamic workflow cooperatively.</summary>
+    /// <param name="request">Parameters for cooperatively aborting a workflow body.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
+    /// <returns>Acknowledgement that a workflow request was accepted.</returns>
+    Task<WorkflowAckResult> AbortAsync(WorkflowAbortRequest request, CancellationToken cancellationToken = default);
+}
+
 /// <summary>Handles `tasks` client session API methods.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public interface ITasksHandler
 {
     /// <summary>Asks the client currently bound to a client-owned session task to confirm that its external work stopped.</summary>
@@ -38978,7 +43882,7 @@ public interface ITasksHandler
 }
 
 /// <summary>Handles `sessionFs` client session API methods.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public interface ISessionFsHandler
 {
     /// <summary>Reads a file from the client-provided session filesystem.</summary>
@@ -39049,7 +43953,7 @@ public interface ISessionFsHandler
 }
 
 /// <summary>Handles `canvas` client session API methods.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public interface ICanvasHandler
 {
     /// <summary>Opens a canvas instance on the provider.</summary>
@@ -39076,6 +43980,9 @@ public sealed class ClientSessionApiHandlers
 
     /// <summary>Optional handler for Factory client session API methods.</summary>
     public IFactoryHandler? Factory { get; set; }
+
+    /// <summary>Optional handler for Workflow client session API methods.</summary>
+    public IWorkflowHandler? Workflow { get; set; }
 
     /// <summary>Optional handler for Tasks client session API methods.</summary>
     public ITasksHandler? Tasks { get; set; }
@@ -39113,6 +44020,18 @@ internal static class ClientSessionApiRegistration
         {
             var handler = getHandlers(request.SessionId).Factory;
             if (handler is null) throw new InvalidOperationException($"No factory handler registered for session: {request.SessionId}");
+            return await handler.AbortAsync(request, cancellationToken);
+        }), singleObjectParam: true);
+        rpc.SetLocalRpcMethod("workflow.execute", (Func<WorkflowExecuteRequest, CancellationToken, ValueTask<WorkflowExecuteResult>>)(async (request, cancellationToken) =>
+        {
+            var handler = getHandlers(request.SessionId).Workflow;
+            if (handler is null) throw new InvalidOperationException($"No workflow handler registered for session: {request.SessionId}");
+            return await handler.ExecuteAsync(request, cancellationToken);
+        }), singleObjectParam: true);
+        rpc.SetLocalRpcMethod("workflow.abort", (Func<WorkflowAbortRequest, CancellationToken, ValueTask<WorkflowAckResult>>)(async (request, cancellationToken) =>
+        {
+            var handler = getHandlers(request.SessionId).Workflow;
+            if (handler is null) throw new InvalidOperationException($"No workflow handler registered for session: {request.SessionId}");
             return await handler.AbortAsync(request, cancellationToken);
         }), singleObjectParam: true);
         rpc.SetLocalRpcMethod("tasks.cancel", (Func<ClientTaskCancelRequest, CancellationToken, ValueTask<ClientTaskCancelResult>>)(async (request, cancellationToken) =>
@@ -39221,7 +44140,7 @@ internal static class ClientSessionApiRegistration
 }
 
 /// <summary>Handles `extensionLaunchProvider` client global API methods.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public interface IExtensionLaunchProviderHandler
 {
     /// <summary>Asks the registered SDK client to resolve an opaque process launch profile for one discovered extension entrypoint immediately before launch or reload. The provider must respond within 15 seconds.</summary>
@@ -39232,7 +44151,7 @@ public interface IExtensionLaunchProviderHandler
 }
 
 /// <summary>Handles `llmInference` client global API methods.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public interface ILlmInferenceHandler
 {
     /// <summary>Announces an outbound model-layer HTTP request the runtime wants the SDK client to service. Carries the request head only; the body always follows as one or more httpRequestChunk frames keyed by the same requestId, even when the body is empty (a single chunk with end=true).</summary>
@@ -39248,17 +44167,17 @@ public interface ILlmInferenceHandler
 }
 
 /// <summary>Handles `gitHubTelemetry` client global API methods.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public interface IGitHubTelemetryHandler
 {
-    /// <summary>Forwards a single GitHub telemetry event to a host connection that opted into telemetry forwarding during the `server.connect` handshake. Opted-in connections receive every event the runtime emits after the handshake — across all sessions, plus sessionless events (for example, `server.sendTelemetry` calls with no session id).</summary>
+    /// <summary>Forwards a single GitHub telemetry event to a host connection that opted into telemetry forwarding during the `server.connect` handshake. Opted-in connections receive their runtime host's events across all its sessions, its sessionless events (for example, `server.sendTelemetry`), and explicitly process-wide events. Events owned by another independently embedded runtime host are not forwarded to this connection.</summary>
     /// <param name="request">Payload for a `gitHubTelemetry.event` notification: a single GitHub telemetry event the runtime forwards to a host connection that opted into telemetry forwarding during the `server.connect` handshake.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     Task EventAsync(GitHubTelemetryNotification request, CancellationToken cancellationToken = default);
 }
 
 /// <summary>Handles `gitHubToken` client global API methods.</summary>
-[Experimental(Diagnostics.Experimental)]
+[Experimental(global::GitHub.Copilot.Diagnostics.Experimental)]
 public interface IGitHubTokenHandler
 {
     /// <summary>Asks the SDK client to mint a GitHub access token for a session whose configuration supplied a GitHub token provider. The runtime acquires the initial token during bootstrap and refreshes it during expiry preflight when one hour or less remains.</summary>
@@ -39508,6 +44427,11 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(GitHub.Copilot.HookProgressEvent), TypeInfoPropertyName = "SessionEventsHookProgressEvent")]
 [JsonSerializable(typeof(GitHub.Copilot.HookStartData), TypeInfoPropertyName = "SessionEventsHookStartData")]
 [JsonSerializable(typeof(GitHub.Copilot.HookStartEvent), TypeInfoPropertyName = "SessionEventsHookStartEvent")]
+[JsonSerializable(typeof(GitHub.Copilot.IndexedSearchDisabledReason), TypeInfoPropertyName = "SessionEventsIndexedSearchDisabledReason")]
+[JsonSerializable(typeof(GitHub.Copilot.IndexedSearchErrorType), TypeInfoPropertyName = "SessionEventsIndexedSearchErrorType")]
+[JsonSerializable(typeof(GitHub.Copilot.IndexedSearchIncrementalPhase), TypeInfoPropertyName = "SessionEventsIndexedSearchIncrementalPhase")]
+[JsonSerializable(typeof(GitHub.Copilot.IndexedSearchOutcome), TypeInfoPropertyName = "SessionEventsIndexedSearchOutcome")]
+[JsonSerializable(typeof(GitHub.Copilot.IndexedSearchState), TypeInfoPropertyName = "SessionEventsIndexedSearchState")]
 [JsonSerializable(typeof(GitHub.Copilot.ManagedSettingsEnforcedAction), TypeInfoPropertyName = "SessionEventsManagedSettingsEnforcedAction")]
 [JsonSerializable(typeof(GitHub.Copilot.ManagedSettingsEnforcedEscalation), TypeInfoPropertyName = "SessionEventsManagedSettingsEnforcedEscalation")]
 [JsonSerializable(typeof(GitHub.Copilot.ManagedSettingsResolvedSource), TypeInfoPropertyName = "SessionEventsManagedSettingsResolvedSource")]
@@ -39552,11 +44476,13 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(GitHub.Copilot.ModelCallStartData), TypeInfoPropertyName = "SessionEventsModelCallStartData")]
 [JsonSerializable(typeof(GitHub.Copilot.ModelCallStartEvent), TypeInfoPropertyName = "SessionEventsModelCallStartEvent")]
 [JsonSerializable(typeof(GitHub.Copilot.ModelChangeSource), TypeInfoPropertyName = "SessionEventsModelChangeSource")]
+[JsonSerializable(typeof(GitHub.Copilot.ModelDeselectedReason), TypeInfoPropertyName = "SessionEventsModelDeselectedReason")]
 [JsonSerializable(typeof(GitHub.Copilot.OmittedBinaryOmittedReason), TypeInfoPropertyName = "SessionEventsOmittedBinaryOmittedReason")]
 [JsonSerializable(typeof(GitHub.Copilot.OmittedBinaryResult), TypeInfoPropertyName = "SessionEventsOmittedBinaryResult")]
 [JsonSerializable(typeof(GitHub.Copilot.OmittedBinaryType), TypeInfoPropertyName = "SessionEventsOmittedBinaryType")]
 [JsonSerializable(typeof(GitHub.Copilot.PendingMessagesModifiedData), TypeInfoPropertyName = "SessionEventsPendingMessagesModifiedData")]
 [JsonSerializable(typeof(GitHub.Copilot.PendingMessagesModifiedEvent), TypeInfoPropertyName = "SessionEventsPendingMessagesModifiedEvent")]
+[JsonSerializable(typeof(GitHub.Copilot.PermissionApprovalEvaluation), TypeInfoPropertyName = "SessionEventsPermissionApprovalEvaluation")]
 [JsonSerializable(typeof(GitHub.Copilot.PermissionAssentDetectedData), TypeInfoPropertyName = "SessionEventsPermissionAssentDetectedData")]
 [JsonSerializable(typeof(GitHub.Copilot.PermissionAssentDetectedEvent), TypeInfoPropertyName = "SessionEventsPermissionAssentDetectedEvent")]
 [JsonSerializable(typeof(GitHub.Copilot.PermissionAssistedApproval), TypeInfoPropertyName = "SessionEventsPermissionAssistedApproval")]
@@ -39591,6 +44517,14 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(GitHub.Copilot.PermissionPromptRequestUrl), TypeInfoPropertyName = "SessionEventsPermissionPromptRequestUrl")]
 [JsonSerializable(typeof(GitHub.Copilot.PermissionPromptRequestWrite), TypeInfoPropertyName = "SessionEventsPermissionPromptRequestWrite")]
 [JsonSerializable(typeof(GitHub.Copilot.PermissionRecommendation), TypeInfoPropertyName = "SessionEventsPermissionRecommendation")]
+[JsonSerializable(typeof(GitHub.Copilot.PermissionRecoveryAttempt), TypeInfoPropertyName = "SessionEventsPermissionRecoveryAttempt")]
+[JsonSerializable(typeof(GitHub.Copilot.PermissionRecoveryAttemptDisposition), TypeInfoPropertyName = "SessionEventsPermissionRecoveryAttemptDisposition")]
+[JsonSerializable(typeof(GitHub.Copilot.PermissionRecoveryAttemptReason), TypeInfoPropertyName = "SessionEventsPermissionRecoveryAttemptReason")]
+[JsonSerializable(typeof(GitHub.Copilot.PermissionRecoveryAttemptRelation), TypeInfoPropertyName = "SessionEventsPermissionRecoveryAttemptRelation")]
+[JsonSerializable(typeof(GitHub.Copilot.PermissionRecoveryData), TypeInfoPropertyName = "SessionEventsPermissionRecoveryData")]
+[JsonSerializable(typeof(GitHub.Copilot.PermissionRecoveryOnBlocked), TypeInfoPropertyName = "SessionEventsPermissionRecoveryOnBlocked")]
+[JsonSerializable(typeof(GitHub.Copilot.PermissionRecoveryReason), TypeInfoPropertyName = "SessionEventsPermissionRecoveryReason")]
+[JsonSerializable(typeof(GitHub.Copilot.PermissionRecoveryStatus), TypeInfoPropertyName = "SessionEventsPermissionRecoveryStatus")]
 [JsonSerializable(typeof(GitHub.Copilot.PermissionRequest), TypeInfoPropertyName = "SessionEventsPermissionRequest")]
 [JsonSerializable(typeof(GitHub.Copilot.PermissionRequestCustomTool), TypeInfoPropertyName = "SessionEventsPermissionRequestCustomTool")]
 [JsonSerializable(typeof(GitHub.Copilot.PermissionRequestExtensionEnvAccess), TypeInfoPropertyName = "SessionEventsPermissionRequestExtensionEnvAccess")]
@@ -39623,12 +44557,26 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(GitHub.Copilot.ReasoningSummary), TypeInfoPropertyName = "SessionEventsReasoningSummary")]
 [JsonSerializable(typeof(GitHub.Copilot.RecommendedAutoTier), TypeInfoPropertyName = "SessionEventsRecommendedAutoTier")]
 [JsonSerializable(typeof(GitHub.Copilot.RemediationAction), TypeInfoPropertyName = "SessionEventsRemediationAction")]
+[JsonSerializable(typeof(GitHub.Copilot.ResponsesReasoning), TypeInfoPropertyName = "SessionEventsResponsesReasoning")]
 [JsonSerializable(typeof(GitHub.Copilot.SamplingCompletedData), TypeInfoPropertyName = "SessionEventsSamplingCompletedData")]
 [JsonSerializable(typeof(GitHub.Copilot.SamplingCompletedEvent), TypeInfoPropertyName = "SessionEventsSamplingCompletedEvent")]
 [JsonSerializable(typeof(GitHub.Copilot.SamplingRequestedData), TypeInfoPropertyName = "SessionEventsSamplingRequestedData")]
 [JsonSerializable(typeof(GitHub.Copilot.SamplingRequestedEvent), TypeInfoPropertyName = "SessionEventsSamplingRequestedEvent")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxAttestation), TypeInfoPropertyName = "SessionEventsSandboxAttestation")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxBackend), TypeInfoPropertyName = "SessionEventsSandboxBackend")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxBypassSource), TypeInfoPropertyName = "SessionEventsSandboxBypassSource")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxControl), TypeInfoPropertyName = "SessionEventsSandboxControl")]
 [JsonSerializable(typeof(GitHub.Copilot.SandboxDecisionData), TypeInfoPropertyName = "SessionEventsSandboxDecisionData")]
 [JsonSerializable(typeof(GitHub.Copilot.SandboxDecisionEvent), TypeInfoPropertyName = "SessionEventsSandboxDecisionEvent")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxDegradationReason), TypeInfoPropertyName = "SessionEventsSandboxDegradationReason")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxDenialClass), TypeInfoPropertyName = "SessionEventsSandboxDenialClass")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxDenialConfidence), TypeInfoPropertyName = "SessionEventsSandboxDenialConfidence")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxEnforcementPoint), TypeInfoPropertyName = "SessionEventsSandboxEnforcementPoint")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxFilesystemPolicyDetails), TypeInfoPropertyName = "SessionEventsSandboxFilesystemPolicyDetails")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxOutcome), TypeInfoPropertyName = "SessionEventsSandboxOutcome")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxPlatform), TypeInfoPropertyName = "SessionEventsSandboxPlatform")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxPolicySource), TypeInfoPropertyName = "SessionEventsSandboxPolicySource")]
+[JsonSerializable(typeof(GitHub.Copilot.SandboxProxyMode), TypeInfoPropertyName = "SessionEventsSandboxProxyMode")]
 [JsonSerializable(typeof(GitHub.Copilot.ScheduleOrigin), TypeInfoPropertyName = "SessionEventsScheduleOrigin")]
 [JsonSerializable(typeof(GitHub.Copilot.SessionEvent), TypeInfoPropertyName = "SessionEventsSessionEvent")]
 [JsonSerializable(typeof(GitHub.Copilot.SessionLimitsConfig), TypeInfoPropertyName = "SessionEventsSessionLimitsConfig")]
@@ -39672,6 +44620,7 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(GitHub.Copilot.SubagentStartedData), TypeInfoPropertyName = "SessionEventsSubagentStartedData")]
 [JsonSerializable(typeof(GitHub.Copilot.SubagentStartedEvent), TypeInfoPropertyName = "SessionEventsSubagentStartedEvent")]
 [JsonSerializable(typeof(GitHub.Copilot.SubagentTaskModelSource), TypeInfoPropertyName = "SessionEventsSubagentTaskModelSource")]
+[JsonSerializable(typeof(GitHub.Copilot.SystemMessageContentBlock), TypeInfoPropertyName = "SessionEventsSystemMessageContentBlock")]
 [JsonSerializable(typeof(GitHub.Copilot.SystemMessageData), TypeInfoPropertyName = "SessionEventsSystemMessageData")]
 [JsonSerializable(typeof(GitHub.Copilot.SystemMessageEvent), TypeInfoPropertyName = "SessionEventsSystemMessageEvent")]
 [JsonSerializable(typeof(GitHub.Copilot.SystemMessageMetadata), TypeInfoPropertyName = "SessionEventsSystemMessageMetadata")]
@@ -39690,6 +44639,8 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(GitHub.Copilot.SystemNotificationShellCompleted), TypeInfoPropertyName = "SessionEventsSystemNotificationShellCompleted")]
 [JsonSerializable(typeof(GitHub.Copilot.SystemNotificationShellDetachedCompleted), TypeInfoPropertyName = "SessionEventsSystemNotificationShellDetachedCompleted")]
 [JsonSerializable(typeof(GitHub.Copilot.SystemNotificationUnclassified), TypeInfoPropertyName = "SessionEventsSystemNotificationUnclassified")]
+[JsonSerializable(typeof(GitHub.Copilot.TaskBlocker), TypeInfoPropertyName = "SessionEventsTaskBlocker")]
+[JsonSerializable(typeof(GitHub.Copilot.TaskBlockerKind), TypeInfoPropertyName = "SessionEventsTaskBlockerKind")]
 [JsonSerializable(typeof(GitHub.Copilot.TaskCompletionOutcome), TypeInfoPropertyName = "SessionEventsTaskCompletionOutcome")]
 [JsonSerializable(typeof(GitHub.Copilot.ToolExecutionCompleteContent), TypeInfoPropertyName = "SessionEventsToolExecutionCompleteContent")]
 [JsonSerializable(typeof(GitHub.Copilot.ToolExecutionCompleteContentAudio), TypeInfoPropertyName = "SessionEventsToolExecutionCompleteContentAudio")]
@@ -39814,14 +44765,20 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(CanvasSessionContext))]
 [JsonSerializable(typeof(CapiSessionOptions))]
 [JsonSerializable(typeof(CardDigest))]
+[JsonSerializable(typeof(CatalogAgentPluginCandidateProvenance))]
 [JsonSerializable(typeof(CatalogAiSkillCandidateProvenance))]
 [JsonSerializable(typeof(CatalogCandidate))]
 [JsonSerializable(typeof(CatalogCandidateSource))]
 [JsonSerializable(typeof(CatalogClientContract))]
 [JsonSerializable(typeof(CatalogMcpServerCandidateProvenance))]
 [JsonSerializable(typeof(CatalogNegotiatedContract))]
+[JsonSerializable(typeof(CatalogPluginRepositorySource))]
+[JsonSerializable(typeof(CatalogSearchPage))]
+[JsonSerializable(typeof(CatalogSearchPagination))]
 [JsonSerializable(typeof(CatalogSearchRequest))]
 [JsonSerializable(typeof(CatalogSearchResult))]
+[JsonSerializable(typeof(CatalogSelectionRequest))]
+[JsonSerializable(typeof(CatalogSelectionResult))]
 [JsonSerializable(typeof(CatalogTrustProvenance))]
 [JsonSerializable(typeof(CatalogTrustSnapshot))]
 [JsonSerializable(typeof(ClientTaskCancelRequest))]
@@ -39845,12 +44802,25 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(ConnectResult))]
 [JsonSerializable(typeof(ConnectedRemoteSessionMetadata))]
 [JsonSerializable(typeof(ConnectedRemoteSessionMetadataRepository))]
+[JsonSerializable(typeof(ConnectorAccountRequest))]
+[JsonSerializable(typeof(ConnectorAuthorizationRequirement))]
+[JsonSerializable(typeof(ConnectorCapabilities))]
+[JsonSerializable(typeof(ConnectorCatalogEntry))]
+[JsonSerializable(typeof(ConnectorCatalogResult))]
+[JsonSerializable(typeof(ConnectorConnectRequest))]
+[JsonSerializable(typeof(ConnectorConnectResult))]
+[JsonSerializable(typeof(ConnectorContinueRequest))]
+[JsonSerializable(typeof(ConnectorDisconnectResult))]
+[JsonSerializable(typeof(ConnectorReconcileRequest))]
+[JsonSerializable(typeof(ConnectorRuntimeStatus))]
+[JsonSerializable(typeof(ConnectorStatus))]
 [JsonSerializable(typeof(ContentExclusionCheckPathsRequest))]
 [JsonSerializable(typeof(ContentExclusionCheckPathsResult))]
 [JsonSerializable(typeof(ContentExclusionPathCheck))]
 [JsonSerializable(typeof(ContextHeaviestMessage))]
 [JsonSerializable(typeof(CopilotUserResponse))]
 [JsonSerializable(typeof(CopilotUserResponseEndpoints))]
+[JsonSerializable(typeof(CopilotUserResponseEnterpriseListItem))]
 [JsonSerializable(typeof(CopilotUserResponseOrganizationListItem))]
 [JsonSerializable(typeof(CopilotUserResponseQuotaSnapshots))]
 [JsonSerializable(typeof(CopilotUserResponseQuotaSnapshotsChat))]
@@ -39865,6 +44835,12 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(DebugCollectLogsRequest))]
 [JsonSerializable(typeof(DebugCollectLogsResult))]
 [JsonSerializable(typeof(DebugCollectLogsSkippedEntry))]
+[JsonSerializable(typeof(DiagnosticEntry))]
+[JsonSerializable(typeof(DiagnosticSourcesConfiguration))]
+[JsonSerializable(typeof(DiagnosticsConfiguration))]
+[JsonSerializable(typeof(DiagnosticsConfigureRequest))]
+[JsonSerializable(typeof(DiagnosticsReadRequest))]
+[JsonSerializable(typeof(DiagnosticsReadResult))]
 [JsonSerializable(typeof(DiscoveredCanvas))]
 [JsonSerializable(typeof(DiscoveredExtension))]
 [JsonSerializable(typeof(DiscoveredExtensionPlugin))]
@@ -39993,6 +44969,7 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(LogResult))]
 [JsonSerializable(typeof(LspInitializeRequest))]
 [JsonSerializable(typeof(ManagedSettingsReadResult))]
+[JsonSerializable(typeof(ManagedSettingsResolvedData))]
 [JsonSerializable(typeof(MarketplaceAddResult))]
 [JsonSerializable(typeof(MarketplaceBrowseResult))]
 [JsonSerializable(typeof(MarketplaceInfo))]
@@ -40026,6 +45003,8 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(McpConfigUpdateRequest))]
 [JsonSerializable(typeof(McpConfigureGitHubRequest))]
 [JsonSerializable(typeof(McpConfigureGitHubResult))]
+[JsonSerializable(typeof(McpDiagnosticDetails))]
+[JsonSerializable(typeof(McpDiagnosticSourceConfiguration))]
 [JsonSerializable(typeof(McpDisableRequest))]
 [JsonSerializable(typeof(McpDiscoverRequest))]
 [JsonSerializable(typeof(McpDiscoverResult))]
@@ -40232,11 +45211,16 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(PluginsEnableRequest))]
 [JsonSerializable(typeof(PluginsInstallRequest))]
 [JsonSerializable(typeof(PluginsMarketplacesAddRequest))]
+[JsonSerializable(typeof(PluginsMarketplacesAddRequestWithSession))]
 [JsonSerializable(typeof(PluginsMarketplacesBrowseRequest))]
+[JsonSerializable(typeof(PluginsMarketplacesBrowseRequestWithSession))]
 [JsonSerializable(typeof(PluginsMarketplacesRefreshRequest))]
 [JsonSerializable(typeof(PluginsMarketplacesRemoveRequest))]
+[JsonSerializable(typeof(PluginsMarketplacesRemoveRequestWithSession))]
 [JsonSerializable(typeof(PluginsUninstallRequest))]
+[JsonSerializable(typeof(PluginsUninstallRequestWithSession))]
 [JsonSerializable(typeof(PluginsUpdateRequest))]
+[JsonSerializable(typeof(PluginsUpdateRequestWithSession))]
 [JsonSerializable(typeof(ProtocolExternalToolDefinition))]
 [JsonSerializable(typeof(ProtocolMarkerSectionOverride))]
 [JsonSerializable(typeof(ProtocolSectionOverride))]
@@ -40252,6 +45236,8 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(ProviderEndpoint))]
 [JsonSerializable(typeof(ProviderModelConfig))]
 [JsonSerializable(typeof(ProviderSessionToken))]
+[JsonSerializable(typeof(ProviderSyncRequest))]
+[JsonSerializable(typeof(ProviderSyncResult))]
 [JsonSerializable(typeof(ProviderTokenAcquireRequest))]
 [JsonSerializable(typeof(ProviderTokenAcquireResult))]
 [JsonSerializable(typeof(PushAttachment))]
@@ -40262,6 +45248,7 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(PushAttachmentSelectionDetailsEnd))]
 [JsonSerializable(typeof(PushAttachmentSelectionDetailsStart))]
 [JsonSerializable(typeof(PushGitHubRepoRef))]
+[JsonSerializable(typeof(QueueAppendSteeringRequest))]
 [JsonSerializable(typeof(QueueBeginDeferredIdleDrainRequest))]
 [JsonSerializable(typeof(QueueBeginDeferredIdleDrainResult))]
 [JsonSerializable(typeof(QueueConsumeSystemNotificationsRequest))]
@@ -40288,6 +45275,8 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(QueueSnapshotResult))]
 [JsonSerializable(typeof(QueueUpdateTextRequest))]
 [JsonSerializable(typeof(QueueUpdateTextResult))]
+[JsonSerializable(typeof(QueueWithdrawMessageRequest))]
+[JsonSerializable(typeof(QueueWithdrawMessageResult))]
 [JsonSerializable(typeof(QueuedCommandResult))]
 [JsonSerializable(typeof(RegisterEventInterestParams))]
 [JsonSerializable(typeof(RegisterEventInterestResult))]
@@ -40319,6 +45308,8 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(SandboxDisableForSessionRequest))]
 [JsonSerializable(typeof(SandboxDisableForSessionResult))]
 [JsonSerializable(typeof(SandboxEnforcementStatus))]
+[JsonSerializable(typeof(SandboxHostCapability))]
+[JsonSerializable(typeof(SandboxHostSupport))]
 [JsonSerializable(typeof(ScheduleAddAtRequest))]
 [JsonSerializable(typeof(ScheduleAddCronRequest))]
 [JsonSerializable(typeof(ScheduleAddRequest))]
@@ -40362,7 +45353,11 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(SessionCommandsListRequestWithSession))]
 [JsonSerializable(typeof(SessionCompletionItem))]
 [JsonSerializable(typeof(SessionCompletionsGetTriggerCharactersRequest))]
+[JsonSerializable(typeof(SessionConnectorsGetCapabilitiesRequest))]
+[JsonSerializable(typeof(SessionConnectorsGetStatusRequest))]
+[JsonSerializable(typeof(SessionConnectorsWithdrawProjectionRequest))]
 [JsonSerializable(typeof(SessionContext))]
+[JsonSerializable(typeof(SessionCustomizationsReloadRequest))]
 [JsonSerializable(typeof(SessionEnrichMetadataResult))]
 [JsonSerializable(typeof(SessionEventLogTailRequest))]
 [JsonSerializable(typeof(SessionExtensionsListRequest))]
@@ -40410,6 +45405,7 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(SessionHistorySummarizeForHandoffRequest))]
 [JsonSerializable(typeof(SessionInstalledPlugin))]
 [JsonSerializable(typeof(SessionInstructionsGetSourcesRequest))]
+[JsonSerializable(typeof(SessionInstructionsReloadRequest))]
 [JsonSerializable(typeof(SessionLimitPredictionBaselineData))]
 [JsonSerializable(typeof(SessionLimitPredictionDetails))]
 [JsonSerializable(typeof(SessionLimitPredictionPredictRequest))]
@@ -40420,6 +45416,7 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(SessionListEntry))]
 [JsonSerializable(typeof(SessionListFilter))]
 [JsonSerializable(typeof(SessionLoadDeferredRepoHooksResult))]
+[JsonSerializable(typeof(SessionManagedSettingsGetRequest))]
 [JsonSerializable(typeof(SessionMcpAppsGetHostContextRequest))]
 [JsonSerializable(typeof(SessionMcpListRequest))]
 [JsonSerializable(typeof(SessionMcpMoveLoadingToBackgroundRequest))]
@@ -40444,7 +45441,13 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(SessionPlanReadRequest))]
 [JsonSerializable(typeof(SessionPlanReadSqlTodosRequest))]
 [JsonSerializable(typeof(SessionPlanReadSqlTodosWithDependenciesRequest))]
+[JsonSerializable(typeof(SessionPluginsDisableRequest))]
+[JsonSerializable(typeof(SessionPluginsEnableRequest))]
+[JsonSerializable(typeof(SessionPluginsInstallRequest))]
 [JsonSerializable(typeof(SessionPluginsListRequest))]
+[JsonSerializable(typeof(SessionPluginsMarketplacesListRequest))]
+[JsonSerializable(typeof(SessionPluginsMarketplacesRefreshRequest))]
+[JsonSerializable(typeof(SessionPluginsMarketplacesRefreshRequestWithSession))]
 [JsonSerializable(typeof(SessionPluginsReloadRequest))]
 [JsonSerializable(typeof(SessionPluginsReloadRequestWithSession))]
 [JsonSerializable(typeof(SessionProviderGetEndpointRequest))]
@@ -40494,6 +45497,7 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(SessionUpdateOptionsResult))]
 [JsonSerializable(typeof(SessionUsageGetMetricsRequest))]
 [JsonSerializable(typeof(SessionVisibilityGetRequest))]
+[JsonSerializable(typeof(SessionWorkflowPauseAtCheckpointResult))]
 [JsonSerializable(typeof(SessionWorkingDirectoryContext))]
 [JsonSerializable(typeof(SessionWorkspacesAutopilotObjectiveExistsRequest))]
 [JsonSerializable(typeof(SessionWorkspacesDeleteAutopilotObjectiveRequest))]
@@ -40664,6 +45668,46 @@ internal static class ClientGlobalApiRegistration
 [JsonSerializable(typeof(VisibilityGetResult))]
 [JsonSerializable(typeof(VisibilitySetRequest))]
 [JsonSerializable(typeof(VisibilitySetResult))]
+[JsonSerializable(typeof(WorkflowAbortRequest))]
+[JsonSerializable(typeof(WorkflowAckResult))]
+[JsonSerializable(typeof(WorkflowAgentOptions))]
+[JsonSerializable(typeof(WorkflowAgentRequest))]
+[JsonSerializable(typeof(WorkflowAgentResult))]
+[JsonSerializable(typeof(WorkflowAgentSummary))]
+[JsonSerializable(typeof(WorkflowCancelRequest))]
+[JsonSerializable(typeof(WorkflowCurrentPhase))]
+[JsonSerializable(typeof(WorkflowDeclaredLimits))]
+[JsonSerializable(typeof(WorkflowExecuteRequest))]
+[JsonSerializable(typeof(WorkflowExecuteResult))]
+[JsonSerializable(typeof(WorkflowGetRunProgressRequest))]
+[JsonSerializable(typeof(WorkflowGetRunRequest))]
+[JsonSerializable(typeof(WorkflowJournalGetRequest))]
+[JsonSerializable(typeof(WorkflowJournalGetResult))]
+[JsonSerializable(typeof(WorkflowJournalPutRequest))]
+[JsonSerializable(typeof(WorkflowListRunsRequest))]
+[JsonSerializable(typeof(WorkflowListRunsResult))]
+[JsonSerializable(typeof(WorkflowLogLine))]
+[JsonSerializable(typeof(WorkflowLogRequest))]
+[JsonSerializable(typeof(WorkflowPauseCheckpointRequest))]
+[JsonSerializable(typeof(WorkflowPauseInfo))]
+[JsonSerializable(typeof(WorkflowPauseRequest))]
+[JsonSerializable(typeof(WorkflowPhaseObservation))]
+[JsonSerializable(typeof(WorkflowProgressLine))]
+[JsonSerializable(typeof(WorkflowProgressPage))]
+[JsonSerializable(typeof(WorkflowResumeRequest))]
+[JsonSerializable(typeof(WorkflowResumeResult))]
+[JsonSerializable(typeof(WorkflowRunConsumed))]
+[JsonSerializable(typeof(WorkflowRunDetail))]
+[JsonSerializable(typeof(WorkflowRunFailure))]
+[JsonSerializable(typeof(WorkflowRunLimits))]
+[JsonSerializable(typeof(WorkflowRunOptions))]
+[JsonSerializable(typeof(WorkflowRunRequest))]
+[JsonSerializable(typeof(WorkflowRunResult))]
+[JsonSerializable(typeof(WorkflowRunSummary))]
+[JsonSerializable(typeof(WorkflowRunTerminal))]
+[JsonSerializable(typeof(WorkflowToolResumeRequest))]
+[JsonSerializable(typeof(WorkflowToolRunOptions))]
+[JsonSerializable(typeof(WorkflowToolRunRequest))]
 [JsonSerializable(typeof(WorkspaceDiffFileChange))]
 [JsonSerializable(typeof(WorkspaceDiffResult))]
 [JsonSerializable(typeof(WorkspacesAddSummaryRequest))]

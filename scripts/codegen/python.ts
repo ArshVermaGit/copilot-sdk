@@ -146,7 +146,8 @@ function placeholderToQuicktypeIdentifiers(placeholder: string): string[] {
 export function postProcessExternalRefsForPython(
     code: string,
     placeholderToReal: Map<string, string>,
-    externalEnumNames: Set<string> = new Set()
+    externalEnumNames: Set<string> = new Set(),
+    externalDiscriminatedUnionNames: Set<string> = new Set()
 ): string {
     for (const [placeholder, realName] of placeholderToReal) {
         const markerProperty = `__externalRefMarker_${placeholder}`;
@@ -182,10 +183,47 @@ export function postProcessExternalRefsForPython(
                 new RegExp(`to_class\\(${realName},\\s*([^)]+)\\)`, "g"),
                 `to_enum(${realName}, $1)`
             );
+        } else if (externalDiscriminatedUnionNames.has(realName)) {
+            code = code.replace(new RegExp(`\\b${realName}\\.from_dict\\b`, "g"), `_load_${realName}`);
         }
     }
 
     return code.replace(/\n{3,}/g, "\n\n");
+}
+
+function collectPythonExternalDiscriminatedUnionNames(
+    schema: JSONSchema7 | undefined,
+    placeholderToReal: Map<string, string>
+): Set<string> {
+    const unionNames = new Set<string>();
+    if (!schema) return unionNames;
+
+    const definitions = collectDefinitionCollections(schema as Record<string, unknown>);
+    for (const realName of placeholderToReal.values()) {
+        // SessionEvent is emitted as a wrapper class with its own from_dict dispatcher,
+        // not as a union alias with a _load_* helper.
+        if (realName === "SessionEvent") continue;
+        const definition = definitions.definitions[realName] ?? definitions.$defs[realName];
+        if (!definition) continue;
+
+        const variants = definition.anyOf ?? definition.oneOf;
+        if (!Array.isArray(variants) || variants.length < 2) continue;
+        const resolvedVariants = variants.map((variant) =>
+            typeof variant === "object" && variant !== null
+                ? resolveObjectSchema(variant, definitions) ??
+                  resolveSchema(variant, definitions) ??
+                  variant
+                : undefined
+        );
+        if (
+            resolvedVariants.every((variant) => variant?.properties !== undefined) &&
+            findPyDiscriminator(resolvedVariants as JSONSchema7[])
+        ) {
+            unionNames.add(realName);
+        }
+    }
+
+    return unionNames;
 }
 
 function collectPythonExternalEnumNames(
@@ -1383,6 +1421,57 @@ function removeShadowedSessionEventEnumsForPython(
             return "";
         })
         .replace(/\n{3,}/g, "\n\n");
+}
+
+function makePythonDataclassFieldKeywordOnly(
+    code: string,
+    className: string,
+    fieldName: string
+): string {
+    const classPattern = new RegExp(
+        `(@dataclass\\r?\\nclass ${escapeRegExp(className)}:[\\s\\S]*?)(?=^@dataclass|^class\\s+\\w|^def\\s+\\w|(?![\\s\\S]))`,
+        "gm"
+    );
+    let foundClass = false;
+    const updated = code.replace(classPattern, (block: string) => {
+        foundClass = true;
+        const fieldPattern = new RegExp(
+            `^(    ${escapeRegExp(fieldName)}: .+) = None$`,
+            "m"
+        );
+        if (!fieldPattern.test(block)) {
+            throw new Error(`Missing optional field ${className}.${fieldName}`);
+        }
+        let updatedBlock = block.replace(fieldPattern, "$1 = field(default=None, kw_only=True)");
+
+        const constructorPattern = new RegExp(
+            `^(        return ${escapeRegExp(className)}\\()([^\\n]*)(\\))$`,
+            "m"
+        );
+        let foundConstructor = false;
+        updatedBlock = updatedBlock.replace(
+            constructorPattern,
+            (_match: string, prefix: string, args: string, suffix: string) => {
+                foundConstructor = true;
+                const constructorArgs = args.split(", ");
+                const fieldIndex = constructorArgs.indexOf(fieldName);
+                if (fieldIndex < 0) {
+                    throw new Error(`Missing constructor argument ${className}.${fieldName}`);
+                }
+                constructorArgs.splice(fieldIndex, 1);
+                constructorArgs.push(`${fieldName}=${fieldName}`);
+                return `${prefix}${constructorArgs.join(", ")}${suffix}`;
+            }
+        );
+        if (!foundConstructor) {
+            throw new Error(`Missing from_dict constructor for ${className}`);
+        }
+        return updatedBlock;
+    });
+    if (!foundClass) {
+        throw new Error(`Missing dataclass ${className}`);
+    }
+    return updated;
 }
 
 function reorderPythonDataclassFields(code: string): string {
@@ -2628,6 +2717,26 @@ export function generatePythonSessionEventsCode(schema: JSONSchema7): string {
     };
 
     for (const variant of variants) {
+        const unionMembers = variant.dataSchema.anyOf ?? variant.dataSchema.oneOf;
+        if (unionMembers) {
+            const members = unionMembers
+                .filter((member): member is JSONSchema7 => typeof member === "object")
+                .map((member) => resolveObjectSchema(member, ctx.definitions) ?? member)
+                .filter((member) => !isPyNullLikeSchema(member));
+            const discriminator = findPyDiscriminator(members);
+            if (!discriminator) {
+                throw new Error(`Cannot represent event payload union "${variant.dataClassName}" without a discriminator`);
+            }
+            emitPyFlatDiscriminatedUnion(
+                variant.dataClassName,
+                discriminator.property,
+                discriminator.mapping,
+                ctx,
+                variant.dataDescription,
+                variant.dataExperimental
+            );
+            continue;
+        }
         emitPyClass(
             variant.dataClassName,
             variant.dataSchema,
@@ -3087,6 +3196,10 @@ async function generateRpc(schemaPath?: string, sessionEventsSchema?: JSONSchema
     };
     const externalRefs = rewriteExternalRefsForPython(singleSchema as JSONSchema7 & { definitions?: Record<string, JSONSchema7> });
     const externalEnumNames = collectPythonExternalEnumNames(sessionEventsSchema, externalRefs.placeholderNames);
+    const externalDiscriminatedUnionNames = collectPythonExternalDiscriminatedUnionNames(
+        sessionEventsSchema,
+        externalRefs.placeholderNames
+    );
     const externalUnionAliases = collectExternalUnionAliasesForPython(
         singleSchema.definitions as Record<string, JSONSchema7>,
         externalRefs.placeholderNames
@@ -3138,12 +3251,23 @@ async function generateRpc(schemaPath?: string, sessionEventsSchema?: JSONSchema
     const knownDefNames = new Set(Object.keys(allDefinitions).map((n) => n.toLowerCase()));
     typesCode = collapsePlaceholderPythonDataclasses(typesCode, knownDefNames);
     typesCode = postProcessExternalUnionAliasesForPython(typesCode, externalUnionAliases);
-    typesCode = postProcessExternalRefsForPython(typesCode, externalRefs.placeholderNames, externalEnumNames);
+    typesCode = postProcessExternalRefsForPython(
+        typesCode,
+        externalRefs.placeholderNames,
+        externalEnumNames,
+        externalDiscriminatedUnionNames
+    );
     typesCode = removeShadowedSessionEventEnumsForPython(
         typesCode,
         externalRefs.imports.get(".session_events") ?? new Set<string>(),
         sessionEventsSchema
     );
+    const sessionEventImports = externalRefs.imports.get(".session_events");
+    if (sessionEventImports) {
+        for (const unionName of externalDiscriminatedUnionNames) {
+            sessionEventImports.add(`_load_${unionName}`);
+        }
+    }
     const { code: typesCodeAfterUnions, unions: refBasedUnions } = postProcessRefBasedDiscriminatedUnionsForPython(
         typesCode,
         allDefinitions,
@@ -3171,6 +3295,11 @@ async function generateRpc(schemaPath?: string, sessionEventsSchema?: JSONSchema
     // Reorder class/enum definitions to resolve forward references.
     // Quicktype may emit classes before their dependencies are defined.
     typesCode = reorderPythonForwardRefs(typesCode);
+    typesCode = makePythonDataclassFieldKeywordOnly(
+        typesCode,
+        "MCPServerConfigHTTP",
+        "oauth_scopes"
+    );
 
     // Strip quicktype's import block and preamble — we provide our own unified header.
     // The preamble ends just before the first helper function (e.g. "def from_str")
@@ -3311,7 +3440,7 @@ if TYPE_CHECKING:
     from .._jsonrpc import JsonRpcClient
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Protocol, TypeVar, cast

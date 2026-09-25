@@ -11,6 +11,7 @@ import type { Canvas } from "./canvas.js";
 import type { SessionFsProvider } from "./sessionFsProvider.js";
 import type { CopilotRequestHandler } from "./copilotRequestHandler.js";
 import type {
+    AttachmentExtensionContext as GeneratedExtensionContextAttachment,
     AutoTier,
     PermissionRequest as GeneratedPermissionRequest,
     PermissionRequestedData as GeneratedPermissionRequestedData,
@@ -22,10 +23,12 @@ import type {
 import type { CopilotSession } from "./session.js";
 import type { FactoryJsonSchema, JsonValue } from "./factory.js";
 import type {
+    ExtensionLaunchProviderHandler as GeneratedExtensionLaunchProvider,
     GitHubTokenAcquireRequest,
     GitHubTokenAcquireResult,
     GitHubTelemetryNotification,
     ModelBillingTokenPrices,
+    DiagnosticsConfiguration,
     OpenCanvasInstance,
     RemoteSessionMode,
     CurrentToolMetadata,
@@ -34,6 +37,23 @@ import type { ToolSet } from "./toolSet.js";
 export type { RemoteSessionMode } from "./generated/rpc.js";
 export type { CurrentToolMetadata } from "./generated/rpc.js";
 export type {
+    ConnectorAccountRequest,
+    ConnectorAvailability,
+    ConnectorCapabilities,
+    ConnectorCatalogEntry,
+    ConnectorCatalogResult,
+    ConnectorCatalogStatus,
+    ConnectorConnectRequest,
+    ConnectorConnectResult,
+    ConnectorContinueRequest,
+    ConnectorDisconnectResult,
+    ConnectorMcpStatus,
+    ConnectorReconcileRequest,
+    ConnectorRuntimeStatus,
+    ConnectorStatus,
+    ExtensionLaunchProfile,
+    ExtensionLaunchProviderResolveRequest,
+    ExtensionLaunchProviderResolveResult,
     GitHubTokenAcquireReason,
     GitHubTokenAcquireResult,
     GitHubTelemetryNotification,
@@ -386,6 +406,15 @@ export interface CopilotClientOptions {
     builtinPluginDirectories?: readonly string[];
 
     /**
+     * Connection-level extension launch profile provider.
+     * When set, the client registers the provider during startup before any
+     * session can be created.
+     *
+     * @experimental
+     */
+    extensionLaunchProvider?: ExtensionLaunchProvider;
+
+    /**
      * Log level for the Copilot runtime. When omitted, the runtime uses its
      * own default (currently `"info"`).
      */
@@ -530,6 +559,9 @@ export interface CopilotClientOptions {
      */
     _internalConnection?: InternalRuntimeConnection;
 }
+
+/** Resolves launch profiles for extension entrypoints discovered by the runtime. */
+export type ExtensionLaunchProvider = GeneratedExtensionLaunchProvider;
 
 /**
  * Configuration for creating a session
@@ -708,6 +740,14 @@ export type ToolHandler<TArgs = unknown> = (
 export interface ZodSchema<T = unknown> {
     _output: T;
     toJSONSchema(): Record<string, unknown>;
+}
+
+/**
+ * A Zod-compatible output schema that both describes and parses a typed result.
+ * TypeScript types are erased at runtime, so typed output requires a schema value.
+ */
+export interface ResponseSchema<T = unknown> extends ZodSchema<T> {
+    parse(value: unknown): T;
 }
 
 /**
@@ -2030,6 +2070,8 @@ export interface McpAuthStaticClientConfig {
     grantType?: "client_credentials";
     /** Whether this is a public OAuth client. */
     publicClient?: boolean;
+    /** Configured OAuth scope string used when the server challenge omits scope. */
+    scope?: string;
 }
 
 /** MCP OAuth request that the SDK host can satisfy with a host-acquired token. */
@@ -2353,6 +2395,17 @@ export interface SessionConfigBase {
      * the session to the long-context tier; omit or use "default" otherwise.
      */
     contextTier?: ContextTier;
+
+    /**
+     * Enables session-scoped MCP diagnostic capture at the requested level.
+     *
+     * Diagnostics are off by default. At `"debug"` and `"trace"` levels, entries
+     * can contain MCP payloads, tool arguments, paths, and server stderr. Do not
+     * upload entries as telemetry or export them without deliberate host action.
+     * Omit this option when resuming a resident session to preserve its current
+     * diagnostic level.
+     */
+    diagnostics?: DiagnosticsConfiguration;
 
     /** Per-property overrides for model capabilities, deep-merged over runtime defaults. */
     modelCapabilities?: ModelCapabilitiesOverride;
@@ -2987,6 +3040,15 @@ export interface SessionConfig extends SessionConfigBase {
     sessionId?: string;
 
     /**
+     * Invalidates the process-wide custom-instruction discovery cache before
+     * creating this session. Use when instruction files changed in the same runtime.
+     * Other sessions in this runtime may observe updated instructions on later turns
+     * or discovery. This does not watch files or enable disabled instruction loading.
+     * @default false
+     */
+    refreshCustomInstructions?: boolean;
+
+    /**
      * Creates a remote session in the cloud instead of a local session.
      * The optional repository is associated with the cloud session.
      */
@@ -3328,6 +3390,9 @@ export interface ProviderModelConfig {
  */
 export type MessageSource = "user" | "system" | `agent-${string}`;
 
+/** Structured context contributed by an extension. */
+export type ExtensionContextAttachment = GeneratedExtensionContextAttachment;
+
 export interface MessageOptions {
     /**
      * The prompt/message to send
@@ -3342,7 +3407,7 @@ export interface MessageOptions {
     source?: MessageSource;
 
     /**
-     * File, directory, selection, or blob attachments
+     * File, directory, selection, blob, or extension context attachments
      */
     attachments?: Array<
         | {
@@ -3371,6 +3436,7 @@ export interface MessageOptions {
               mimeType: string;
               displayName?: string;
           }
+        | ExtensionContextAttachment
     >;
 
     /**
@@ -3395,6 +3461,20 @@ export interface MessageOptions {
      * If provided, this is shown in the timeline instead of `prompt`.
      */
     displayPrompt?: string;
+
+    /**
+     * JSON Schema or a Zod schema for this run's output, including requests after tool calls.
+     * Independent sends do not inherit it. Ordinary immediate steering retains the active
+     * schema and origin, even when promoted to a follow-up after the model request finishes.
+     * Specifying a schema with mode "immediate" is rejected, even while idle.
+     * This is not a persisted session default and does not survive a context reset.
+     *
+     * sendAndWait still returns an assistant message event. For a typed result, pass a
+     * Zod-compatible schema as sendAndWait's second argument instead.
+     * Streaming events remain text and may include intermediate messages.
+     * Use rpc.send's responseFormat for provider-specific name, description and strict options.
+     */
+    responseSchema?: ZodSchema | Record<string, unknown>;
 }
 
 /**

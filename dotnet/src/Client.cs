@@ -463,6 +463,11 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
                     "CopilotClient.StartAsync protocol verification complete. Elapsed={Elapsed}",
                     startTimestamp);
 
+                if (_options.ExtensionLaunchProvider is not null)
+                {
+                    await connection.Server.RegisterExtensionLaunchProviderAsync(ct);
+                }
+
                 if (_builtinPluginDirectories.Length > 0)
                 {
                     var request = new BuiltinPluginDirectoriesRequest(_builtinPluginDirectories);
@@ -552,6 +557,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
     public async Task StopAsync()
     {
         List<Exception> errors = [];
+        CancelPendingExternalTools();
 
         foreach (var session in _sessions.Values.ToArray())
         {
@@ -597,10 +603,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
     /// </example>
     public async Task ForceStopAsync()
     {
-        foreach (var session in _sessions.Values)
-        {
-            session.CancelPendingExternalTools();
-        }
+        CancelPendingExternalTools();
         _sessions.Clear();
         ClearGitHubTokenProviders();
 
@@ -1250,6 +1253,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
                 config.Streaming is true ? true : null,
                 config.IncludeSubAgentStreamingEvents,
                 config.McpServers,
+                config.Diagnostics,
                 config.McpOAuthTokenStorage,
                 config.AuthClientIdMetadataUrl,
                 "direct",
@@ -1281,6 +1285,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
                 GitHubTokenProviderRegistrationId: registrationId,
                 RemoteSession: config.RemoteSession,
                 Cloud: config.Cloud,
+                RefreshCustomInstructions: config.RefreshCustomInstructions,
                 InstructionDirectories: config.InstructionDirectories,
                 PluginDirectories: config.PluginDirectories,
                 DisabledMcpServers: config.DisabledMcpServers,
@@ -1503,6 +1508,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
                 config.Streaming is true ? true : null,
                 config.IncludeSubAgentStreamingEvents,
                 config.McpServers,
+                config.Diagnostics,
                 config.McpOAuthTokenStorage,
                 config.AuthClientIdMetadataUrl,
                 "direct",
@@ -2041,8 +2047,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
 
     /// <summary>
     /// Builds the client-global RPC handler bag at construction time. Registers
-    /// the LLM inference provider adapter and/or the GitHub telemetry adapter
-    /// depending on which options are configured. The GitHub token dispatcher is
+    /// the configured connection-level adapters. The GitHub token dispatcher is
     /// always registered because providers are configured per session.
     /// </summary>
     private ClientGlobalApiHandlers? BuildClientGlobalApis()
@@ -2051,6 +2056,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
         var onGitHubTelemetry = _options.OnGitHubTelemetry;
         return new ClientGlobalApiHandlers
         {
+            ExtensionLaunchProvider = _options.ExtensionLaunchProvider,
             LlmInference = handler is null ? null : new LlmInferenceAdapter(handler, () => _serverRpc),
             GitHubTelemetry = onGitHubTelemetry is null ? null : new GitHubTelemetryAdapter(onGitHubTelemetry, _logger),
             GitHubToken = new GitHubTokenAdapter(this),
@@ -2698,6 +2704,10 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
             {
                 ClientGlobalApiRegistration.RegisterClientGlobalApiHandlers(rpc, _clientGlobalApis);
             }
+            if (cliProcess is not null)
+            {
+                RegisterRpcProcessExit(cliProcess, rpc);
+            }
             rpc.StartListening();
             _ = CancelExternalToolsWhenConnectionClosesAsync(rpc);
             LoggingHelpers.LogTiming(_logger, LogLevel.Debug, null,
@@ -2729,6 +2739,35 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
         }
     }
 
+    private void RegisterRpcProcessExit(Process cliProcess, JsonRpc rpc)
+    {
+        try
+        {
+            cliProcess.EnableRaisingEvents = true;
+            cliProcess.Exited += (_, _) => DisposeRpcAfterProcessExit(rpc);
+            if (cliProcess.HasExited)
+            {
+                DisposeRpcAfterProcessExit(rpc);
+            }
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or ObjectDisposedException)
+        {
+            _logger.LogDebug(ex, "Unable to monitor the Copilot CLI process for transport closure");
+        }
+    }
+
+    private void DisposeRpcAfterProcessExit(JsonRpc rpc)
+    {
+        try
+        {
+            rpc.Dispose(new ConnectionLostException());
+        }
+        catch (Exception ex) when (IsRecoverableConnectionCleanupFailure(ex))
+        {
+            _logger.LogDebug(ex, "Failed to dispose JSON-RPC connection after Copilot CLI process exit");
+        }
+    }
+
     private static bool IsRecoverableConnectionCleanupFailure(Exception exception)
         => exception is not OutOfMemoryException
             and not StackOverflowException
@@ -2749,6 +2788,15 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
             || !ReferenceEquals(connectionTask.Result.Rpc, rpc))
         {
             return;
+        }
+        CancelPendingExternalTools();
+    }
+
+    private void CancelPendingExternalTools()
+    {
+        if (_clientGlobalApis?.LlmInference is LlmInferenceAdapter llmInferenceAdapter)
+        {
+            llmInferenceAdapter.CancelPending();
         }
         foreach (var session in _sessions.Values)
         {
@@ -2834,16 +2882,12 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
 
     private class RpcHandler(CopilotClient client)
     {
-        public void OnSessionEvent(string sessionId, JsonElement? @event)
+        public void OnSessionEvent(string sessionId, SessionEvent? @event)
         {
             var session = client.GetSession(sessionId);
             if (session != null && @event != null)
             {
-                var evt = SessionEvent.FromJson(@event.Value.GetRawText());
-                if (evt != null)
-                {
-                    session.DispatchEvent(evt);
-                }
+                session.DispatchEvent(@event);
             }
         }
 
@@ -2863,9 +2907,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
             evt.SessionId = sessionId;
             if (metadata is not null)
             {
-                evt.Metadata = JsonSerializer.Deserialize(
-                    metadata.Value.GetRawText(),
-                    TypesJsonContext.Default.SessionLifecycleEventMetadata);
+                evt.Metadata = metadata.Value.Deserialize(TypesJsonContext.Default.SessionLifecycleEventMetadata);
             }
 
             client.DispatchLifecycleEvent(evt);
@@ -3034,6 +3076,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
         bool? Streaming,
         bool? IncludeSubAgentStreamingEvents,
         IDictionary<string, McpServerConfig>? McpServers,
+        DiagnosticsConfiguration? Diagnostics,
         McpOAuthTokenStorageMode? McpOAuthTokenStorage,
         string? AuthClientIdMetadataUrl,
         string? EnvValueMode,
@@ -3065,6 +3108,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
         [property: JsonPropertyName("gitHubTokenProviderRegistrationId")] string? GitHubTokenProviderRegistrationId = null,
         RemoteSessionMode? RemoteSession = null,
         CloudSessionOptions? Cloud = null,
+        bool? RefreshCustomInstructions = null,
         IList<string>? InstructionDirectories = null,
         IList<string>? PluginDirectories = null,
         [property: JsonPropertyName("disabledMcpServers")] IList<string>? DisabledMcpServers = null,
@@ -3164,6 +3208,7 @@ public sealed partial class CopilotClient : IDisposable, IAsyncDisposable
         bool? Streaming,
         bool? IncludeSubAgentStreamingEvents,
         IDictionary<string, McpServerConfig>? McpServers,
+        DiagnosticsConfiguration? Diagnostics,
         McpOAuthTokenStorageMode? McpOAuthTokenStorage,
         string? AuthClientIdMetadataUrl,
         string? EnvValueMode,
